@@ -2,7 +2,7 @@
 
 [![](https://jitpack.io/v/dev-tools-for-enterprise-java/system-test.svg)](https://jitpack.io/#dev-tools-for-enterprise-java/system-test)
 [![Build Status](https://travis-ci.org/dev-tools-for-enterprise-java/system-test.svg?branch=master)](https://travis-ci.org/dev-tools-for-enterprise-java/system-test)
-[![License](https://img.shields.io/badge/License-EPL%201.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License](https://img.shields.io/badge/License-ASL%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # Goals
 1. Simple to setup
