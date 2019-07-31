@@ -1,0 +1,33 @@
+plugins {
+  id 'war'
+}
+
+configurations {
+	postgres
+}
+
+description = "MicroProfile and JavaEE Testing framework :: Sample JDBC application"
+
+dependencies {
+  providedCompile 'javax:javaee-api:8.0'
+  providedCompile 'org.eclipse.microprofile:microprofile:2.1'
+  testCompile "org.testcontainers:postgresql:1.11.2"
+  testCompile project(':microprofile-system-test-core')
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
+  postgres "org.postgresql:postgresql:42.2.5"
+}
+
+task copyDriver(type: Copy) {
+	from configurations.postgres
+	include '**/*.jar'
+	into 'src/main/liberty/config/resources'
+	rename 'postgresql.*jar', 'postgresql.jar'
+}
+
+war.archiveName 'myservice.war'
+test.dependsOn 'war'
+test.dependsOn 'copyDriver'
+
+// Always re-run tests on every build for the sake of this sample
+// In a real project, this setting would not be desirable
+test.outputs.upToDateWhen { false } 

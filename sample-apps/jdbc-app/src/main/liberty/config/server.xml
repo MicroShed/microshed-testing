@@ -1,0 +1,20 @@
+<server>
+
+    <featureManager>
+        <feature>jaxrs-2.1</feature>
+        <feature>jsonb-1.0</feature>
+        <feature>beanValidation-2.0</feature>
+        <feature>jdbc-4.2</feature>
+        <feature>cdi-2.0</feature>
+    </featureManager>
+
+	<dataSource id="DefaultDataSource">
+    	<jdbcDriver libraryRef="postgresLib"/>
+		<properties serverName="${POSTGRES_HOSTNAME}" portNumber="${POSTGRES_PORT}" user="test" password="test" databaseName="testdb"/>
+	</dataSource>
+	
+	<library id="postgresLib">
+		<file name="${server.config.dir}/resources/postgresql.jar"/>
+	</library>
+
+</server>

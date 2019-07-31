@@ -1,0 +1,10 @@
+.gradle/
+build/
+bin/
+.DS_Store
+.project
+.classpath
+.settings
+.vscode
+org.eclipse.buildship.core.prefs
+**/resources/*.jar

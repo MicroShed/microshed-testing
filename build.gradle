@@ -1,0 +1,27 @@
+subprojects {
+    apply plugin: 'java'
+
+    group = 'io.microprofile.sandbox'
+    version = '0.1-SNAPSHOT'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    compileJava.options.encoding = 'UTF-8'
+
+    repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+
+    test {
+        defaultCharacterEncoding = "UTF-8"
+        useJUnitPlatform()
+        testLogging {
+            displayGranularity 1
+            showStandardStreams = true
+            showStackTraces = true
+            exceptionFormat = 'full'
+            events 'PASSED', 'FAILED', 'SKIPPED'
+        }
+    }
+}

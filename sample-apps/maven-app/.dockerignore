@@ -1,0 +1,6 @@
+#*
+#!build/libs/basic-liberty.war
+#!src/main/liberty/config
+
+*~
+[a-b-c]

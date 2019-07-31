@@ -1,0 +1,18 @@
+<server>
+
+    <featureManager>
+        <feature>jaxrs-2.1</feature>
+        <feature>jsonb-1.0</feature>
+        <feature>mpHealth-1.0</feature>
+        <feature>mpConfig-1.3</feature>
+        <feature>mpRestClient-1.1</feature>
+        <feature>beanValidation-2.0</feature>
+        <feature>cdi-2.0</feature>
+
+        <!-- next 2 for mp-jwt testing -->        
+        <feature>appSecurity-3.0</feature>
+        <feature>mpJwt-1.1</feature>        
+    </featureManager>
+
+            
+</server>
