@@ -46,12 +46,12 @@ Then add `system-test` and `junit-jupiter` as test-scoped dependencies:
 
 ### Run with Gradle:
 ```
-./gradlew :microprofile-system-test-jaxrs-json:test
+./gradlew :system-test-jaxrs-json:test
 ```
 
 ### Run with Maven:
 ```bash
-./gradlew :microprofile-system-test-core:publishToMavenLocal
+./gradlew publishToMavenLocal
 cd sample-apps/maven-app
 mvn clean install
 ```

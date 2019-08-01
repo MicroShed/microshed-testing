@@ -19,11 +19,11 @@
 package org.eclipse.microprofile.system.test.testcontainers;
 
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.system.test.ManuallyStartedConfiguration;
@@ -38,23 +38,24 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
     private static final Logger LOG = LoggerFactory.getLogger(HollowTestcontainersConfiguration.class);
 
     @Override
-    public String getApplicationURL() {
-        return ManuallyStartedConfiguration.applicationURL();
-    }
-
-    @Override
     public void applyConfiguration(Class<?> testClass) {
         super.applyConfiguration(testClass);
 
-        // TODO leave "other" containers running, but kill them before the next test run
+        // Translate any Docker network hosts that may have been configured in environment variables
+        Set<String> networkAliases = allContainers().stream()
+                        .filter(c -> !(c instanceof MicroProfileApplication<?>))
+                        .flatMap(c -> c.getNetworkAliases().stream())
+                        .collect(Collectors.toSet());
+        allContainers().stream()
+                        .filter(c -> c instanceof MicroProfileApplication<?>)
+                        .map(c -> (MicroProfileApplication<?>) c)
+                        .forEach(mpApp -> sanitizeEnvVar(mpApp, networkAliases));
 
-        // TODO figure out a way to apply env vars to running Liberty server
-
+        // Expose any external resources (such as DBs) on fixed exposed ports
         try {
             Method addFixedPort = GenericContainer.class.getDeclaredMethod("addFixedExposedPort", int.class, int.class);
             addFixedPort.setAccessible(true);
             Map<Integer, String> fixedExposedPorts = new HashMap<>();
-            fixedExposedPorts.put(getAppPort(), MicroProfileApplication.class.getSimpleName());
             for (GenericContainer<?> c : allContainers())
                 for (Integer p : c.getExposedPorts()) {
                     LOG.debug("exposing port: " + p + " for container " + c.getContainerName());
@@ -70,28 +71,45 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // Apply configuration to a running server
+        URL appURL;
+        try {
+            appURL = new URL(ManuallyStartedConfiguration.getRuntimeURL());
+        } catch (MalformedURLException e) {
+            throw new ExtensionConfigurationException("The application URL '" + getApplicationURL() + "' was not a valid URL.", e);
+        }
+        allContainers().stream()
+                        .filter(c -> c instanceof MicroProfileApplication<?>)
+                        .map(c -> (MicroProfileApplication<?>) c)
+                        .forEach(c -> c.setRunningURL(appURL));
     }
 
-    @Override
-    public void start() {
-        // TODO this doesn't account for manually implement start
-        // need to add a switch to turn off staring MP app containers
-        super.start();
+    /**
+     * Attempt to translate any environment variables such as:
+     * FOO_HOSTNAME=foo
+     * to accomodate for the fixed exposed port such as:
+     * FOO_HOSTNAME=localhost
+     */
+    private void sanitizeEnvVar(MicroProfileApplication<?> mpApp, Set<String> networkAliases) {
+        mpApp.getEnvMap().forEach((k, v) -> {
+            URL url = null;
+            try {
+                url = new URL(v);
+            } catch (MalformedURLException ignore) {
+            }
+            for (String network : networkAliases) {
+                String newValue = null;
+                if (network.equals(v)) {
+                    newValue = "localhost";
+                } else if (url != null && url.getHost().equals(network)) {
+                    newValue = v.replaceFirst(url.getHost(), "localhost");
+                }
+                if (newValue != null) {
+                    LOG.info("translating env var " + k + "=" + v + "-->localhost");
+                    mpApp.withEnv(k, newValue);
+                }
+            }
+        });
     }
-
-    @Override
-    protected Set<GenericContainer<?>> discoverContainers(Class<?> clazz) {
-        return super.discoverContainers(clazz).stream()
-                        .filter(c -> !(MicroProfileApplication.class.isAssignableFrom(c.getClass())))
-                        .collect(Collectors.toSet());
-    }
-
-    private int getAppPort() {
-        Matcher urlMatcher = Pattern.compile("^(.*:\\/\\/)?[a-z0-9]+(:[0-9]+)?\\/.*$").matcher(getApplicationURL());
-        if (urlMatcher.matches() && urlMatcher.group(2) != null)
-            return Integer.valueOf(urlMatcher.group(2).substring(1));
-        else
-            return -1;
-    }
-
 }

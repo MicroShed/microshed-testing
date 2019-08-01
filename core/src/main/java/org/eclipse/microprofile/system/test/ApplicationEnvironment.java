@@ -18,15 +18,28 @@
  */
 package org.eclipse.microprofile.system.test;
 
+import org.eclipse.microprofile.system.test.testcontainers.TestcontainersConfiguration;
+
 public interface ApplicationEnvironment {
 
     public static String ENV_CLASS = "MP_TEST_ENV_CLASS";
 
-    public static String getEnvClass() {
-        String strategy = System.getenv(ENV_CLASS);
+    @SuppressWarnings("unchecked")
+    public static Class<? extends ApplicationEnvironment> getEnvClass() throws ClassNotFoundException {
+        String strategy = System.getProperty(ENV_CLASS);
         if (strategy == null)
-            strategy = System.getProperty(ENV_CLASS);
-        return strategy;
+            strategy = System.getenv(ENV_CLASS);
+        if (strategy == null) {
+            return TestcontainersConfiguration.class;
+        } else {
+            Class<?> found = Class.forName(strategy);
+            if (!ApplicationEnvironment.class.isAssignableFrom(found)) {
+                throw new IllegalStateException("ApplicationEnvironment class " + strategy +
+                                                " was found, but it does not implement the required interface " + ApplicationEnvironment.class);
+            } else {
+                return (Class<? extends ApplicationEnvironment>) found;
+            }
+        }
     }
 
     public void applyConfiguration(Class<?> testClass);
