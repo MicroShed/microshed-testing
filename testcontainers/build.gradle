@@ -2,20 +2,19 @@ plugins {
     id 'maven-publish'
 }
 
-description = "MicroProfile and JavaEE Testing framework"
-
-
 publishing {
     publications {
         maven(MavenPublication) {
             groupId = 'org.eclipse.microprofile.sandbox'
-            artifactId = 'microprofile-system-test-testcontainers'
+            artifactId = 'system-test-testcontainers'
             version = '0.1-SNAPSHOT'
 
             from components.java
         }
     }
 }
+
+description = "MicroProfile and JavaEE Testing framework"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8

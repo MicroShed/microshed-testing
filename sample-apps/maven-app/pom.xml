@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.openliberty</groupId>
-  <artifactId>microprofile-system-test-maven-app</artifactId>
+  <artifactId>system-test-maven-app</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>war</packaging>
 
@@ -20,12 +20,12 @@
     <packaging.type>usr</packaging.type>
   </properties>
   
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
+<!--     <repositories> -->
+<!--         <repository> -->
+<!--             <id>jitpack.io</id> -->
+<!--             <url>https://jitpack.io</url> -->
+<!--         </repository> -->
+<!--     </repositories> -->
 
   <dependencies>
     <dependency>

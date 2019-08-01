@@ -33,6 +33,9 @@ dependencies {
   compile group: 'org.apache.cxf', name: 'cxf-rt-rs-extension-providers', version: '3.3.0'
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
   compile "org.testcontainers:junit-jupiter:1.11.2"
-  compile project(':microprofile-system-test-testcontainers') // TODO: reverse this dependency with an adapter
+  compile project(':system-test-testcontainers') // TODO: reverse this dependency with an adapter
   testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
 }
+
+
+publishToMavenLocal.dependsOn ':system-test-testcontainers:publishToMavenLocal'
