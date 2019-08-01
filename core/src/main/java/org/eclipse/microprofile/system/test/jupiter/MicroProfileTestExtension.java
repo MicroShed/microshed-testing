@@ -25,7 +25,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.system.test.ApplicationEnvironment;
-import org.eclipse.microprofile.system.test.jaxrs.JAXRSUtilities;
+import org.eclipse.microprofile.system.test.jaxrs.RestClientBuilder;
 import org.eclipse.microprofile.system.test.jwt.JwtBuilder;
 import org.eclipse.microprofile.system.test.jwt.JwtConfig;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -72,7 +72,7 @@ public class MicroProfileTestExtension implements BeforeAllCallback {
                     throw new ExtensionConfigurationException("REST-client field must be public, static, and non-final: " + restClientField.getName());
                 }
                 String jwt = createJwtIfNeeded(restClientField);
-                Object restClient = JAXRSUtilities.createRestClient(restClientField.getType(), mpAppURL, jwt);
+                Object restClient = RestClientBuilder.createRestClient(restClientField.getType(), mpAppURL, jwt);
                 //Object restClient = JAXRSUtilities.createRestClient(restClientField.getType(), mpAppURL);
                 restClientField.set(null, restClient);
                 LOGGER.debug("Injecting rest client for " + restClientField);

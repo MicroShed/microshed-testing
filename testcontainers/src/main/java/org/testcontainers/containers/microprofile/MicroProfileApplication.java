@@ -29,7 +29,6 @@ import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.concurrent.Future;
 
-import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.DockerClientFactory;
@@ -48,7 +47,6 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
 
     private String appContextRoot;
     private ServerAdapter serverAdapter;
-    private final List<Class<?>> providers = new ArrayList<>();
 
     // variables for late-bound containers
     private boolean wasLateBound = false;
@@ -92,7 +90,6 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
         addExposedPorts(serverAdapter.getDefaultHttpPort());
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
         withAppContextRoot("/");
-        providers.add(JsonBProvider.class);
     }
 
     public void setRunningURL(URL url) {
@@ -108,8 +105,6 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
                 return;
 
             Map<String, String> env = getEnvMap();
-            System.out.println("@AGG env map: " + env);
-            System.out.println("============================\n SETTING ENV \n =========================");
             if (env.size() > 0)
                 getServerAdapter().setConfigProperties(env);;
             lateBind_started = true;
@@ -161,7 +156,7 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
      */
     public SELF withAppContextRoot(String appContextRoot) {
         Objects.requireNonNull(appContextRoot);
-        this.appContextRoot = appContextRoot = JAXRSUtilities.buildPath(appContextRoot);
+        this.appContextRoot = appContextRoot = buildPath(appContextRoot);
         waitingFor(Wait.forHttp(this.appContextRoot)
                         .withStartupTimeout(Duration.ofSeconds(serverAdapter.getDefaultAppStartTimeout())));
         return self();
@@ -185,7 +180,7 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
      */
     public SELF withReadinessPath(String readinessUrl, int timeoutSeconds) {
         Objects.requireNonNull(readinessUrl);
-        readinessUrl = JAXRSUtilities.buildPath(readinessUrl);
+        readinessUrl = buildPath(readinessUrl);
         waitingFor(Wait.forHttp(readinessUrl)
                         .withStartupTimeout(Duration.ofSeconds(timeoutSeconds)));
         return self();
@@ -197,22 +192,6 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
                         .replaceAll("\\$", "_") +
                          "_mp_rest_url";
         return withEnv(envName, hostUrl);
-    }
-
-    public SELF withJaxrsProvider(Class<?> providerClass) {
-        providers.add(0, providerClass);
-        return self();
-    }
-
-    public <T> T createRestClient(Class<T> clazz, String applicationPath) {
-        Objects.requireNonNull(applicationPath, "Supplied 'applicationPath' must not be null");
-        String appURL = getApplicationURL();
-        LOGGER.info("Building rest client for " + clazz + " with path: " + appURL + " and providers: " + providers);
-        return JAXRSClientFactory.create(appURL, clazz, providers);
-    }
-
-    public <T> T createRestClient(Class<T> clazz) {
-        return createRestClient(clazz, JAXRSUtilities.resolveJaxrsAppPath(appContextRoot, clazz));
     }
 
     public String getApplicationURL() throws IllegalStateException {
@@ -227,6 +206,26 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
 
     public ServerAdapter getServerAdapter() {
         return serverAdapter;
+    }
+
+    /**
+     * Normalize a series of one or more path parts into a path
+     *
+     * @return a slash-normalized path, beginning with a '/' and joined by exactly one '/'
+     */
+    private static String buildPath(String firstPart, String... moreParts) {
+        String result = firstPart.startsWith("/") ? firstPart : '/' + firstPart;
+        if (moreParts != null && moreParts.length > 0) {
+            for (String part : moreParts) {
+                if (result.endsWith("/") && part.startsWith("/"))
+                    result += part.substring(1);
+                else if (result.endsWith("/") || part.startsWith("/"))
+                    result += part;
+                else
+                    result += "/" + part;
+            }
+        }
+        return result;
     }
 
     private class DefaultServerAdapter implements ServerAdapter {

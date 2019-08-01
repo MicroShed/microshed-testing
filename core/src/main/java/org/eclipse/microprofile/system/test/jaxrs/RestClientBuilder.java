@@ -33,9 +33,9 @@ import org.junit.platform.commons.support.ReflectionSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JAXRSUtilities {
+public class RestClientBuilder {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(JAXRSUtilities.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(RestClientBuilder.class);
 
     public static <T> T createRestClient(Class<T> clazz, String appContextRoot, String applicationPath, String jwt) {
         Objects.requireNonNull(appContextRoot, "Supplied 'appContextRoot' must not be null");

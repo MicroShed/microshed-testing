@@ -26,15 +26,16 @@ dependencies {
   compile group: 'org.bitbucket.b_c', name: 'jose4j', version: '0.6.5'
   compile group: 'org.eclipse', name: 'yasson', version: '1.0.3'
   compile group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
-  compile group: 'org.testcontainers', name: 'testcontainers', version: '1.11.2'
   compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.26'
   compile group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version: '3.3.0'
   compile group: 'cglib', name: 'cglib-nodep', version: '3.2.10'
   compile group: 'org.apache.cxf', name: 'cxf-rt-rs-extension-providers', version: '3.3.0'
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
-  compile "org.testcontainers:junit-jupiter:1.11.2"
-  compile project(':system-test-testcontainers') // TODO: reverse this dependency with an adapter
   testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
+  
+  // If there is ever a commonly used usage pattern that does not involve Testcontainrs, we can
+  // look at removing this dependency. For now, we will add it as a convenience
+  compile project(':system-test-testcontainers')
 }
 
 
