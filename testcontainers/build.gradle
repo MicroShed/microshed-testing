@@ -2,19 +2,20 @@ plugins {
     id 'maven-publish'
 }
 
+description = "MicroProfile and JavaEE Testing framework"
+
+
 publishing {
     publications {
         maven(MavenPublication) {
             groupId = 'org.eclipse.microprofile.sandbox'
-            artifactId = 'system-test'
+            artifactId = 'microprofile-system-test-testcontainers'
             version = '0.1-SNAPSHOT'
 
             from components.java
         }
     }
 }
-
-description = "MicroProfile System Testing framework"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -23,9 +24,8 @@ tasks.withType(JavaCompile) {
 }
 
 dependencies {
-  compile group: 'org.bitbucket.b_c', name: 'jose4j', version: '0.6.5'
-  compile group: 'org.eclipse', name: 'yasson', version: '1.0.3'
-  compile group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
+  compile group: 'org.eclipse', name: 'yasson', version: '1.0.4'
+  compile group: 'org.glassfish', name: 'jakarta.json', version: '1.1.5'
   compile group: 'org.testcontainers', name: 'testcontainers', version: '1.11.2'
   compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.26'
   compile group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version: '3.3.0'
@@ -33,6 +33,7 @@ dependencies {
   compile group: 'org.apache.cxf', name: 'cxf-rt-rs-extension-providers', version: '3.3.0'
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
   compile "org.testcontainers:junit-jupiter:1.11.2"
-  compile project(':microprofile-system-test-testcontainers') // TODO: reverse this dependency with an adapter
+  compile "org.testcontainers:mockserver:1.11.2"
+  compile 'org.mock-server:mockserver-client-java:5.5.1'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
 }

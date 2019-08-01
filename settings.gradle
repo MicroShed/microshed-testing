@@ -3,6 +3,12 @@ rootProject.name = 'system-test'
 include "microprofile-system-test-core"
 project(':microprofile-system-test-core').projectDir = "$rootDir/core" as File
 
+include "microprofile-system-test-testcontainers"
+project(':microprofile-system-test-testcontainers').projectDir = "$rootDir/testcontainers" as File
+
+include "microprofile-system-test-liberty"
+project(':microprofile-system-test-liberty').projectDir = "$rootDir/liberty" as File
+
 // Include all test app projects as microprofile-system-test-<APP_NAME>
 file('sample-apps').eachDir { dir ->
     include 'microprofile-system-test-' + dir.name

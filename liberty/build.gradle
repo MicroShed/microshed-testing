@@ -1,0 +1,21 @@
+plugins {
+    id 'maven-publish'
+}
+
+description = "MicroProfile and JavaEE Testing framework :: Liberty extensions"
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'org.eclipse.microprofile.sandbox'
+            artifactId = 'microprofile-system-test-liberty'
+            version = '0.1-SNAPSHOT'
+
+            from components.java
+        }
+    }
+}
+
+dependencies {
+  compile project(':microprofile-system-test-testcontainers')
+}
