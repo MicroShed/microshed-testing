@@ -11,7 +11,7 @@ description = "MicroProfile and JavaEE Testing framework :: Sample JDBC applicat
 dependencies {
   providedCompile 'javax:javaee-api:8.0'
   providedCompile 'org.eclipse.microprofile:microprofile:2.1'
-  testCompile "org.testcontainers:postgresql:1.11.2"
+  testCompile "org.testcontainers:postgresql:1.12.0"
   testCompile project(':system-test-core')
   testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
   postgres "org.postgresql:postgresql:42.2.5"

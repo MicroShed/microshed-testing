@@ -25,7 +25,7 @@ tasks.withType(JavaCompile) {
 dependencies {
   compile group: 'org.eclipse', name: 'yasson', version: '1.0.4'
   compile group: 'org.glassfish', name: 'jakarta.json', version: '1.1.5'
-  compile group: 'org.testcontainers', name: 'testcontainers', version: '1.11.2'
+  compile group: 'org.testcontainers', name: 'testcontainers', version: '1.12.0'
   compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.26'
   compile group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version: '3.3.0'
   compile group: 'cglib', name: 'cglib-nodep', version: '3.2.10'
