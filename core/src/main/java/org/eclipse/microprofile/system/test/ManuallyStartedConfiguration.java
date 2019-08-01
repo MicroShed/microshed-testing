@@ -24,25 +24,25 @@ package org.eclipse.microprofile.system.test;
  */
 public class ManuallyStartedConfiguration implements ApplicationEnvironment {
 
-    public static final String APPLICATION_URL_PROPERTY = "MP_TEST_APPLICATION_URL";
+    public static final String RUNTIME_URL_PROPERTY = "MP_TEST_RUNTIME_URL";
 
     public static boolean isAvailable() {
-        return System.getProperty(APPLICATION_URL_PROPERTY) != null ||
-               System.getenv(APPLICATION_URL_PROPERTY) != null;
+        return System.getProperty(RUNTIME_URL_PROPERTY) != null ||
+               System.getenv(RUNTIME_URL_PROPERTY) != null;
     }
 
-    public static String applicationURL() {
-        String url = System.getProperty(APPLICATION_URL_PROPERTY);
+    public static String getRuntimeURL() {
+        String url = System.getProperty(RUNTIME_URL_PROPERTY);
         if (url == null || url.isEmpty())
-            url = System.getenv(APPLICATION_URL_PROPERTY);
+            url = System.getenv(RUNTIME_URL_PROPERTY);
         if (url == null || url.isEmpty())
-            throw new IllegalStateException("The property '" + APPLICATION_URL_PROPERTY +
+            throw new IllegalStateException("The property '" + RUNTIME_URL_PROPERTY +
                                             "' must be set in order to use this ApplicationEnvironment");
         return url;
     }
 
     public ManuallyStartedConfiguration() {
-        ManuallyStartedConfiguration.applicationURL();
+        ManuallyStartedConfiguration.getRuntimeURL();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class ManuallyStartedConfiguration implements ApplicationEnvironment {
 
     @Override
     public String getApplicationURL() {
-        return ManuallyStartedConfiguration.applicationURL();
+        return ManuallyStartedConfiguration.getRuntimeURL();
     }
 
 }
