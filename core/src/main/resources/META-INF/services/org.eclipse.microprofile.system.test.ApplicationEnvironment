@@ -1,0 +1,3 @@
+org.eclipse.microprofile.system.test.ManuallyStartedConfiguration
+org.eclipse.microprofile.system.test.testcontainers.TestcontainersConfiguration
+org.eclipse.microprofile.system.test.testcontainers.HollowTestcontainersConfiguration

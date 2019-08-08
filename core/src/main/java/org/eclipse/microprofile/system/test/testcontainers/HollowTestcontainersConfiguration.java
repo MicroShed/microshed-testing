@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.microprofile.system.test.ApplicationEnvironment;
 import org.eclipse.microprofile.system.test.ManuallyStartedConfiguration;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.slf4j.Logger;
@@ -36,6 +37,18 @@ import org.testcontainers.containers.microprofile.MicroProfileApplication;
 public class HollowTestcontainersConfiguration extends TestcontainersConfiguration {
 
     private static final Logger LOG = LoggerFactory.getLogger(HollowTestcontainersConfiguration.class);
+
+    @Override
+    public boolean isAvailable() {
+        String url = System.getProperty(ManuallyStartedConfiguration.RUNTIME_URL_PROPERTY,
+                                        System.getenv(ManuallyStartedConfiguration.RUNTIME_URL_PROPERTY));
+        return url != null && !url.isEmpty();
+    }
+
+    @Override
+    public int getPriority() {
+        return ApplicationEnvironment.DEFAULT_PRIORITY - 10;
+    }
 
     @Override
     public void applyConfiguration(Class<?> testClass) {

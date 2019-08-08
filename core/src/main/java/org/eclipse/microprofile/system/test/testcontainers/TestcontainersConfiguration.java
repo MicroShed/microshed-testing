@@ -51,6 +51,16 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
     final Set<GenericContainer<?>> sharedContainers = new HashSet<>();
 
     @Override
+    public int getPriority() {
+        return ApplicationEnvironment.DEFAULT_PRIORITY - 20;
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return true;
+    }
+
+    @Override
     public void applyConfiguration(Class<?> testClass) {
         this.testClass = testClass;
 

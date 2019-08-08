@@ -18,28 +18,67 @@
  */
 package org.eclipse.microprofile.system.test;
 
-import org.eclipse.microprofile.system.test.testcontainers.TestcontainersConfiguration;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.ServiceLoader;
+import java.util.Set;
 
 public interface ApplicationEnvironment {
 
-    public static String ENV_CLASS = "MP_TEST_ENV_CLASS";
+    /**
+     * The default priority returned by an implementation of {@link ApplicationEnvironment.isAvailable()}
+     * In general, built-in ApplicationEnvironment implementations have a priority less than the default
+     * and user-defined priorities will have a greater than default priority.
+     */
+    public static final int DEFAULT_PRIORITY = 0;
 
-    @SuppressWarnings("unchecked")
-    public static Class<? extends ApplicationEnvironment> getEnvClass() throws ClassNotFoundException {
+    public static final String ENV_CLASS = "MP_TEST_ENV_CLASS";
+
+    public static ApplicationEnvironment load() throws ClassNotFoundException {
+        // First check explicilty configured environment via system property or env var
         String strategy = System.getProperty(ENV_CLASS);
-        if (strategy == null)
+        if (strategy == null || strategy.isEmpty())
             strategy = System.getenv(ENV_CLASS);
-        if (strategy == null) {
-            return TestcontainersConfiguration.class;
-        } else {
+        if (strategy != null && !strategy.isEmpty()) {
             Class<?> found = Class.forName(strategy);
             if (!ApplicationEnvironment.class.isAssignableFrom(found)) {
                 throw new IllegalStateException("ApplicationEnvironment class " + strategy +
                                                 " was found, but it does not implement the required interface " + ApplicationEnvironment.class);
             } else {
-                return (Class<? extends ApplicationEnvironment>) found;
+                try {
+                    return (ApplicationEnvironment) found.newInstance();
+                } catch (InstantiationException | IllegalAccessException e) {
+                    throw new IllegalStateException("Unable to initialize " + found, e);
+                }
             }
         }
+
+        // If nothing explicitly defined in sysprops or env, check ServiceLoader
+        Set<ApplicationEnvironment> envs = new HashSet<>();
+        ServiceLoader.load(ApplicationEnvironment.class).forEach(envs::add);
+        Optional<ApplicationEnvironment> selectedEnv = envs.stream()
+                        .filter(env -> env.isAvailable())
+                        .sorted((c1, c2) -> c1.getClass().getCanonicalName().compareTo(c2.getClass().getCanonicalName()))
+                        .sorted((c1, c2) -> Integer.compare(c2.getPriority(), c1.getPriority()))
+                        .findFirst();
+        return selectedEnv.orElseThrow(() -> new IllegalStateException("No available " + ApplicationEnvironment.class + " was discovered."));
+    }
+
+    /**
+     * @return true if the ApplicationEnvironment is currently available
+     *         false otherwise
+     */
+    public default boolean isAvailable() {
+        return true;
+    }
+
+    /**
+     * @return The priority of the ApplicationEnvironment. The ApplicationEnvironment
+     *         with the highest prioirty that is also available. A higher number corresponds
+     *         to a higher priority.
+     */
+    public default int getPriority() {
+        return DEFAULT_PRIORITY;
     }
 
     public void applyConfiguration(Class<?> testClass);

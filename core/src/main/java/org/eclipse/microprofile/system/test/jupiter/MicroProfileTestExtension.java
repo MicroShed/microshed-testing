@@ -47,11 +47,8 @@ public class MicroProfileTestExtension implements BeforeAllCallback {
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
         Class<?> testClass = context.getRequiredTestClass();
-        // For now this is hard-coded to using Testcontainers for container management.
-        // In the future, this could be configurable to something besides Testcontainers
-        Class<?> envClass = ApplicationEnvironment.getEnvClass();
-        LOGGER.info("Using ApplicationEnvironment class: " + envClass.getCanonicalName());
-        ApplicationEnvironment config = (ApplicationEnvironment) envClass.newInstance();
+        ApplicationEnvironment config = ApplicationEnvironment.load();
+        LOGGER.info("Using ApplicationEnvironment class: " + config.getClass().getCanonicalName());
         config.applyConfiguration(testClass);
         config.start();
         injectRestClients(testClass, config);
