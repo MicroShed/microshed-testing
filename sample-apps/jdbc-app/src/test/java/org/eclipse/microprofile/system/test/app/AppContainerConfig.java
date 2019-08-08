@@ -34,7 +34,13 @@ public class AppContainerConfig implements SharedContainerConfiguration {
     public static MicroProfileApplication<?> app = new MicroProfileApplication<>()
                     .withEnv("POSTGRES_HOSTNAME", "testpostgres")
                     .withEnv("POSTGRES_PORT", "5432")
-                    .withAppContextRoot("/myservice")
-                    .dependsOn(postgres);
+                    .withAppContextRoot("/myservice");
+                    //.dependsOn(postgres); intermittent bugs, see: https://github.com/testcontainers/testcontainers-java/issues/1722
+    
+    @Override
+    public void startContainers() {
+        postgres.start();
+        app.start();
+    }
 
 }
