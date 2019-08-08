@@ -19,6 +19,8 @@
 package org.testcontainers.containers.microprofile;
 
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.concurrent.Future;
 
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.DockerClientFactory;
@@ -36,7 +39,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.microprofile.spi.ServerAdapter;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.images.builder.ImageFromDockerfile;
+import org.testcontainers.utility.Base58;
 
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.ExposedPort;
@@ -54,10 +57,27 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
     private int lateBind_port;
     private boolean lateBind_started = false;
 
+    private static Path autoDiscoverDockerfile() {
+        Path root = Paths.get(".", "Dockerfile");
+        if (Files.exists(root))
+            return root;
+        Path srcMain = Paths.get(".", "src", "main", "docker", "Dockerfile");
+        if (Files.exists(srcMain))
+            return srcMain;
+        throw new ExtensionConfigurationException("Unable to locate any Dockerfile in " +
+                                                  root.toAbsolutePath() + " or " + srcMain.toAbsolutePath());
+    }
+
     public MicroProfileApplication() {
-        super(new ImageFromDockerfile()
-                        .withDockerfilePath("Dockerfile") // TODO use withDockerfile(File) here because it honors .dockerignore
-                        .withFileFromPath(".", Paths.get(".")));
+        this(autoDiscoverDockerfile());
+    }
+
+    public MicroProfileApplication(Path dockerfilePath) {
+        super(new ImageFromDockerfile("testcontainers/mpapp-" + Base58.randomString(10).toLowerCase())
+                        .withBaseDirectory(Paths.get("."))
+                        .withDockerfile(dockerfilePath));
+        if (!Files.exists(dockerfilePath))
+            throw new ExtensionConfigurationException("Dockerfile did not exist at: " + dockerfilePath);
         commonInit();
     }
 

@@ -38,9 +38,13 @@ public interface ServerAdapter {
     /**
      * @return The default amount of time (in seconds) to wait for a runtime to start before
      *         assuming that application start has failed and aborting the start process.
+     *
+     *         Implementation note:
+     *         It is reccomended to increase the default app start timeout when running in
+     *         remote CI environments such as TravisCI by checking for the CI=true env var.
      */
     public default int getDefaultAppStartTimeout() {
-        return 30;
+        return "true".equalsIgnoreCase(System.getenv("CI")) ? 90 : 30;
     }
 
     /**

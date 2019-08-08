@@ -25,22 +25,22 @@ import org.testcontainers.junit.jupiter.Container;
 
 public class AppContainerConfig implements SharedContainerConfiguration {
 
-    @Container
-    public static MicroProfileApplication<?> app = new MicroProfileApplication<>()
-					.withEnv("POSTGRES_HOSTNAME", "testpostgres")
-                    .withEnv("POSTGRES_PORT", "5432")
-                    .withAppContextRoot("/myservice");
-					
 	@Container
 	public static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>()
 					.withNetworkAliases("testpostgres")
-					.withDatabaseName("testdb");	
-
+					.withDatabaseName("testdb");
+	
+    @Container
+    public static MicroProfileApplication<?> app = new MicroProfileApplication<>()
+                    .withEnv("POSTGRES_HOSTNAME", "testpostgres")
+                    .withEnv("POSTGRES_PORT", "5432")
+                    .withAppContextRoot("/myservice");
+                    //.dependsOn(postgres); intermittent bugs, see: https://github.com/testcontainers/testcontainers-java/issues/1722
+    
     @Override
     public void startContainers() {
-		//TODO: Reset to default if we move away from the Parallel streams API for loading
-		postgres.start();
-		app.start();
+        postgres.start();
+        app.start();
     }
 
 }

@@ -43,11 +43,6 @@ public class LibertyAdapter implements ServerAdapter {
     }
 
     @Override
-    public int getDefaultAppStartTimeout() {
-        return 30;
-    }
-
-    @Override
     public void setConfigProperties(Map<String, String> properties) {
         String MP_TEST_CONFIG_FILE = System.getProperty("MP_TEST_CONFIG_FILE", System.getenv("MP_TEST_CONFIG_FILE"));
         Path configFile = null;

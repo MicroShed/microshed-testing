@@ -25,10 +25,18 @@ package org.eclipse.microprofile.system.test;
 public class ManuallyStartedConfiguration implements ApplicationEnvironment {
 
     public static final String RUNTIME_URL_PROPERTY = "MP_TEST_RUNTIME_URL";
+    public static final String MANUAL_ENALBED = "MP_TEST_MANUAL_ENV";
 
-    public static boolean isAvailable() {
-        return System.getProperty(RUNTIME_URL_PROPERTY) != null ||
-               System.getenv(RUNTIME_URL_PROPERTY) != null;
+    @Override
+    public boolean isAvailable() {
+        boolean manualEnabled = Boolean.valueOf(System.getProperty(MANUAL_ENALBED, System.getenv(MANUAL_ENALBED)));
+        String url = System.getProperty(RUNTIME_URL_PROPERTY, System.getenv(RUNTIME_URL_PROPERTY));
+        return manualEnabled && url != null && !url.isEmpty();
+    }
+
+    @Override
+    public int getPriority() {
+        return ApplicationEnvironment.DEFAULT_PRIORITY - 30;
     }
 
     public static String getRuntimeURL() {
@@ -39,10 +47,6 @@ public class ManuallyStartedConfiguration implements ApplicationEnvironment {
             throw new IllegalStateException("The property '" + RUNTIME_URL_PROPERTY +
                                             "' must be set in order to use this ApplicationEnvironment");
         return url;
-    }
-
-    public ManuallyStartedConfiguration() {
-        ManuallyStartedConfiguration.getRuntimeURL();
     }
 
     @Override
