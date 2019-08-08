@@ -1,6 +1,5 @@
-#*
-#!build/libs/basic-liberty.war
-#!src/main/liberty/config
-
-*~
-[a-b-c]
+build/
+target/
+!target/*.war
+src/
+!src/main/liberty/config
