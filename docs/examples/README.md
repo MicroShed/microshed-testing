@@ -1,7 +1,5 @@
 # MicroProfile System Test Framework
 
-Foo 1
-
 # Goals
 1. Easy to get started
 1. Work with any JavaEE or MicroProfile runtime
