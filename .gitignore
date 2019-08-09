@@ -1,6 +1,7 @@
 .gradle/
 build/
 bin/
+site/
 .DS_Store
 .project
 .classpath
