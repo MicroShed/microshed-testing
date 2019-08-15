@@ -23,20 +23,18 @@ import static org.junit.Assert.assertNotNull;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.system.test.jupiter.MicroProfileTest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.microprofile.ComposedMicroProfileApplication;
 import org.testcontainers.containers.microprofile.MicroProfileApplication;
 import org.testcontainers.junit.jupiter.Container;
 
 @MicroProfileTest
-@Disabled // not a golden path test
 public class DynamicallyLayeredTest {
 
     /**
      * This approach can be used when only a .war file is produced by the build, and there is no
      * docker knowledge in the project. This essentially does:
-     * FROM open-liberty:microProfile2
+     * FROM open-liberty:microProfile3
      * ADD build/libs/myservice.war /config/dropins
      * COPY src/main/liberty/config /config/
      */

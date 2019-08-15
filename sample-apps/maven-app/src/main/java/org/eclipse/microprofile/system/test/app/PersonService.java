@@ -93,6 +93,10 @@ public class PersonService {
             personNotFound(id);
         personRepo.remove(id);
     }
+    
+    public void nonJaxrsMethod() {
+        System.out.println("This is a non-JAXRS method and should not be accessible with a REST client!");
+    }
 
     private void personNotFound(long id) {
         throw new NotFoundException("Person with id " + id + " not found.");

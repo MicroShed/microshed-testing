@@ -29,7 +29,7 @@ task runMvnVerify(type:Exec) {
   }
 }
 
-compileJava.dependsOn ':system-test-core:publishToMavenLocal'
+compileJava.dependsOn ':system-test-testcontainers:publishToMavenLocal'
 assemble.dependsOn runMvnCompile
 test.dependsOn runMvnVerify
 
