@@ -23,12 +23,14 @@ import static org.junit.Assert.assertNotNull;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.system.test.jupiter.MicroProfileTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.microprofile.ComposedMicroProfileApplication;
 import org.testcontainers.containers.microprofile.MicroProfileApplication;
 import org.testcontainers.junit.jupiter.Container;
 
 @MicroProfileTest
+@Disabled
 public class DynamicallyLayeredTest {
 
     /**

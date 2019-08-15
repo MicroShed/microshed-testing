@@ -19,3 +19,5 @@ description = "MicroProfile and JavaEE Testing framework :: Liberty extensions"
 dependencies {
   compile project(':system-test-testcontainers')
 }
+
+publishToMavenLocal.dependsOn ':system-test-testcontainers:publishToMavenLocal'

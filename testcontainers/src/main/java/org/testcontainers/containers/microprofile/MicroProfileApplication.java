@@ -78,6 +78,7 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
                         .withDockerfile(dockerfilePath));
         if (!Files.exists(dockerfilePath))
             throw new ExtensionConfigurationException("Dockerfile did not exist at: " + dockerfilePath);
+        LOGGER.info("Using Dockerfile at:" + dockerfilePath);
         commonInit();
     }
 
@@ -126,7 +127,7 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
 
             Map<String, String> env = getEnvMap();
             if (env.size() > 0)
-                getServerAdapter().setConfigProperties(env);;
+                getServerAdapter().setConfigProperties(env);
             lateBind_started = true;
             return;
         }

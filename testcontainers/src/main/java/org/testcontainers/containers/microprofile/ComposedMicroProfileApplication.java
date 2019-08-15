@@ -27,15 +27,34 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import org.eclipse.microprofile.system.test.ApplicationEnvironment;
+import org.eclipse.microprofile.system.test.testcontainers.HollowTestcontainersConfiguration;
+import org.eclipse.microprofile.system.test.testcontainers.TestcontainersConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.microprofile.spi.ServerAdapter;
 
 public class ComposedMicroProfileApplication<SELF extends ComposedMicroProfileApplication<SELF>> extends MicroProfileApplication<SELF> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ComposedMicroProfileApplication.class);
+
+    private static Future<String> resolveImage() {
+        ApplicationEnvironment current = ApplicationEnvironment.load();
+        if (!(current instanceof TestcontainersConfiguration) ||
+            current instanceof HollowTestcontainersConfiguration) {
+            // Testcontainers won't be used in this case, supply a dummy image to improve performance
+            return CompletableFuture.completedFuture("alpine:3.5");
+        } else {
+            return resolveAdatper().getDefaultImage(findAppFile());
+        }
+    }
+
     public ComposedMicroProfileApplication() {
-        this(resolveAdatper().getDefaultImage(findAppFile()));
+        this(resolveImage());
     }
 
     public ComposedMicroProfileApplication(Future<String> image) {
