@@ -18,6 +18,8 @@
  */
 package org.testcontainers.containers.microprofile;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,12 +27,21 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ServiceLoader;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
+import org.eclipse.microprofile.system.test.ApplicationEnvironment;
+import org.eclipse.microprofile.system.test.testcontainers.HollowTestcontainersConfiguration;
+import org.eclipse.microprofile.system.test.testcontainers.TestcontainersConfiguration;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,28 +68,97 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
     private int lateBind_port;
     private boolean lateBind_started = false;
 
-    private static Path autoDiscoverDockerfile() {
-        Path root = Paths.get(".", "Dockerfile");
-        if (Files.exists(root))
-            return root;
-        Path srcMain = Paths.get(".", "src", "main", "docker", "Dockerfile");
-        if (Files.exists(srcMain))
-            return srcMain;
-        throw new ExtensionConfigurationException("Unable to locate any Dockerfile in " +
-                                                  root.toAbsolutePath() + " or " + srcMain.toAbsolutePath());
+    private static final Path dockerfile_root = Paths.get(".", "Dockerfile");
+    private static final Path dockerfile_src_main = Paths.get(".", "src", "main", "docker", "Dockerfile");
+
+    private static Optional<Path> autoDiscoverDockerfile() {
+        if (Files.exists(dockerfile_root))
+            return Optional.of(dockerfile_root);
+        if (Files.exists(dockerfile_src_main))
+            return Optional.of(dockerfile_src_main);
+        return Optional.empty();
+    }
+
+    private static Future<String> resolveImage(Optional<Path> dockerfile) {
+        ApplicationEnvironment current = ApplicationEnvironment.load();
+        if (!(current instanceof TestcontainersConfiguration) ||
+            current instanceof HollowTestcontainersConfiguration) {
+            // Testcontainers won't be used in this case, supply a dummy image to improve performance
+            return CompletableFuture.completedFuture("alpine:3.5");
+        } else if (dockerfile.isPresent()) {
+            if (!Files.exists(dockerfile.get()))
+                throw new ExtensionConfigurationException("Dockerfile did not exist at: " + dockerfile.get());
+            ImageFromDockerfile image = new ImageFromDockerfile("testcontainers/mpapp-" + Base58.randomString(10).toLowerCase());
+            image.withDockerfile(dockerfile.get());
+            image.setBaseDirectory(Paths.get("."));
+            return image;
+        } else {
+            // Dockerfile is not present, use a ServerAdapter to build the image
+            return resolveAdatper().orElseThrow(() -> {
+                return new ExtensionConfigurationException("Unable to resolve Docker image for application because:" +
+                                                           "\n - unable to locate Dockerfile in " + dockerfile_root.toAbsolutePath() +
+                                                           "\n - unable to locate Dockerfile in " + dockerfile_src_main.toAbsolutePath() +
+                                                           "\n - did not find any ServerAdapter to provide a default Dockerfile");
+            }).getDefaultImage(findAppFile());
+        }
+    }
+
+    private static File findAppFile() {
+        // Find a .war or .ear file in the build/ or target/ directories
+        Set<File> matches = new HashSet<>();
+        matches.addAll(findAppFiles("build"));
+        matches.addAll(findAppFiles("target"));
+        if (matches.size() == 0)
+            throw new IllegalStateException("No .war or .ear files found in build/ or target/ output folders.");
+        if (matches.size() > 1)
+            throw new IllegalStateException("Found multiple application files in build/ or target output folders: " + matches +
+                                            " Expecting exactly 1 application file to be found.");
+        File appFile = matches.iterator().next();
+        LOGGER.info("Found application file at: " + appFile.getAbsolutePath());
+        return appFile;
+    }
+
+    private static Set<File> findAppFiles(String path) {
+        File dir = new File(path);
+        if (dir.exists() && dir.isDirectory()) {
+            try {
+                return Files.walk(dir.toPath())
+                                .filter(Files::isRegularFile)
+                                .filter(p -> p.toString().toLowerCase().endsWith(".war"))
+                                .map(p -> p.toFile())
+                                .collect(Collectors.toSet());
+            } catch (IOException ignore) {
+            }
+        }
+        return Collections.emptySet();
+    }
+
+    private static Optional<ServerAdapter> resolveAdatper() {
+        List<ServerAdapter> adapters = new ArrayList<>(1);
+        for (ServerAdapter adapter : ServiceLoader.load(ServerAdapter.class)) {
+            adapters.add(adapter);
+            LOGGER.info("Discovered ServerAdapter: " + adapter.getClass());
+        }
+        return adapters.stream()
+                        .sorted((a1, a2) -> Integer.compare(a2.getPriority(), a1.getPriority()))
+                        .findFirst();
     }
 
     public MicroProfileApplication() {
         this(autoDiscoverDockerfile());
     }
 
+    private MicroProfileApplication(Optional<Path> dockerfilePath) {
+        this(resolveImage(dockerfilePath));
+    }
+
     public MicroProfileApplication(Path dockerfilePath) {
-        super(new ImageFromDockerfile("testcontainers/mpapp-" + Base58.randomString(10).toLowerCase())
-                        .withBaseDirectory(Paths.get("."))
-                        .withDockerfile(dockerfilePath));
-        if (!Files.exists(dockerfilePath))
-            throw new ExtensionConfigurationException("Dockerfile did not exist at: " + dockerfilePath);
+        this(Optional.of(dockerfilePath));
         LOGGER.info("Using Dockerfile at:" + dockerfilePath);
+    }
+
+    public MicroProfileApplication(Future<String> dockerImageName) {
+        super(dockerImageName);
         commonInit();
     }
 
@@ -87,27 +167,9 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
         commonInit();
     }
 
-    public MicroProfileApplication(Future<String> dockerImageName) {
-        super(dockerImageName);
-        commonInit();
-    }
-
     private void commonInit() {
-        // Look for a ServerAdapter implementation (optional)
-        List<ServerAdapter> adapters = new ArrayList<>(1);
-        for (ServerAdapter adapter : ServiceLoader.load(ServerAdapter.class)) {
-            adapters.add(adapter);
-            LOGGER.info("Found ServerAdapter: " + adapter.getClass());
-        }
-        if (adapters.size() == 0) {
-            LOGGER.info("No ServerAdapter found. Using default settings.");
-            serverAdapter = new DefaultServerAdapter();
-        } else if (adapters.size() == 1) {
-            serverAdapter = adapters.get(0);
-            LOGGER.info("Only 1 ServerAdapter found. Will use: " + serverAdapter);
-        } else {
-            throw new IllegalStateException("Expected 0 or 1 ServerAdapters, but found: " + adapters);
-        }
+        serverAdapter = resolveAdatper().orElseGet(() -> new DefaultServerAdapter());
+        LOGGER.info("Using ServerAdapter: " + serverAdapter.getClass().getCanonicalName());
         addExposedPorts(serverAdapter.getDefaultHttpPort());
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
         withAppContextRoot("/");
@@ -251,11 +313,10 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
 
     private class DefaultServerAdapter implements ServerAdapter {
 
-        private final InspectImageResponse imageData;
         private final int defaultHttpPort;
 
         public DefaultServerAdapter() {
-            imageData = DockerClientFactory.instance().client().inspectImageCmd(getDockerImageName()).exec();
+            InspectImageResponse imageData = DockerClientFactory.instance().client().inspectImageCmd(getDockerImageName()).exec();
             LOGGER.info("Found exposed ports: " + Arrays.toString(imageData.getContainerConfig().getExposedPorts()));
             int bestChoice = -1;
             for (ExposedPort exposedPort : imageData.getContainerConfig().getExposedPorts()) {
@@ -269,8 +330,13 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
                     bestChoice = port;
                 }
             }
-            LOGGER.info("Automatically selecting default HTTP port: " + getDefaultHttpPort());
             defaultHttpPort = bestChoice;
+            LOGGER.info("Automatically selecting default HTTP port: " + defaultHttpPort);
+        }
+
+        @Override
+        public int getPriority() {
+            return -100;
         }
 
         @Override

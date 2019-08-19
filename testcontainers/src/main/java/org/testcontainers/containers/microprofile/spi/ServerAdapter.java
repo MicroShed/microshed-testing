@@ -25,6 +25,10 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 
 public interface ServerAdapter {
 
+    public default int getPriority() {
+        return 0;
+    }
+
     /**
      * @return The default HTTP port for this runtime
      */
