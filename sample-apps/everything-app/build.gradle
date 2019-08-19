@@ -8,7 +8,9 @@ dependencies {
   providedCompile 'javax:javaee-api:8.0'
   providedCompile 'org.eclipse.microprofile:microprofile:2.1'
   compile group: 'org.mongodb', name: 'mongo-java-driver', version: '3.10.1'
-  testCompile project(':system-test-core')
+  testCompile project(':system-test-testcontainers')
+  testCompile 'org.testcontainers:mockserver:1.11.2'
+  testCompile 'org.mock-server:mockserver-client-java:5.5.1'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
 }
 

@@ -34,13 +34,18 @@ public interface ApplicationEnvironment {
 
     public static final String ENV_CLASS = "MP_TEST_ENV_CLASS";
 
-    public static ApplicationEnvironment load() throws ClassNotFoundException {
+    public static ApplicationEnvironment load() {
         // First check explicilty configured environment via system property or env var
         String strategy = System.getProperty(ENV_CLASS);
         if (strategy == null || strategy.isEmpty())
             strategy = System.getenv(ENV_CLASS);
         if (strategy != null && !strategy.isEmpty()) {
-            Class<?> found = Class.forName(strategy);
+            Class<?> found;
+            try {
+                found = Class.forName(strategy);
+            } catch (ClassNotFoundException e) {
+                throw new IllegalStateException("Unable to load the selected ApplicationEnvironment class: " + strategy, e);
+            }
             if (!ApplicationEnvironment.class.isAssignableFrom(found)) {
                 throw new IllegalStateException("ApplicationEnvironment class " + strategy +
                                                 " was found, but it does not implement the required interface " + ApplicationEnvironment.class);

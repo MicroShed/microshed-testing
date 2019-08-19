@@ -38,11 +38,15 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
 
     private static final Logger LOG = LoggerFactory.getLogger(HollowTestcontainersConfiguration.class);
 
-    @Override
-    public boolean isAvailable() {
+    public static boolean available() {
         String url = System.getProperty(ManuallyStartedConfiguration.RUNTIME_URL_PROPERTY,
                                         System.getenv(ManuallyStartedConfiguration.RUNTIME_URL_PROPERTY));
         return url != null && !url.isEmpty();
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return available();
     }
 
     @Override

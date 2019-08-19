@@ -29,8 +29,19 @@ import java.util.Map;
 
 import org.testcontainers.containers.microprofile.spi.ServerAdapter;
 import org.testcontainers.images.builder.ImageFromDockerfile;
+import org.testcontainers.images.builder.dockerfile.DockerfileBuilder;
 
 public class LibertyAdapter implements ServerAdapter {
+
+    private static String BASE_DOCKER_IMAGE = "open-liberty:microProfile3";
+
+    public static String getBaseDockerImage() {
+        return BASE_DOCKER_IMAGE;
+    }
+
+    public static void setBaseDockerImage(String imageName) {
+        BASE_DOCKER_IMAGE = imageName;
+    }
 
     @Override
     public int getDefaultHttpPort() {
@@ -69,7 +80,7 @@ public class LibertyAdapter implements ServerAdapter {
         lines.add("</server>");
         try {
             Files.write(configFile, lines, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            Thread.sleep(3000);
+            Thread.sleep(500); // wait for configuration updates
         } catch (Exception e) {
             throw new RuntimeException("Unable to write configuration to " + configFile, e);
         }
@@ -79,14 +90,15 @@ public class LibertyAdapter implements ServerAdapter {
     public ImageFromDockerfile getDefaultImage(File appFile) {
         String appName = appFile.getName();
         // Compose a docker image equivalent to doing:
-        // FROM open-liberty:microProfile2
-        // ADD build/libs/myservice.war /config/dropins
+        // FROM open-liberty:microProfile3
+        // ADD build/libs/<appFile> /config/dropins
         // COPY src/main/liberty/config /config/
+        DockerfileBuilder builder = new DockerfileBuilder()
+                        .from(BASE_DOCKER_IMAGE)
+                        .add("/config/dropins/" + appName, "/config/dropins/" + appName)
+                        .copy("/config", "/config");
         ImageFromDockerfile image = new ImageFromDockerfile()
-                        .withDockerfileFromBuilder(builder -> builder.from("open-liberty:microProfile3")
-                                        .add("/config/dropins/" + appName, "/config/dropins/" + appName)
-                                        .copy("/config", "/config")
-                                        .build())
+                        .withDockerfileFromBuilder(b -> builder.build())
                         .withFileFromFile("/config/dropins/" + appName, appFile)
                         .withFileFromFile("/config", new File("src/main/liberty/config"));
         return image;

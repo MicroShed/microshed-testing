@@ -16,27 +16,15 @@ publishing {
 
 description = "MicroProfile System Testing framework"
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-tasks.withType(JavaCompile) {
-  options.encoding = 'UTF-8'
-}
-
 dependencies {
-  compile group: 'org.bitbucket.b_c', name: 'jose4j', version: '0.6.5'
-  compile group: 'org.eclipse', name: 'yasson', version: '1.0.3'
-  compile group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
-  compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.26'
-  compile group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version: '3.3.0'
-  compile group: 'cglib', name: 'cglib-nodep', version: '3.2.10'
-  compile group: 'org.apache.cxf', name: 'cxf-rt-rs-extension-providers', version: '3.3.0'
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
-  testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
-  
-  // If there is ever a commonly used usage pattern that does not involve Testcontainrs, we can
-  // look at removing this dependency. For now, we will add it as a convenience
-  compile project(':system-test-testcontainers')
+  compile 'org.junit.jupiter:junit-jupiter-api:5.5.1'
+  implementation group: 'org.bitbucket.b_c', name: 'jose4j', version: '0.6.5'
+  implementation group: 'org.eclipse', name: 'yasson', version: '1.0.4'
+  implementation group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
+  implementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.26'
+  implementation group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version: '3.3.0'
+  implementation group: 'cglib', name: 'cglib-nodep', version: '3.2.10'
+  implementation group: 'org.apache.cxf', name: 'cxf-rt-rs-extension-providers', version: '3.3.0'
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.5.1'
 }
-
-
-publishToMavenLocal.dependsOn ':system-test-testcontainers:publishToMavenLocal'
