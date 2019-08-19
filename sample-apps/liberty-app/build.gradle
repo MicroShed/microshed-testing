@@ -6,7 +6,7 @@ description = "MicroProfile and JavaEE Testing framework :: Sample application"
 
 dependencies {
   providedCompile 'javax:javaee-api:8.0'
-  providedCompile 'org.eclipse.microprofile:microprofile:2.1'
+  providedCompile 'org.eclipse.microprofile:microprofile:3.0'
   testCompile project(':system-test-testcontainers')
   testCompile project(':system-test-liberty')
   testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'

@@ -32,7 +32,8 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 
 public class LibertyAdapter implements ServerAdapter {
 
-    private static String BASE_DOCKER_IMAGE = "open-liberty:microProfile3";
+    // TODO: change back to open-liberty:microProfile3 once 19008 is available
+    private static String BASE_DOCKER_IMAGE = "openliberty/daily:full";//"open-liberty:microProfile3";
 
     public static String getBaseDockerImage() {
         return BASE_DOCKER_IMAGE;
