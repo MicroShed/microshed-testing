@@ -35,7 +35,7 @@ import org.testcontainers.containers.microprofile.MicroProfileApplication;
 import org.testcontainers.junit.jupiter.Container;
 
 @MicroProfileTest
-public class BasicJAXRSServiceTest {
+public class BasicLibertyAppTest {
 
     @Container
     public static MicroProfileApplication<?> app = new MicroProfileApplication<>()

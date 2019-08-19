@@ -50,6 +50,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.microprofile.spi.ServerAdapter;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.Base58;
 
 import com.github.dockerjava.api.command.InspectImageResponse;
@@ -57,16 +58,26 @@ import com.github.dockerjava.api.model.ExposedPort;
 
 public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>> extends GenericContainer<SELF> {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(MicroProfileApplication.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MicroProfileApplication.class);
+    private static final boolean mpHealth20Available;
+    static {
+        Class<?> readinessClass = null;
+        try {
+            readinessClass = Class.forName("org.eclipse.microprofile.health.Readiness");
+        } catch (ClassNotFoundException e) {
+        }
+        mpHealth20Available = readinessClass != null;
+    }
 
     private String appContextRoot;
     private ServerAdapter serverAdapter;
+    private boolean readinessPathSet;
 
     // variables for late-bound containers
-    private boolean wasLateBound = false;
+    private boolean wasLateBound;
     private String lateBind_ipAddress;
     private int lateBind_port;
-    private boolean lateBind_started = false;
+    private boolean lateBind_started;
 
     private static final Path dockerfile_root = Paths.get(".", "Dockerfile");
     private static final Path dockerfile_src_main = Paths.get(".", "src", "main", "docker", "Dockerfile");
@@ -175,6 +186,17 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
         withAppContextRoot("/");
     }
 
+    @Override
+    protected void configure() {
+        super.configure();
+        // If the readiness path was not set explicitly, default it to:
+        // A) The standard MP Health 2.0 readiness endpoint (if available)
+        // B) the app context root
+        if (!readinessPathSet) {
+            withReadinessPath(mpHealth20Available ? "/health/readiness" : appContextRoot);
+        }
+    }
+
     public void setRunningURL(URL url) {
         wasLateBound = true;
         lateBind_ipAddress = url.getHost();
@@ -240,15 +262,20 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
     public SELF withAppContextRoot(String appContextRoot) {
         Objects.requireNonNull(appContextRoot);
         this.appContextRoot = appContextRoot = buildPath(appContextRoot);
-        waitingFor(Wait.forHttp(this.appContextRoot)
-                        .withStartupTimeout(Duration.ofSeconds(serverAdapter.getDefaultAppStartTimeout())));
         return self();
     }
 
     /**
-     * Sets the path to be used to determine container readiness.
-     * If the path starts with '/' it is an absolute path (after hostname and port). If it does not
-     * start with '/', the path is relative to the current appContextRoot.
+     * Sets the path to be used to determine container readiness. The readiness check will
+     * timeout after a sensible amount of time has elapsed.
+     * If unspecified, the readiness path with defailt to either:
+     * <ol><li>The MicroProfile Health 2.0 readiness endpoint <code>/health/readiness</code>,
+     * if MP Health 2.0 API is accessible</li>
+     * <li>Otherwise, the application context root</li>
+     * </ol>
+     *
+     * @param readinessUrl The HTTP endpoint to be polled for readiness. Once the endpoint
+     *            returns HTTP 200 (OK), the container is considered to be ready.
      */
     public SELF withReadinessPath(String readinessUrl) {
         withReadinessPath(readinessUrl, serverAdapter.getDefaultAppStartTimeout());
@@ -256,9 +283,16 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
     }
 
     /**
-     * @param readinessUrl The container readiness path to be used to determine container readiness.
-     *            If the path starts with '/' it is an absolute path (after hostname and port). If it does not
-     *            start with '/', the path is relative to the current appContextRoot.
+     * Sets the path to be used to determine container readiness. The readiness check will
+     * timeout after a sensible amount of time has elapsed.
+     * If unspecified, the readiness path with defailt to either:
+     * <ol><li>The MicroProfile Health 2.0 readiness endpoint <code>/health/readiness</code>,
+     * if MP Health 2.0 API is accessible</li>
+     * <li>Otherwise, the application context root</li>
+     * </ol>
+     *
+     * @param readinessUrl The HTTP endpoint to be polled for readiness. Once the endpoint
+     *            returns HTTP 200 (OK), the container is considered to be ready.
      * @param timeout The amount of time to wait for the container to be ready.
      */
     public SELF withReadinessPath(String readinessUrl, int timeoutSeconds) {
@@ -267,6 +301,18 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
         waitingFor(Wait.forHttp(readinessUrl)
                         .withStartupTimeout(Duration.ofSeconds(timeoutSeconds)));
         return self();
+    }
+
+    @Override
+    public SELF waitingFor(WaitStrategy waitStrategy) {
+        readinessPathSet = true;
+        return super.waitingFor(waitStrategy);
+    }
+
+    @Override
+    public void setWaitStrategy(WaitStrategy waitStrategy) {
+        readinessPathSet = true;
+        super.setWaitStrategy(waitStrategy);
     }
 
     public SELF withMpRestClient(Class<?> restClient, String hostUrl) {
