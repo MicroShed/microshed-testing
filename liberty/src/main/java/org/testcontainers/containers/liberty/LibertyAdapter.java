@@ -29,7 +29,6 @@ import java.util.Map;
 
 import org.testcontainers.containers.microprofile.spi.ServerAdapter;
 import org.testcontainers.images.builder.ImageFromDockerfile;
-import org.testcontainers.images.builder.dockerfile.DockerfileBuilder;
 
 public class LibertyAdapter implements ServerAdapter {
 
@@ -41,6 +40,11 @@ public class LibertyAdapter implements ServerAdapter {
 
     public static void setBaseDockerImage(String imageName) {
         BASE_DOCKER_IMAGE = imageName;
+    }
+
+    @Override
+    public int getPriority() {
+        return -50;
     }
 
     @Override
@@ -93,12 +97,11 @@ public class LibertyAdapter implements ServerAdapter {
         // FROM open-liberty:microProfile3
         // ADD build/libs/<appFile> /config/dropins
         // COPY src/main/liberty/config /config/
-        DockerfileBuilder builder = new DockerfileBuilder()
-                        .from(BASE_DOCKER_IMAGE)
-                        .add("/config/dropins/" + appName, "/config/dropins/" + appName)
-                        .copy("/config", "/config");
         ImageFromDockerfile image = new ImageFromDockerfile()
-                        .withDockerfileFromBuilder(b -> builder.build())
+                        .withDockerfileFromBuilder(builder -> builder.from(getBaseDockerImage())
+                                        .add("/config/dropins/" + appName, "/config/dropins/" + appName)
+                                        .copy("/config", "/config")
+                                        .build())
                         .withFileFromFile("/config/dropins/" + appName, appFile)
                         .withFileFromFile("/config", new File("src/main/liberty/config"));
         return image;
