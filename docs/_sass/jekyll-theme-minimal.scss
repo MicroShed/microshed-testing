@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,400i,700,700i&display=swap');
 @import "rouge-github";
-@import "sidebar";
 
 body {
   background-color: #fff;
@@ -269,4 +268,14 @@ footer {
     font-size:12pt;
     color:#444;
   }
+}
+
+
+.sidebarPage {
+	padding-left: 1em;
+	padding-top: .25em;
+}
+
+.sidebarSectionTitle {
+	padding-top: .5em;
 }
