@@ -1,0 +1,38 @@
+// Disable gradle compile/test for this project so Maven can handle it
+sourceSets {
+    main.java.srcDirs = []
+    main.resources.srcDirs = []
+    test.java.srcDirs = []
+    test.resources.srcDirs = []
+}
+
+task runMvnCompile(type:Exec) {
+  environment System.getProperties()
+  if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+    executable "cmd"
+    args '/c', 'mvn', "clean", 'compile'
+  } else {
+    executable "mvn"
+    args 'clean', 'compile'
+  }
+}
+
+task runMvnVerify(type:Exec) {
+  shouldRunAfter runMvnCompile
+  environment System.getProperties()
+  if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+    executable "cmd"
+    args '/c', 'mvn', "clean", 'verify'
+  } else {
+    executable "mvn"
+    args 'clean', 'verify'
+  }
+}
+
+compileJava.dependsOn ':system-test-core:publishToMavenLocal'
+assemble.dependsOn runMvnCompile
+test.dependsOn runMvnVerify
+
+// Always re-run tests on every build for the sake of this sample
+// In a real project, this setting would not be desirable
+test.outputs.upToDateWhen { false } 
