@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: "en-US" }}">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+{% seo %}
+    <link rel="stylesheet" href="{{ "/assets/css/style.css?v=" | append: site.github.build_revision | relative_url }}">
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1><a href="{{ "/" | absolute_url }}">{{ site.title | default: site.github.repository_name }}</a></h1>
+
+        <p class="view"><a href="{{ site.github.repository_url }}">View the Project on GitHub <small>{{ site.github.repository_nwo }}</small></a></p>
+
+		<div class="sidebar">
+				<div class="sidebarSectionTitle">Features</div>
+				<div id="featuresPanel" class="sidebarSection">
+					{% for page in site.pages %}
+						{% assign split_array = page.path | split: "/" %}
+						{% if split_array.first == "features" %}
+							<div class="sidebarPage">
+								<a class="sidebarLink" href= {{ page.url | relative_url }} >{{page.title}}</a>
+							</div>
+						{% endif %}
+					{% endfor %}
+				</div>
+				<div class="sidebarSectionTitle">Examples</div>
+				<div id="examplesPanel" class="sidebarSection">
+					{% for page in site.pages %}
+						{% assign split_array = page.path | split: "/" %}
+						{% if split_array.first == "examples" %}
+							<div class="sidebarPage">
+								<a class="sidebarLink" href= {{ page.url | relative_url }} >{{page.title}}</a>
+							</div>
+						{% endif %}
+					{% endfor %}
+				</div>
+			</div>
+
+	  </header>
+
+
+      <section>
+
+      {{ content }}
+
+      </section>
+      <footer>
+        {% if site.github.is_project_page %}
+        <p>This project is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></p>
+        {% endif %}
+      </footer>
+    </div>
+    <script src="{{ "/assets/js/scale.fix.js" | relative_url }}"></script>
+  </body>
+</html>

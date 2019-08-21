@@ -1,6 +1,7 @@
+---
+title: "MicroProfile System Test Framework"
+---
 # MicroProfile System Test Framework
-
-Foo 1
 
 # Goals
 1. Easy to get started
@@ -39,3 +40,4 @@ Then add `system-test` and `junit-jupiter` as test-scoped dependencies:
     <!-- other dependencies... -->
 </dependencies>
 ```
+
