@@ -1,3 +1,7 @@
+---
+layout: post
+title: "Example"
+---
 # MicroProfile System Test Framework
 
 # Goals
