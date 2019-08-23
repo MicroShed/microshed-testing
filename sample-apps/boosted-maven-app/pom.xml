@@ -60,7 +60,7 @@
 		</dependency>
     <dependency>
       <groupId>boost.boosters</groupId>
-      <artifactId>beanValidation</artifactId>
+      <artifactId>bean-validation</artifactId>
     </dependency>
   
    <dependency>
