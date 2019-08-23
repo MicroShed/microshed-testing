@@ -1,16 +1,24 @@
 @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,400i,700,700i&display=swap');
 @import "rouge-github";
 
+//Colors
+$dark: #2f2f2f;
+$tan: #f8dfa1;
+$grey: #948f8f;
+$white: #f4f4f4;
+
+
 body {
-  background-color: #fff;
-  padding:50px;
-  font: 14px/1.5 "IBM Plex Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color:#727272;
+  background-color: $white;
+  padding:50px 0px;
+  margin: 10px 10px 10px 0px;
+  font: 16px/1.5 "IBM Plex Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color:$grey;
   font-weight:400;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color:#222;
+  color:$dark;
   margin:0 0 20px;
 }
 
@@ -35,13 +43,12 @@ h3, h4, h5, h6 {
 }
 
 a {
-  color:#267CB9;
+  color:$tan;
   text-decoration:none;
 }
 
 a:hover, a:focus {
-  color:#069;
-  font-weight: bold;
+  color:#ffedc1;
 }
 
 a small {
@@ -105,7 +112,12 @@ img {
 
 header {
   width:270px;
+  padding: 10px 0px 10px 25px;
   float:left;
+  background-color: $dark;
+  border: 3px solid $dark;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
   position:fixed;
   -webkit-font-smoothing:subpixel-antialiased;
 }
