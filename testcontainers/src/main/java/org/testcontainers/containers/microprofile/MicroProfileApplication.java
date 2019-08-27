@@ -60,6 +60,7 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MicroProfileApplication.class);
     private static final boolean mpHealth20Available;
+    private static final String MP_HEALTH_READINESS_PATH = "/health/ready";
     static {
         Class<?> readinessClass = null;
         try {
@@ -193,7 +194,7 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
         // A) The standard MP Health 2.0 readiness endpoint (if available)
         // B) the app context root
         if (!readinessPathSet) {
-            withReadinessPath(mpHealth20Available ? "/health/readiness" : appContextRoot);
+            withReadinessPath(mpHealth20Available ? MP_HEALTH_READINESS_PATH : appContextRoot);
         }
     }
 
