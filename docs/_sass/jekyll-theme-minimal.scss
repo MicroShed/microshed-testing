@@ -1,16 +1,26 @@
 @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,400i,700,700i&display=swap');
 @import "rouge-github";
 
+//Colors
+$dark: #2f2f2f;
+$birch: #f8dfa1;
+$light-birch: #ffedc1;
+$grey: #948f8f;
+$dark-grey: #4e4e4e;
+$white: #f4f4f4;
+
+
 body {
-  background-color: #fff;
-  padding:50px;
-  font: 14px/1.5 "IBM Plex Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color:#727272;
+  background-color: $white;
+  padding:50px 0px;
+  margin: 10px 10px 10px 0px;
+  font: 16px/1.5 "IBM Plex Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color:$dark-grey;
   font-weight:400;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color:#222;
+  color:$dark;
   margin:0 0 20px;
 }
 
@@ -35,13 +45,16 @@ h3, h4, h5, h6 {
 }
 
 a {
-  color:#267CB9;
+  color:$birch;
   text-decoration:none;
 }
 
 a:hover, a:focus {
-  color:#069;
-  font-weight: bold;
+  color: $light-birch;
+}
+
+a:hover svg, a:focus {
+  fill: $light-birch;
 }
 
 a small {
@@ -68,14 +81,15 @@ blockquote {
 
 code, pre {
   font-family:Monaco, Bitstream Vera Sans Mono, Lucida Console, Terminal, Consolas, Liberation Mono, DejaVu Sans Mono, Courier New, monospace;
-  color:#333;
+  color:#111;
 }
 
 pre {
   padding:8px 15px;
-  background: #f8f8f8;
-  border-radius:5px;
-  border:1px solid #e5e5e5;
+  background: #fdfdfd;
+  border-style: solid;
+  border-width: 2px;
+  border-color: $grey;
   overflow-x: auto;
 }
 
@@ -104,9 +118,18 @@ img {
 }
 
 header {
+  color: $grey;
   width:270px;
+  padding: 10px 0px 10px 25px;
   float:left;
   position:fixed;
+  background: $dark;
+  background:
+	linear-gradient(225deg, transparent 9px, $dark 0) top right,
+	linear-gradient(315deg, transparent 9px, $dark 0) bottom right;
+  background-size: 100% 50%;
+  background-repeat: no-repeat;
+  
   -webkit-font-smoothing:subpixel-antialiased;
 }
 
@@ -278,4 +301,27 @@ footer {
 
 .sidebarSectionTitle {
 	padding-top: .5em;
+}
+
+.octicon-mark {
+	width: 32px;
+	height: 32px;
+	fill: $birch;
+}
+
+a#text {
+	vertical-align: middle;
+}
+
+.githubLink {
+	display: table;
+}
+
+.githubLink > span {
+	font-size: 14pt;
+	font-style: italic;
+	display: table-cell;
+	vertical-align: middle;
+	padding-left: .8em;
+	padding-bottom: .3em
 }
