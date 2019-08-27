@@ -3,11 +3,11 @@ rootProject.name = 'system-test'
 include  "system-test-core"
 project(':system-test-core').projectDir = "$rootDir/core" as File
 
-include  "system-test-testcontainers"
-project(':system-test-testcontainers').projectDir = "$rootDir/testcontainers" as File
-
-include  "system-test-liberty"
-project(':system-test-liberty').projectDir = "$rootDir/liberty" as File
+// Include all module projects as system-test-<MODULE>
+file('modules').eachDir { dir ->
+	include  'system-test-' + dir.name
+	project(':system-test-' + dir.name).projectDir = dir
+}
 
 // Include all test app projects as system-test-<APP_NAME>
 file('sample-apps').eachDir { dir ->
