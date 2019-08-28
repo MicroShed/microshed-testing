@@ -61,6 +61,7 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
     private static final Logger LOGGER = LoggerFactory.getLogger(MicroProfileApplication.class);
     private static final boolean mpHealth20Available;
     private static final String MP_HEALTH_READINESS_PATH = "/health/ready";
+    private static final boolean isHollow = isHollow();
     static {
         Class<?> readinessClass = null;
         try {
@@ -75,7 +76,6 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
     private boolean readinessPathSet;
 
     // variables for late-bound containers
-    private boolean wasLateBound;
     private String lateBind_ipAddress;
     private int lateBind_port;
     private boolean lateBind_started;
@@ -92,9 +92,7 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
     }
 
     private static Future<String> resolveImage(Optional<Path> dockerfile) {
-        ApplicationEnvironment current = ApplicationEnvironment.load();
-        if (!(current instanceof TestcontainersConfiguration) ||
-            current instanceof HollowTestcontainersConfiguration) {
+        if (isHollow) {
             // Testcontainers won't be used in this case, supply a dummy image to improve performance
             return CompletableFuture.completedFuture("alpine:3.5");
         } else if (dockerfile.isPresent()) {
@@ -113,6 +111,12 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
                                                            "\n - did not find any ServerAdapter to provide a default Dockerfile");
             }).getDefaultImage(findAppFile());
         }
+    }
+
+    private static boolean isHollow() {
+        ApplicationEnvironment current = ApplicationEnvironment.load();
+        return !(current instanceof TestcontainersConfiguration) ||
+               current instanceof HollowTestcontainersConfiguration;
     }
 
     private static File findAppFile() {
@@ -199,14 +203,13 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
     }
 
     public void setRunningURL(URL url) {
-        wasLateBound = true;
         lateBind_ipAddress = url.getHost();
         lateBind_port = url.getPort() == -1 ? url.getDefaultPort() : url.getPort();
     }
 
     @Override
     protected void doStart() {
-        if (wasLateBound) {
+        if (isHollow) {
             if (isRunning())
                 return;
 
@@ -221,35 +224,35 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
 
     @Override
     public boolean isCreated() {
-        if (wasLateBound)
+        if (isHollow)
             return true;
         return super.isCreated();
     }
 
     @Override
     public boolean isHealthy() {
-        if (wasLateBound)
+        if (isHollow)
             return true; // TODO may want to invoke MP health endpoint here?
         return super.isHealthy();
     }
 
     @Override
     public boolean isRunning() {
-        if (wasLateBound)
+        if (isHollow)
             return lateBind_started;
         return super.isRunning();
     }
 
     @Override
     public String getContainerIpAddress() {
-        if (wasLateBound)
+        if (isHollow)
             return lateBind_ipAddress;
         return super.getContainerIpAddress();
     }
 
     @Override
     public Integer getFirstMappedPort() {
-        if (wasLateBound)
+        if (isHollow)
             return lateBind_port;
         return super.getFirstMappedPort();
     }
@@ -363,22 +366,26 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
         private final int defaultHttpPort;
 
         public DefaultServerAdapter() {
-            InspectImageResponse imageData = DockerClientFactory.instance().client().inspectImageCmd(getDockerImageName()).exec();
-            LOGGER.info("Found exposed ports: " + Arrays.toString(imageData.getContainerConfig().getExposedPorts()));
-            int bestChoice = -1;
-            for (ExposedPort exposedPort : imageData.getContainerConfig().getExposedPorts()) {
-                int port = exposedPort.getPort();
-                // If any ports end with 80, assume they are HTTP ports
-                if (Integer.toString(port).endsWith("80")) {
-                    bestChoice = port;
-                    break;
-                } else if (bestChoice == -1) {
-                    // if no ports match *80, then pick the first port
-                    bestChoice = port;
+            if (isHollow) {
+                defaultHttpPort = -1;
+            } else {
+                InspectImageResponse imageData = DockerClientFactory.instance().client().inspectImageCmd(getDockerImageName()).exec();
+                LOGGER.info("Found exposed ports: " + Arrays.toString(imageData.getContainerConfig().getExposedPorts()));
+                int bestChoice = -1;
+                for (ExposedPort exposedPort : imageData.getContainerConfig().getExposedPorts()) {
+                    int port = exposedPort.getPort();
+                    // If any ports end with 80, assume they are HTTP ports
+                    if (Integer.toString(port).endsWith("80")) {
+                        bestChoice = port;
+                        break;
+                    } else if (bestChoice == -1) {
+                        // if no ports match *80, then pick the first port
+                        bestChoice = port;
+                    }
                 }
+                defaultHttpPort = bestChoice;
+                LOGGER.info("Automatically selecting default HTTP port: " + defaultHttpPort);
             }
-            defaultHttpPort = bestChoice;
-            LOGGER.info("Automatically selecting default HTTP port: " + defaultHttpPort);
         }
 
         @Override
