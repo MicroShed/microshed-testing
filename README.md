@@ -27,7 +27,7 @@ Then add `system-test` and `junit-jupiter` as test-scoped dependencies:
     <dependency>
         <groupId>com.github.dev-tools-for-enterprise-java</groupId>
         <artifactId>system-test</artifactId>
-        <version>v0.2-alpha</version>
+        <version>v0.3-alpha</version>
         <scope>test</scope>
     </dependency>
     
