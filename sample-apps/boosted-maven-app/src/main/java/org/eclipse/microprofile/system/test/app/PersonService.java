@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-//import javax.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -47,7 +47,7 @@ public class PersonService {
 
     private final Map<Long, Person> personRepo = new HashMap<>();
 
-    //@PostConstruct
+    @PostConstruct
     public void initPeople() {
         System.out.println("Seeding database with sample data");
         createPerson("Sample Person A", 25);
