@@ -9,10 +9,10 @@ sourceSets {
 task runMvnCompile(type:Exec) {
   environment System.getProperties()
   if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-    executable "cmd"
-    args '/c', 'mvn', "clean", 'compile'
+    executable 'cmd'
+    args '/c', 'mvn', 'clean', 'compile'
   } else {
-    executable "mvn"
+    executable 'mvn'
     args 'clean', 'compile'
   }
 }
@@ -21,15 +21,15 @@ task runMvnVerify(type:Exec) {
   shouldRunAfter runMvnCompile
   environment System.getProperties()
   if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-    executable "cmd"
-    args '/c', 'mvn', "clean", 'verify'
+    executable 'cmd'
+    args '/c', 'mvn', 'clean', 'verify', '-DboostRuntime=ol'
   } else {
-    executable "mvn"
-    args 'clean', 'verify'
+    executable 'mvn'
+    args 'clean', 'verify', '-DboostRuntime=ol'
   }
 }
 
-compileJava.dependsOn ':system-test-core:publishToMavenLocal'
+compileJava.dependsOn ':system-test-testcontainers:publishToMavenLocal'
 assemble.dependsOn runMvnCompile
 test.dependsOn runMvnVerify
 
