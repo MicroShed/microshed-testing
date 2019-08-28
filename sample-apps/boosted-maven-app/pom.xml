@@ -65,7 +65,7 @@
   
    <dependency>
         <groupId>org.eclipse.microprofile.sandbox</groupId>
-        <artifactId>system-test</artifactId>
+        <artifactId>system-test-testcontainers</artifactId>
         <version>0.1-SNAPSHOT</version>
         <scope>test</scope>
     </dependency>
@@ -138,6 +138,7 @@
               <goal>integration-test</goal>
             </goals>
             <configuration>
+              <trimStackTrace>false</trimStackTrace>
               <includes>
                 <include>**/it/*.java</include>
               </includes>
