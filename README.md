@@ -1,4 +1,4 @@
-# MicroProfile System Test Framework
+# MicroShed Testing
 
 [![](https://jitpack.io/v/dev-tools-for-enterprise-java/system-test.svg)](https://jitpack.io/#dev-tools-for-enterprise-java/system-test)
 [![Build Status](https://travis-ci.org/dev-tools-for-enterprise-java/system-test.svg?branch=master)](https://travis-ci.org/dev-tools-for-enterprise-java/system-test)
