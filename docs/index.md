@@ -1,14 +1,14 @@
 ---
-title: "MicroProfile System Test Framework"
+layout: post
+title: "MicroShed Testing"
 ---
-# MicroProfile System Test Framework
 
-# Goals
+## Goals
 1. Easy to get started
 1. Work with any JavaEE or MicroProfile runtime
 1. Provide true-to-production tests that are easy to write and fast to run
 
-# How to use in an existing project:
+## How to use in an existing project:
 
 Add jitpack.io repository configuration to your pom.xml:
 ```xml
