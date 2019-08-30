@@ -5,8 +5,8 @@ plugins {
 publishing {
     publications {
         maven(MavenPublication) {
-            groupId = 'org.eclipse.microprofile.sandbox'
-            artifactId = 'system-test'
+            groupId = 'org.microshed'
+            artifactId = 'microshed-testing'
             version = '0.1-SNAPSHOT'
 
             from components.java
@@ -14,7 +14,7 @@ publishing {
     }
 }
 
-description = "MicroProfile System Testing framework"
+description = "MicroShed Testing Framework"
 
 dependencies {
   compile group: 'javax.inject', name: 'javax.inject', version: '1'

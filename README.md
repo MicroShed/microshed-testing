@@ -1,7 +1,7 @@
 # MicroShed Testing
 
-[![](https://jitpack.io/v/dev-tools-for-enterprise-java/system-test.svg)](https://jitpack.io/#dev-tools-for-enterprise-java/system-test)
-[![Build Status](https://travis-ci.org/dev-tools-for-enterprise-java/system-test.svg?branch=master)](https://travis-ci.org/dev-tools-for-enterprise-java/system-test)
+[![](https://jitpack.io/v/microshed/microshed-testing.svg)](https://jitpack.io/#microshed/microshed-testing)
+[![Build Status](https://travis-ci.org/MicroShed/microshed-testing.svg?branch=master)](https://travis-ci.org/MicroShed/microshed-testing)
 [![License](https://img.shields.io/badge/License-ASL%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # Goals
@@ -25,8 +25,8 @@ Then add `system-test` and `junit-jupiter` as test-scoped dependencies:
 ```xml
 <dependencies>
     <dependency>
-        <groupId>com.github.dev-tools-for-enterprise-java</groupId>
-        <artifactId>system-test</artifactId>
+        <groupId>com.github.microshed</groupId>
+        <artifactId>microshed-testing</artifactId>
         <version>v0.3-alpha</version>
         <scope>test</scope>
     </dependency>
@@ -42,11 +42,11 @@ Then add `system-test` and `junit-jupiter` as test-scoped dependencies:
 </dependencies>
 ```
 
-# How to run locally:
+# How to try out a sample locally:
 
 ### Run with Gradle:
 ```
-./gradlew :system-test-jaxrs-json:test
+./gradlew :microshed-testing-jaxrs-json:test
 ```
 
 ### Run with Maven:
@@ -68,20 +68,14 @@ To change which app server is used, [un]comment sections of the test app's Docke
 
 # Proposed mockup:
 ```java
-import org.aguibert.testcontainers.framework.MicroProfileApplication;
-import org.eclipse.microprofile.system.test.jupiter.MicroProfileTest;
-import org.junit.jupiter.api.Test;
-import org.testcontainers.junit.jupiter.Testcontainers;
-
-@Testcontainers
-@MicroProfileTest
+@MicroShedTest
 public class BasicJAXRSServiceTest {
 
-    @Container // (1)
+    @Container
     public static MicroProfileApplication app = new MicroProfileApplication()
                     .withAppContextRoot("/myservice");
 
-    @Inject // (2)
+    @Inject
     public static PersonService personSvc;
 
     @Test
@@ -95,15 +89,4 @@ public class BasicJAXRSServiceTest {
 
 }
 ```
-
-### Explanation of mockup
-1. Extend Testcontainers with a `MicroProfileApplication` class that can work
-for any JEE/MP implementation. By annotating with `@Container`, Testcontainers 
-will automatically find/build the Dockerfile in this project and start it, then
-wait for the application context root to be ready.
-2. Use the `@Inject` annotation to create a REST Client proxy of the `PersonService`
-class which is being tested. This is basically a convenience for the test client making
-HTTP requests on the server and then parsing back the response.
-3. Easily invoke HTTP requests on the running server and have the response bound
-back into a POJO (or an exception class if an error occurred)
 

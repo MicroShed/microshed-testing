@@ -1,0 +1,2 @@
+org.microshed.testing.testcontainers.config.TestcontainersConfiguration
+org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration
