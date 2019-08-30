@@ -5,8 +5,8 @@ plugins {
 publishing {
     publications {
         maven(MavenPublication) {
-            groupId = 'org.eclipse.microprofile.sandbox'
-            artifactId = 'system-test-testcontainers'
+            groupId = 'org.microshed'
+            artifactId = 'microshed-testing-testcontainers'
             version = '0.1-SNAPSHOT'
 
             from components.java
@@ -14,12 +14,12 @@ publishing {
     }
 }
 
-description = "MicroProfile and JavaEE Testing framework"
+description = "MicroShed Testing :: Testcontainers extension"
 
 dependencies {
-  compile project(':system-test-core')
+  compile project(':microshed-testing-core')
   compile "org.testcontainers:junit-jupiter:1.12.0"
   testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
 }
 
-publishToMavenLocal.dependsOn ':system-test-core:publishToMavenLocal'
+publishToMavenLocal.dependsOn ':microshed-testing-core:publishToMavenLocal'

@@ -5,8 +5,8 @@ plugins {
 publishing {
     publications {
         maven(MavenPublication) {
-            groupId = 'org.eclipse.microprofile.sandbox'
-            artifactId = 'system-test-liberty'
+            groupId = 'org.microshed'
+            artifactId = 'microshed-testing-liberty'
             version = '0.1-SNAPSHOT'
 
             from components.java
@@ -17,7 +17,7 @@ publishing {
 description = "MicroProfile and JavaEE Testing framework :: Liberty extensions"
 
 dependencies {
-  compile project(':system-test-testcontainers')
+  compile project(':microshed-testing-testcontainers')
 }
 
-publishToMavenLocal.dependsOn ':system-test-testcontainers:publishToMavenLocal'
+publishToMavenLocal.dependsOn ':microshed-testing-testcontainers:publishToMavenLocal'

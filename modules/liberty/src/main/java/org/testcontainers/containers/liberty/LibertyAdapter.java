@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.testcontainers.containers.microprofile.spi.ServerAdapter;
+import org.microshed.testing.testcontainers.spi.ServerAdapter;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
 public class LibertyAdapter implements ServerAdapter {

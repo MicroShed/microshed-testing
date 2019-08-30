@@ -5,7 +5,7 @@ plugins {
 dependencies {
   providedCompile 'javax:javaee-api:8.0'
   providedCompile 'org.eclipse.microprofile:microprofile:2.1'
-  testCompile project(':system-test-testcontainers')
+  testCompile project(':microshed-testing-testcontainers')
   testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
 }
 

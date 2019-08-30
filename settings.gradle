@@ -1,16 +1,14 @@
-rootProject.name = 'system-test'
+rootProject.name = 'microshed-testing'
 
-include  "system-test-core"
-project(':system-test-core').projectDir = "$rootDir/core" as File
+include rootProject.name + '-core'
+project(':' + rootProject.name + '-core').projectDir = "$rootDir/core" as File
 
-// Include all module projects as system-test-<MODULE>
 file('modules').eachDir { dir ->
-	include  'system-test-' + dir.name
-	project(':system-test-' + dir.name).projectDir = dir
+	include rootProject.name + '-' + dir.name
+	project(':' + rootProject.name + '-' + dir.name).projectDir = dir
 }
 
-// Include all test app projects as system-test-<APP_NAME>
 file('sample-apps').eachDir { dir ->
-    include 'system-test-' + dir.name
-    project(':system-test-' + dir.name).projectDir = dir
+    include rootProject.name + '-' + dir.name
+    project(':' + rootProject.name + '-' + dir.name).projectDir = dir
 }
