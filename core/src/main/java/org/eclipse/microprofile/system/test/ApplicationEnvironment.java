@@ -26,7 +26,7 @@ import java.util.Set;
 public interface ApplicationEnvironment {
 
     /**
-     * The default priority returned by an implementation of {@link ApplicationEnvironment.isAvailable()}
+     * The default priority returned by an implementation of {@link ApplicationEnvironment#isAvailable}
      * In general, built-in ApplicationEnvironment implementations have a priority less than the default
      * and user-defined priorities will have a greater than default priority.
      */

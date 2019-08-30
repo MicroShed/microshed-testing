@@ -258,10 +258,10 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
     }
 
     /**
-     * Sets the application context root. The protocol, hostname, and port do not need to be
-     * included in the <code>appContextRoot</code> parameter. For example, an application
-     * "foo.war" is available at <code>http://localhost:8080/foo/</code> the context root can
-     * be set using <code>withAppContextRoot("/foo")</code>.
+     * @param appContextRoot the application context root. The protocol, hostname, and port do not need to be
+     *            included in the <code>appContextRoot</code> parameter. For example, an application
+     *            "foo.war" is available at <code>http://localhost:8080/foo/</code> the context root can
+     *            be set using <code>withAppContextRoot("/foo")</code>.
      */
     public SELF withAppContextRoot(String appContextRoot) {
         Objects.requireNonNull(appContextRoot);
@@ -297,7 +297,7 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
      *
      * @param readinessUrl The HTTP endpoint to be polled for readiness. Once the endpoint
      *            returns HTTP 200 (OK), the container is considered to be ready.
-     * @param timeout The amount of time to wait for the container to be ready.
+     * @param timeoutSeconds The amount of time (in seconds) to wait for the container to be ready.
      */
     public SELF withReadinessPath(String readinessUrl, int timeoutSeconds) {
         Objects.requireNonNull(readinessUrl);
