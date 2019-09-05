@@ -36,7 +36,7 @@ public class ManuallyStartedConfiguration implements ApplicationEnvironment {
 
     @Override
     public int getPriority() {
-        return ApplicationEnvironment.DEFAULT_PRIORITY - 30;
+        return ApplicationEnvironment.DEFAULT_PRIORITY - 10;
     }
 
     public static String getRuntimeURL() {
