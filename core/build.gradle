@@ -19,12 +19,11 @@ description = "MicroShed Testing Framework"
 dependencies {
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
   compile 'org.junit.jupiter:junit-jupiter-api:5.5.1'
+  implementation group: 'cglib', name: 'cglib-nodep', version: '3.2.10'
+  implementation group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version: '3.3.0'
+  implementation group: 'org.apache.cxf', name: 'cxf-rt-rs-extension-providers', version: '3.3.0'
   implementation group: 'org.bitbucket.b_c', name: 'jose4j', version: '0.6.5'
   implementation group: 'org.eclipse', name: 'yasson', version: '1.0.4'
   implementation group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
-  implementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.26'
-  implementation group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version: '3.3.0'
-  implementation group: 'cglib', name: 'cglib-nodep', version: '3.2.10'
-  implementation group: 'org.apache.cxf', name: 'cxf-rt-rs-extension-providers', version: '3.3.0'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.5.1'
 }
