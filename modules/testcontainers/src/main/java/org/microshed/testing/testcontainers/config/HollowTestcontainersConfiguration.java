@@ -39,9 +39,15 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
     private static final Logger LOG = LoggerFactory.getLogger(HollowTestcontainersConfiguration.class);
 
     public static boolean available() {
-        String url = System.getProperty(ManuallyStartedConfiguration.RUNTIME_URL_PROPERTY,
-                                        System.getenv(ManuallyStartedConfiguration.RUNTIME_URL_PROPERTY));
-        return url != null && !url.isEmpty();
+        String host = resolveProperty(ManuallyStartedConfiguration.MICROSHED_HOSTNAME);
+        String httpPort = resolveProperty(ManuallyStartedConfiguration.MICROSHED_HTTP_PORT);
+        String httpsPort = resolveProperty(ManuallyStartedConfiguration.MICROSHED_HTTPS_PORT);
+        return !host.isEmpty() && (!httpPort.isEmpty() || !httpsPort.isEmpty());
+    }
+
+    private static String resolveProperty(String key) {
+        String value = System.getProperty(key, System.getenv(key));
+        return value == null ? "" : value;
     }
 
     @Override
@@ -75,13 +81,13 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
             Map<Integer, String> fixedExposedPorts = new HashMap<>();
             for (GenericContainer<?> c : allContainers())
                 for (Integer p : c.getExposedPorts()) {
-                    LOG.debug("exposing port: " + p + " for container " + c.getContainerName());
+                    LOG.debug("exposing port: " + p + " for container " + c.getDockerImageName());
                     if (fixedExposedPorts.containsKey(p)) {
                         throw new ExtensionConfigurationException("Cannot expose port " + p + " for " + c.getDockerImageName() +
                                                                   " because another container (" + fixedExposedPorts.get(p) +
                                                                   ") is already using it.");
                     } else {
-                        fixedExposedPorts.put(p, c.getContainerName());
+                        fixedExposedPorts.put(p, c.getDockerImageName());
                     }
                     addFixedPort.invoke(c, p, p);
                 }
@@ -91,10 +97,11 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
 
         // Apply configuration to a running server
         URL appURL;
+        String runtimeURL = ManuallyStartedConfiguration.getRuntimeURL();
         try {
-            appURL = new URL(ManuallyStartedConfiguration.getRuntimeURL());
+            appURL = new URL(runtimeURL);
         } catch (MalformedURLException e) {
-            throw new ExtensionConfigurationException("The application URL '" + getApplicationURL() + "' was not a valid URL.", e);
+            throw new ExtensionConfigurationException("The application URL '" + runtimeURL + "' was not a valid URL.", e);
         }
         allContainers().stream()
                         .filter(c -> c instanceof MicroProfileApplication<?>)
