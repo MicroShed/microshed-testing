@@ -24,8 +24,8 @@ package org.microshed.testing;
  */
 public class ManuallyStartedConfiguration implements ApplicationEnvironment {
 
-    public static final String RUNTIME_URL_PROPERTY = "MP_TEST_RUNTIME_URL";
-    public static final String MANUAL_ENALBED = "MP_TEST_MANUAL_ENV";
+    public static final String RUNTIME_URL_PROPERTY = "MICROSHED_TEST_RUNTIME_URL";
+    public static final String MANUAL_ENALBED = "MICROSHED_TEST_MANUAL_ENV";
 
     @Override
     public boolean isAvailable() {
@@ -36,7 +36,7 @@ public class ManuallyStartedConfiguration implements ApplicationEnvironment {
 
     @Override
     public int getPriority() {
-        return ApplicationEnvironment.DEFAULT_PRIORITY - 30;
+        return ApplicationEnvironment.DEFAULT_PRIORITY - 10;
     }
 
     public static String getRuntimeURL() {

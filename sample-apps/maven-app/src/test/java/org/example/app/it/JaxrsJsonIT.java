@@ -35,7 +35,7 @@ import org.microshed.testing.testcontainers.MicroProfileApplication;
 import org.testcontainers.junit.jupiter.Container;
 
 @MicroShedTest
-public class JaxrsJsonTest {
+public class JaxrsJsonIT {
     
     @Container
     public static MicroProfileApplication<?> app = new MicroProfileApplication<>()

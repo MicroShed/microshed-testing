@@ -33,6 +33,7 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 public class LibertyAdapter implements ServerAdapter {
 
     private static String BASE_DOCKER_IMAGE = "open-liberty:microProfile3";
+    private static final String CONFIG_FILE_PROP = "MICROSHED_TEST_LIBERTY_CONFIG_FILE";
 
     public static String getBaseDockerImage() {
         return BASE_DOCKER_IMAGE;
@@ -59,12 +60,12 @@ public class LibertyAdapter implements ServerAdapter {
 
     @Override
     public void setConfigProperties(Map<String, String> properties) {
-        String MP_TEST_CONFIG_FILE = System.getProperty("MP_TEST_CONFIG_FILE", System.getenv("MP_TEST_CONFIG_FILE"));
+        String MP_TEST_CONFIG_FILE = System.getProperty(CONFIG_FILE_PROP, System.getenv(CONFIG_FILE_PROP));
         Path configFile = null;
         if (MP_TEST_CONFIG_FILE == null) {
             String WLP_USR_DIR = System.getProperty("WLP_USR_DIR", System.getenv("WLP_USR_DIR"));
             if (WLP_USR_DIR == null)
-                throw new IllegalStateException("The 'WLP_USR_DIR' or 'MP_TEST_CONFIG_FILE' property must be set in order to dynamically set config properties");
+                throw new IllegalStateException("The 'WLP_USR_DIR' or '" + CONFIG_FILE_PROP + "' property must be set in order to dynamically set config properties");
             Path usrDir = Paths.get(WLP_USR_DIR);
             configFile = usrDir.resolve("servers/defaultServer/configDropins/defaults/system-test-vars.xml");
         } else {

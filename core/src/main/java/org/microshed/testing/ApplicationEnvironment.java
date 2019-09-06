@@ -32,7 +32,7 @@ public interface ApplicationEnvironment {
      */
     public static final int DEFAULT_PRIORITY = 0;
 
-    public static final String ENV_CLASS = "MP_TEST_ENV_CLASS";
+    public static final String ENV_CLASS = "MICROSHED_TEST_ENV_CLASS";
 
     public static ApplicationEnvironment load() {
         // First check explicilty configured environment via system property or env var

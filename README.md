@@ -21,13 +21,13 @@ Add jitpack.io repository configuration to your pom.xml:
 </repositories>
 ```
 
-Then add `system-test` and `junit-jupiter` as test-scoped dependencies:
+Then add `microshed-testing` and `junit-jupiter` as test-scoped dependencies:
 ```xml
 <dependencies>
     <dependency>
         <groupId>com.github.microshed</groupId>
         <artifactId>microshed-testing</artifactId>
-        <version>v0.3-alpha</version>
+        <version>v0.3.1-alpha</version>
         <scope>test</scope>
     </dependency>
     
