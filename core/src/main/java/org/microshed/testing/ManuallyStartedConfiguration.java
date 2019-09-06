@@ -24,14 +24,20 @@ package org.microshed.testing;
  */
 public class ManuallyStartedConfiguration implements ApplicationEnvironment {
 
-    public static final String RUNTIME_URL_PROPERTY = "MICROSHED_TEST_RUNTIME_URL";
-    public static final String MANUAL_ENALBED = "MICROSHED_TEST_MANUAL_ENV";
+    public static final String MICROSHED_HOSTNAME = "microshed.hostname";
+    public static final String MICROSHED_HTTP_PORT = "microshed.http.port";
+    public static final String MICROSHED_HTTPS_PORT = "microshed.https.port";
+//    public static final String RUNTIME_URL_PROPERTY = "MICROSHED_TEST_RUNTIME_URL";
+    public static final String MANUAL_ENALBED = "microshed.manual.env";
 
     @Override
     public boolean isAvailable() {
-        boolean manualEnabled = Boolean.valueOf(System.getProperty(MANUAL_ENALBED, System.getenv(MANUAL_ENALBED)));
-        String url = System.getProperty(RUNTIME_URL_PROPERTY, System.getenv(RUNTIME_URL_PROPERTY));
-        return manualEnabled && url != null && !url.isEmpty();
+        if (!Boolean.valueOf(resolveProperty(MANUAL_ENALBED)))
+            return false;
+        String host = resolveProperty(MICROSHED_HOSTNAME);
+        String httpPort = resolveProperty(MICROSHED_HTTP_PORT);
+        String httpsPort = resolveProperty(MICROSHED_HTTPS_PORT);
+        return !host.isEmpty() && (!httpPort.isEmpty() || !httpsPort.isEmpty());
     }
 
     @Override
@@ -40,13 +46,26 @@ public class ManuallyStartedConfiguration implements ApplicationEnvironment {
     }
 
     public static String getRuntimeURL() {
-        String url = System.getProperty(RUNTIME_URL_PROPERTY);
-        if (url == null || url.isEmpty())
-            url = System.getenv(RUNTIME_URL_PROPERTY);
-        if (url == null || url.isEmpty())
-            throw new IllegalStateException("The property '" + RUNTIME_URL_PROPERTY +
-                                            "' must be set in order to use this ApplicationEnvironment");
-        return url;
+        String host = resolveProperty(MICROSHED_HOSTNAME);
+        String httpPort = resolveProperty(MICROSHED_HTTP_PORT);
+        String httpsPort = resolveProperty(MICROSHED_HTTPS_PORT);
+        if (host.isEmpty() && (httpPort.isEmpty() || httpsPort.isEmpty()))
+            throw new IllegalStateException("The properties '" + MICROSHED_HOSTNAME + "' and '" + MICROSHED_HTTP_PORT + "' or '" +
+                                            MICROSHED_HTTPS_PORT + "' must be set in order to use this ApplicationEnvironment");
+
+        // Prefer HTTPS if set
+        if (!httpsPort.isEmpty()) {
+            Integer.parseInt(httpsPort);
+            return "https://" + host + ':' + httpsPort;
+        } else {
+            Integer.parseInt(httpPort);
+            return "http://" + host + ':' + httpPort;
+        }
+    }
+
+    private static String resolveProperty(String key) {
+        String value = System.getProperty(key, System.getenv(key));
+        return value == null ? "" : value;
     }
 
     @Override
