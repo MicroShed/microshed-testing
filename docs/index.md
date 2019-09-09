@@ -11,10 +11,10 @@ MicroShed Testing offers a fast and simple way of writing and running true-to-pr
 tests for Java microservice applications. MicroShed Testing exercises your containerized application
 from outside the container so you are testing the exact same image that runs in production.
 
-MicroShed Testing:
-1. is easy to get started with
-1. works with any JavaEE or MicroProfile runtime
-1. provides true-to-production tests
+MicroShed Testing aims to:
+1. be easy to get started with
+1. work with any JavaEE or MicroProfile runtime
+1. provide true-to-production tests
 
 ## What it looks like
 

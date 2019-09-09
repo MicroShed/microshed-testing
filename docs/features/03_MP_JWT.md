@@ -1,8 +1,7 @@
 ---
 layout: post
-title: "Feature"
+title: "MicroProfile JWT"
 ---
-# MicroProfile JWT
 
 MicroShed Testing provides integration with [MicroProfile JWT](https://github.com/eclipse/microprofile-jwt-auth) applications. MicroProfile JWT
 is a specification that standardizes OpenID Connect (OIDC) based JSON Web Tokens (JWT) usage in Java applications.
