@@ -9,8 +9,9 @@
     <link rel="stylesheet" href="{{ "/assets/css/style.css?v=" | append: site.github.build_revision | relative_url }}">
   </head>
   <body>
+
     <div class="wrapper">
-      <header>
+      <sidebar>
         <h1><a href="{{ "/" | absolute_url }}">{{ site.title | default: site.github.repository_name }}</a></h1>
 		
         <p class="view">
@@ -21,7 +22,7 @@
 		</p>
 
 		<div class="sidebar">
-				<div class="sidebarSectionTitle">Features</div>
+
 				<div id="featuresPanel" class="sidebarSection">
 					{% for page in site.pages %}
 						{% assign split_array = page.path | split: "/" %}
@@ -32,20 +33,10 @@
 						{% endif %}
 					{% endfor %}
 				</div>
-				<div class="sidebarSectionTitle">Examples</div>
-				<div id="examplesPanel" class="sidebarSection">
-					{% for page in site.pages %}
-						{% assign split_array = page.path | split: "/" %}
-						{% if split_array.first == "examples" %}
-							<div class="sidebarPage">
-								<a class="sidebarLink" href= {{ page.url | relative_url }} >{{page.title}}</a>
-							</div>
-						{% endif %}
-					{% endfor %}
-				</div>
+
 			</div>
 
-	  </header>
+		</sidebar>
 
 
       <section>
