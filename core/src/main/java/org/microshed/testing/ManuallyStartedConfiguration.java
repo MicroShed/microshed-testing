@@ -24,11 +24,11 @@ package org.microshed.testing;
  */
 public class ManuallyStartedConfiguration implements ApplicationEnvironment {
 
-    public static final String MICROSHED_HOSTNAME = "microshed.hostname";
-    public static final String MICROSHED_HTTP_PORT = "microshed.http.port";
-    public static final String MICROSHED_HTTPS_PORT = "microshed.https.port";
+    public static final String MICROSHED_HOSTNAME = "microshed_hostname";
+    public static final String MICROSHED_HTTP_PORT = "microshed_http_port";
+    public static final String MICROSHED_HTTPS_PORT = "microshed_https_port";
 //    public static final String RUNTIME_URL_PROPERTY = "MICROSHED_TEST_RUNTIME_URL";
-    public static final String MANUAL_ENALBED = "microshed.manual.env";
+    public static final String MANUAL_ENALBED = "microshed_manual_env";
 
     @Override
     public boolean isAvailable() {
