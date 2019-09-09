@@ -57,7 +57,7 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
 
     @Override
     public int getPriority() {
-        return ApplicationEnvironment.DEFAULT_PRIORITY - 30;
+        return ApplicationEnvironment.DEFAULT_PRIORITY - 20;
     }
 
     @Override
