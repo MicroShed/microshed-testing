@@ -1,8 +1,7 @@
 ---
 layout: post
-title: "Feature"
+title: "Sharing containers"
 ---
-# Sharing containers across test classes
 
 Typically a suite of tests are comprised of multiple test classes to better organize different test scenarios. Consider 
 the following test classes:
