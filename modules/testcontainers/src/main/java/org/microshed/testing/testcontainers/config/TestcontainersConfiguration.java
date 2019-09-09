@@ -52,7 +52,7 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
 
     @Override
     public int getPriority() {
-        return ApplicationEnvironment.DEFAULT_PRIORITY - 20;
+        return ApplicationEnvironment.DEFAULT_PRIORITY - 30;
     }
 
     @Override
