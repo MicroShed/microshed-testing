@@ -44,7 +44,7 @@ When MicroShed Testing will automatically generate and configure a pair of JWT s
 public class SecuredSvcTest {
 
     @Container
-    public static MicroProfileApplication<?> app = new MicroProfileApplication<>()
+    public static MicroProfileApplication app = new MicroProfileApplication()
                     .withAppContextRoot("/")
                     .withReadinessPath("/data/ping");
 

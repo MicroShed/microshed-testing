@@ -1,4 +1,4 @@
-package org.microshed.testing.testcontainers;
+package org.microshed.testing.testcontainers.internal;
 
 import java.nio.file.Path;
 import java.util.Optional;

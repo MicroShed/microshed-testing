@@ -71,7 +71,7 @@ The Testcontainers API has a built-in dependency mechanism which can be used to 
                     .withNetworkAliases("testmongo");
                     
     @Container
-    public static MicroProfileApplication<?> app = new MicroProfileApplication<>()
+    public static MicroProfileApplication app = new MicroProfileApplication()
                     .dependsOn(mongo)
                     // ...
 ```
@@ -87,11 +87,11 @@ In some cases the start procedure may need to be customized beyond simple start 
 public class AppContainerConfig implements SharedContainerConfiguration {
 
     @Container
-    public static MicroProfileApplication<?> app = new MicroProfileApplication<>()
+    public static GenericContainer<?> mongo = new GenericContainer<>("mongo:3.4")
                     // ...
 
     @Container
-    public static GenericContainer<?> mongo = new GenericContainer<>("mongo:3.4")
+    public static MicroProfileApplication app = new MicroProfileApplication()
                     // ...
 
     @Override

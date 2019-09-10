@@ -31,7 +31,7 @@ public class AppContainerConfig implements SharedContainerConfiguration {
 					.withDatabaseName("testdb");
 	
     @Container
-    public static MicroProfileApplication<?> app = new MicroProfileApplication<>()
+    public static MicroProfileApplication app = new MicroProfileApplication()
                     .withEnv("POSTGRES_HOSTNAME", "testpostgres")
                     .withEnv("POSTGRES_PORT", "5432")
                     .withAppContextRoot("/myservice");

@@ -43,6 +43,7 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.microshed.testing.ApplicationEnvironment;
 import org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration;
 import org.microshed.testing.testcontainers.config.TestcontainersConfiguration;
+import org.microshed.testing.testcontainers.internal.ImageFromDockerfile;
 import org.microshed.testing.testcontainers.spi.ServerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,11 +57,11 @@ import org.testcontainers.utility.Base58;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.ExposedPort;
 
-public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>> extends GenericContainer<SELF> {
+public class MicroProfileApplication extends GenericContainer<MicroProfileApplication> {
 
+    public static final String MP_HEALTH_READINESS_PATH = "/health/ready";
     private static final Logger LOGGER = LoggerFactory.getLogger(MicroProfileApplication.class);
     private static final boolean mpHealth20Available;
-    private static final String MP_HEALTH_READINESS_PATH = "/health/ready";
     private static final boolean isHollow = isHollow();
     static {
         Class<?> readinessClass = null;
@@ -263,10 +264,10 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
      *            "foo.war" is available at <code>http://localhost:8080/foo/</code> the context root can
      *            be set using <code>withAppContextRoot("/foo")</code>.
      */
-    public SELF withAppContextRoot(String appContextRoot) {
+    public MicroProfileApplication withAppContextRoot(String appContextRoot) {
         Objects.requireNonNull(appContextRoot);
         this.appContextRoot = appContextRoot = buildPath(appContextRoot);
-        return self();
+        return this;
     }
 
     /**
@@ -281,9 +282,9 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
      * @param readinessUrl The HTTP endpoint to be polled for readiness. Once the endpoint
      *            returns HTTP 200 (OK), the container is considered to be ready.
      */
-    public SELF withReadinessPath(String readinessUrl) {
+    public MicroProfileApplication withReadinessPath(String readinessUrl) {
         withReadinessPath(readinessUrl, serverAdapter.getDefaultAppStartTimeout());
-        return self();
+        return this;
     }
 
     /**
@@ -299,16 +300,16 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
      *            returns HTTP 200 (OK), the container is considered to be ready.
      * @param timeoutSeconds The amount of time (in seconds) to wait for the container to be ready.
      */
-    public SELF withReadinessPath(String readinessUrl, int timeoutSeconds) {
+    public MicroProfileApplication withReadinessPath(String readinessUrl, int timeoutSeconds) {
         Objects.requireNonNull(readinessUrl);
         readinessUrl = buildPath(readinessUrl);
         waitingFor(Wait.forHttp(readinessUrl)
                         .withStartupTimeout(Duration.ofSeconds(timeoutSeconds)));
-        return self();
+        return this;
     }
 
     @Override
-    public SELF waitingFor(WaitStrategy waitStrategy) {
+    public MicroProfileApplication waitingFor(WaitStrategy waitStrategy) {
         readinessPathSet = true;
         return super.waitingFor(waitStrategy);
     }
@@ -319,7 +320,7 @@ public class MicroProfileApplication<SELF extends MicroProfileApplication<SELF>>
         super.setWaitStrategy(waitStrategy);
     }
 
-    public SELF withMpRestClient(Class<?> restClient, String hostUrl) {
+    public MicroProfileApplication withMpRestClient(Class<?> restClient, String hostUrl) {
         String envName = restClient.getCanonicalName()//
                         .replaceAll("\\.", "_")
                         .replaceAll("\\$", "_") +
