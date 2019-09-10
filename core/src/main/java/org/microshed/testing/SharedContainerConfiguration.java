@@ -19,7 +19,11 @@
 package org.microshed.testing;
 
 /**
- * To be used in conjunction with {@link SharedContainerConfig}
+ * If a set of test classes
+ * use the same set of services, it may be inefficient to start/stop all of the services
+ * for each test class. Using {@link SharedContainerConfiguration}, any environment definitions
+ * can be applied here and the lifecycle of this environment will be shared across all classes
+ * that reference it via {@link SharedContainerConfig}
  */
 public interface SharedContainerConfiguration {
 

@@ -12,6 +12,10 @@ subprojects {
         mavenCentral()
     }
 
+    javadoc {
+        exclude '**/internal/**'
+    }
+
     test {
         defaultCharacterEncoding = "UTF-8"
         useJUnitPlatform()

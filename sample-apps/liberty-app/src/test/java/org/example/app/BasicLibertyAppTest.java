@@ -29,8 +29,6 @@ import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 
-import org.example.app.Person;
-import org.example.app.PersonService;
 import org.junit.jupiter.api.Test;
 import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.testcontainers.MicroProfileApplication;
@@ -40,7 +38,7 @@ import org.testcontainers.junit.jupiter.Container;
 public class BasicLibertyAppTest {
 
     @Container
-    public static MicroProfileApplication<?> app = new MicroProfileApplication<>()
+    public static MicroProfileApplication app = new MicroProfileApplication()
                     .withAppContextRoot("/myservice");
 
     @Inject

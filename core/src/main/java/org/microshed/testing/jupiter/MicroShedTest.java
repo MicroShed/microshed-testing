@@ -25,6 +25,12 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 
+/**
+ * Annotates a test class to indicate that it should run with the MicroShed Testing framework.
+ *
+ * @see <a href="https://microshed.github.io/microshed-testing/">https://microshed.github.io/microshed-testing/</a>
+ * @author aguibert
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(MicroShedTestExtension.class)

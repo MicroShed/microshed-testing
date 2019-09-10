@@ -25,7 +25,6 @@ import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;
 
-import org.example.app.SecuredService;
 import org.junit.jupiter.api.Test;
 import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.jwt.JwtConfig;
@@ -36,7 +35,7 @@ import org.testcontainers.junit.jupiter.Container;
 public class SecuredSvcTest {
 
     @Container
-    public static MicroProfileApplication<?> app = new MicroProfileApplication<>()
+    public static MicroProfileApplication app = new MicroProfileApplication()
                     .withAppContextRoot("/myservice")
                     .withReadinessPath("/myservice/app/data/ping");
 

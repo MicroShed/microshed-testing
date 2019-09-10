@@ -137,7 +137,7 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
 
     @Override
     public String getApplicationURL() {
-        MicroProfileApplication<?> mpApp = autoDiscoverMPApp(testClass, true);
+        MicroProfileApplication mpApp = autoDiscoverMPApp(testClass, true);
 
         // At this point we have found exactly one MicroProfileApplication
         if (!mpApp.isCreated() || !mpApp.isRunning())
@@ -158,7 +158,7 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
         return AnnotationSupport.findAnnotatedFields(testClass, JwtConfig.class).size() > 0;
     }
 
-    private MicroProfileApplication<?> autoDiscoverMPApp(Class<?> clazz, boolean errorIfNone) {
+    private MicroProfileApplication autoDiscoverMPApp(Class<?> clazz, boolean errorIfNone) {
         // First check for any MicroProfileApplicaiton directly present on the test class
         List<Field> mpApps = AnnotationSupport.findAnnotatedFields(clazz, Container.class,
                                                                    f -> Modifier.isStatic(f.getModifiers()) &&
@@ -167,7 +167,7 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
                                                                    HierarchyTraversalMode.TOP_DOWN);
         if (mpApps.size() == 1)
             try {
-                return (MicroProfileApplication<?>) mpApps.get(0).get(null);
+                return (MicroProfileApplication) mpApps.get(0).get(null);
             } catch (IllegalArgumentException | IllegalAccessException e) {
                 // This should never happen because we only look for fields that are public+static
                 e.printStackTrace();
@@ -178,7 +178,7 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
         // If none found, check any SharedContainerConfig
         String sharedConfigMsg = "";
         if (sharedConfigClass != null) {
-            MicroProfileApplication<?> mpApp = autoDiscoverMPApp(sharedConfigClass, false);
+            MicroProfileApplication mpApp = autoDiscoverMPApp(sharedConfigClass, false);
             if (mpApp != null)
                 return mpApp;
             sharedConfigMsg = " or " + sharedConfigClass;
