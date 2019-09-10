@@ -5,10 +5,7 @@ plugins {
 publishing {
     publications {
         maven(MavenPublication) {
-            groupId = 'org.microshed'
             artifactId = 'microshed-testing'
-            version = '0.1-SNAPSHOT'
-
             from components.java
         }
     }
