@@ -23,6 +23,17 @@ import java.util.Map;
 
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
+/**
+ * An adapter for application runtimes can use to define information including:
+ * <ul>
+ * <li>Default HTTP port</li>
+ * <li>Default HTTPS port</li>
+ * <li>Default startup timeout</li>
+ * <li>Default Dockerfile</li>
+ * </ul>
+ *
+ * @author aguibert
+ */
 public interface ServerAdapter {
 
     public default int getPriority() {
@@ -70,7 +81,7 @@ public interface ServerAdapter {
      * layerd on top.
      *
      * @param appFile The applicaiton file to include in the resulting Docker image
-     * @return
+     * @return The default docker image including the supplied appFile
      */
     public default ImageFromDockerfile getDefaultImage(File appFile) {
         throw new UnsupportedOperationException("Dynamically building image is not supported for the default ServerAdapter.");

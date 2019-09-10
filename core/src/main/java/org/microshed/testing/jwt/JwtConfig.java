@@ -23,6 +23,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Used to annotate a REST Client to configure MicroProfile JWT settings
+ * that will be applied to all of its HTTP invocations
+ */
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface JwtConfig {
@@ -42,7 +46,7 @@ public @interface JwtConfig {
      * For arrays, separate values with a comma.
      * example: {"groups=red,green,admin", "sub=fred"}
      *
-     * @return
+     * @return The configured JWT claims
      */
     public String[] claims() default {};
 }

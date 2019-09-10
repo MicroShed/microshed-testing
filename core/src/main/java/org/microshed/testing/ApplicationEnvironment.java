@@ -23,6 +23,15 @@ import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+/**
+ * Defines an approach for configuring and starting the test enviornment. Examples of a test environment might be:
+ * <ul>
+ * <li>Using Testcontainers to start Docker containers for the application and all dependencies (e.g. Databases)</li>
+ * <li>The application and its dependent services may be already started by a custom script or plugin tool</li>
+ * </ul>
+ *
+ * @author aguibert
+ */
 public interface ApplicationEnvironment {
 
     /**
@@ -32,8 +41,22 @@ public interface ApplicationEnvironment {
      */
     public static final int DEFAULT_PRIORITY = 0;
 
+    /**
+     * The name of the system property or environment variable that indicates a specific {@link ApplicationEnvironment}
+     * to use. If this property is set, it will be used regardless of the priority or availability. If this property is
+     * NOT set, the normal resolution rules will be applied as defined in {@link #load()}
+     */
     public static final String ENV_CLASS = "MICROSHED_TEST_ENV_CLASS";
 
+    /**
+     * @return The selected {@link ApplicationEnvironment}. The selection is made using the following criteria:
+     *         <ol>
+     *         <li>If the {@link #ENV_CLASS} system property or environment variable is set, the class is used</li>
+     *         <li>The {@link ServiceLoader} is used to load all {@link ApplicationEnvironment} instances, which are filtered
+     *         based on {@link #isAvailable()} and then sorted based on {@link #getPriority()} where higher numbers are chosen
+     *         first.</li>
+     *         </ol>
+     */
     public static ApplicationEnvironment load() {
         // First check explicilty configured environment via system property or env var
         String strategy = System.getProperty(ENV_CLASS);
@@ -86,10 +109,26 @@ public interface ApplicationEnvironment {
         return DEFAULT_PRIORITY;
     }
 
+    /**
+     * This method is typically called by the test framework.
+     * Implementations should use this method to apply the environment configuration to the
+     * specified class.
+     *
+     * @param testClass The test class to apply configuration for
+     */
     public void applyConfiguration(Class<?> testClass);
 
+    /**
+     * This method is typically called by the test framework.
+     * Implementations should use this method to perform any start procedures necessary to
+     * initialize the test environment. Examples may include starting the application runtime
+     * and any dependent services, such as databases.
+     */
     public void start();
 
+    /**
+     * @return The URL that the application under test is available at
+     */
     public String getApplicationURL();
 
 }

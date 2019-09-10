@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * Currently this is tied to Testcontainers managing runtime build/deployment, but in a future version
  * it could be refactored to allow for a different framework managing the runtime build/deployment.
  */
-public class MicroShedTestExtension implements BeforeAllCallback {
+class MicroShedTestExtension implements BeforeAllCallback {
 
     static final Logger LOGGER = LoggerFactory.getLogger(MicroShedTestExtension.class);
 

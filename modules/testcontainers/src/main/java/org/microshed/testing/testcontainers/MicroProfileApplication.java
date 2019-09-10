@@ -57,9 +57,15 @@ import org.testcontainers.utility.Base58;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.ExposedPort;
 
+/**
+ * Represents a MicroProfile (or JavaEE or JakartaEE) application running inside a Docker
+ * container.
+ *
+ * @author aguibert
+ */
 public class MicroProfileApplication extends GenericContainer<MicroProfileApplication> {
 
-    public static final String MP_HEALTH_READINESS_PATH = "/health/ready";
+    private static final String MP_HEALTH_READINESS_PATH = "/health/ready";
     private static final Logger LOGGER = LoggerFactory.getLogger(MicroProfileApplication.class);
     private static final boolean mpHealth20Available;
     private static final boolean isHollow = isHollow();
@@ -161,6 +167,23 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
                         .findFirst();
     }
 
+    /**
+     * Builds an instance based on a Dockerfile located at
+     *
+     * <pre>
+     * ${user.dir}/Dockerfile}
+     * </pre>
+     *
+     * or
+     *
+     * <pre>
+     * ${user.dir}/src/main/docker/Dockerfile
+     * </pre>
+     *
+     * . If no Dockerfile can be discovered,
+     * a {@link ServerAdapter} may be used to supply a default Dockerfile.
+     * A docker build will be performed before the resulting container image is started.
+     */
     public MicroProfileApplication() {
         this(autoDiscoverDockerfile());
     }
@@ -169,6 +192,13 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
         this(resolveImage(dockerfilePath));
     }
 
+    /**
+     * Builds an instance using the supplied Dockerfile path
+     *
+     * @param dockerfilePath A {@link java.nio.file.Path} indicating the Dockerfile to be used to
+     *            build the container image.
+     *            A docker build will be performed before the resulting container image is started.
+     */
     public MicroProfileApplication(Path dockerfilePath) {
         this(Optional.of(dockerfilePath));
         LOGGER.info("Using Dockerfile at:" + dockerfilePath);
@@ -179,6 +209,11 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
         commonInit();
     }
 
+    /**
+     * Builds an instance based on an existing docker image.
+     *
+     * @param dockerImageName The docker image to be used for this instance
+     */
     public MicroProfileApplication(final String dockerImageName) {
         super(dockerImageName);
         commonInit();
@@ -203,6 +238,14 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
         }
     }
 
+    /**
+     * Sets the URL where the current application is running at. This method is typically called
+     * for plugins that make use of {@link HollowTestcontainersConfiguration}. It is not necessary
+     * for test code to call this method if they are starting the application container in the
+     * normal way.
+     *
+     * @param url The URl where the current application is running
+     */
     public void setRunningURL(URL url) {
         lateBind_ipAddress = url.getHost();
         lateBind_port = url.getPort() == -1 ? url.getDefaultPort() : url.getPort();
@@ -262,7 +305,8 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
      * @param appContextRoot the application context root. The protocol, hostname, and port do not need to be
      *            included in the <code>appContextRoot</code> parameter. For example, an application
      *            "foo.war" is available at <code>http://localhost:8080/foo/</code> the context root can
-     *            be set using <code>withAppContextRoot("/foo")</code>.
+     *            be set using <code>withAppContextRoot("/foo")</code>
+     * @return the current instance
      */
     public MicroProfileApplication withAppContextRoot(String appContextRoot) {
         Objects.requireNonNull(appContextRoot);
@@ -281,6 +325,7 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
      *
      * @param readinessUrl The HTTP endpoint to be polled for readiness. Once the endpoint
      *            returns HTTP 200 (OK), the container is considered to be ready.
+     * @return the current instance
      */
     public MicroProfileApplication withReadinessPath(String readinessUrl) {
         withReadinessPath(readinessUrl, serverAdapter.getDefaultAppStartTimeout());
@@ -299,6 +344,7 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
      * @param readinessUrl The HTTP endpoint to be polled for readiness. Once the endpoint
      *            returns HTTP 200 (OK), the container is considered to be ready.
      * @param timeoutSeconds The amount of time (in seconds) to wait for the container to be ready.
+     * @return the current instance
      */
     public MicroProfileApplication withReadinessPath(String readinessUrl, int timeoutSeconds) {
         Objects.requireNonNull(readinessUrl);
@@ -320,24 +366,58 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
         super.setWaitStrategy(waitStrategy);
     }
 
-    public MicroProfileApplication withMpRestClient(Class<?> restClient, String hostUrl) {
-        String envName = restClient.getCanonicalName()//
+    /**
+     * Configures the application container with the supplied MicroProfile REST Client class that
+     * will reference the supplied {@code hostUrl}
+     *
+     * @param restClientClass The MicroProfile REST Client class
+     * @param hostUrl The URL that the {@code restClientClass} will act as a REST client for
+     * @return the current instance
+     */
+    public MicroProfileApplication withMpRestClient(Class<?> restClientClass, String hostUrl) {
+        return withMpRestClient(restClientClass.getCanonicalName(), hostUrl);
+    }
+
+    /**
+     * Configures the application container with the supplied MicroProfile REST Client class that
+     * will reference the supplied {@code hostUrl}
+     *
+     * @param restClientClass The MicroProfile REST Client class
+     * @param hostUrl The URL that the {@code restClientClass} will act as a REST client for
+     * @return the current instance
+     */
+    public MicroProfileApplication withMpRestClient(String restClientClass, String hostUrl) {
+        String envName = restClientClass//
                         .replaceAll("\\.", "_")
                         .replaceAll("\\$", "_") +
                          "_mp_rest_url";
         return withEnv(envName, hostUrl);
     }
 
-    public String getApplicationURL() throws IllegalStateException {
+    /**
+     * @return The URL where the application is currently running at. The application URL is comprised
+     *         of the baseURL (as defined by {@link #getBaseURL()}) concatenated with the appContextRoot (as defined
+     *         by {@link #withAppContextRoot(String)}.
+     */
+    public String getApplicationURL() {
         return getBaseURL() + appContextRoot;
     }
 
-    public String getBaseURL() throws IllegalStateException {
+    /**
+     * @return The base URL of the application container. For example, if the application is running on
+     *         'localhost' on port 8080 (inside the container), port 8080 inside of the container will be mapped
+     *         to a random external port (usually in the 32XXX range). The base URL would be something like:<p>
+     *         {@code http://<container-ip-address>:<mapped-port>}
+     */
+    public String getBaseURL() {
         if (!this.isRunning())
             throw new IllegalStateException("Container must be running to determine hostname and port");
         return "http://" + this.getContainerIpAddress() + ':' + this.getFirstMappedPort();
     }
 
+    /**
+     * @return The {@link ServerAdapter} that is currently applied for this instance
+     */
     public ServerAdapter getServerAdapter() {
         return serverAdapter;
     }
