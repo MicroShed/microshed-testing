@@ -146,7 +146,7 @@ sidebar {
   grid-area: nav;
   color: $grey;
   height: calc(100% - 20px);
-  padding: 10px 0px 10px 25px;
+  padding: 10px 10px 10px 25px;
   background: $dark;
   -webkit-font-smoothing:subpixel-antialiased;
 }
@@ -271,7 +271,12 @@ footer {
 }
 
 .sidebarPage {
-	padding-top: .25em;
+  padding-top: .6em;
+}
+
+.sidebarLink {
+  display: inline-block;
+  line-height: 1.2;
 }
 
 .sidebarSectionTitle {
