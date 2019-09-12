@@ -14,7 +14,7 @@ from outside the container so you are testing the exact same image that runs in 
 
 MicroShed Testing aims to:
 1. be easy to get started with
-1. work with any JavaEE or MicroProfile runtime
+1. work with any Java EE, Jakarta EE or MicroProfile runtime
 1. provide true-to-production tests
 
 ## What it looks like
