@@ -25,8 +25,8 @@ Then add `microshed-testing` and `junit-jupiter` as test-scoped dependencies:
 ```xml
 <dependencies>
     <dependency>
-        <groupId>com.github.microshed</groupId>
-        <artifactId>microshed-testing</artifactId>
+        <groupId>com.github.microshed.microshed-testing</groupId>
+        <artifactId>microshed-testing-testcontainers</artifactId>
         <version>v0.4-beta</version>
         <scope>test</scope>
     </dependency>
