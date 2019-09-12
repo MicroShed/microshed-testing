@@ -8,7 +8,8 @@ COPY src/main/liberty/config /config/
 #ADD build/libs/myservice.war /opt/jboss/wildfly/standalone/deployments/
 
 # Payara
-#FROM payara/micro
+#FROM payara/micro:5.193
+#CMD ["--deploymentDir", "/opt/payara/deployments", "--noCluster"]
 #ADD build/libs/myservice.war /opt/payara/deployments
 
 # TomEE
