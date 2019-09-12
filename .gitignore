@@ -9,3 +9,4 @@ site/
 .vscode
 org.eclipse.buildship.core.prefs
 **/resources/*.jar
+.idea/
