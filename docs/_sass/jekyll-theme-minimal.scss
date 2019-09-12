@@ -267,6 +267,22 @@ footer {
   sidebar h1 {
     margin-top: 5px;
   }
+
+  section {
+    width: unset;
+  }
+
+  section #content {
+    width: calc(100vw - 20px);
+
+    .title {
+      font-size: 28px;
+    }
+  }
+
+  code {
+    word-break: break-all;
+  }
   
 }
 
