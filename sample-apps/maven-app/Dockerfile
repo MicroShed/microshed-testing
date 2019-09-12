@@ -7,8 +7,9 @@ COPY src/main/liberty/config /config/
 #ADD build/libs/myservice.war /opt/jboss/wildfly/standalone/deployments/
 
 # Payara
-#FROM payara/micro
-#ADD build/libs/myservice.war /opt/payara/deployments
+#FROM payara/micro:5.193
+#CMD ["--deploymentDir", "/opt/payara/deployments", "--noCluster"]
+#ADD target/myservice.war /opt/payara/deployments
 
 # TomEE
 #FROM tomee:8-jre-8.0.0-M2-microprofile
