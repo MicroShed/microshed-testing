@@ -80,12 +80,15 @@ public class RestClientBuilder {
                                                                                    AnnotationSupport.isAnnotated(c, ApplicationPath.class),
                                                                               n -> true);
         if (appClasses.size() == 0) {
+            LOGGER.debug("no classes implementing Application found in pkg: " + resourcePackage);
             // If not found, check under the 3rd package, so com.foo.bar.*
             // Classpath scanning can be expensive, so we jump straight to the 3rd package from root instead
             // of recursing up one package at a time and scanning the entire CP for each step
-            String[] pkgs = resourcePackage.split("(.*)\\.(.*)\\.(.*)\\.", 2);
-            if (pkgs.length > 0 && !pkgs[0].isEmpty() && !pkgs[0].equals(resourcePackage)) {
-                appClasses = ReflectionSupport.findAllClassesInPackage(pkgs[0],
+            String[] pkgs = resourcePackage.split("\\.");
+            if (pkgs.length > 3) {
+                String checkPkg = pkgs[0] + '.' + pkgs[1] + '.' + pkgs[2];
+                LOGGER.debug("checking in pkg: " + checkPkg);
+                appClasses = ReflectionSupport.findAllClassesInPackage(checkPkg,
                                                                        c -> Application.class.isAssignableFrom(c) &&
                                                                             AnnotationSupport.isAnnotated(c, ApplicationPath.class),
                                                                        n -> true);
@@ -108,6 +111,7 @@ public class RestClientBuilder {
                         ". Setting context root to the first class discovered (" + selectedClass.getCanonicalName() + ") with path: " +
                         appPath.value());
         }
+        LOGGER.debug("Using ApplicationPath of '" + appPath.value() + "'");
         return appPath.value();
     }
 
