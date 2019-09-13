@@ -65,12 +65,16 @@ public class LibertyAdapter implements ServerAdapter {
         if (MP_TEST_CONFIG_FILE == null) {
             String WLP_USR_DIR = System.getProperty("WLP_USR_DIR", System.getenv("WLP_USR_DIR"));
             if (WLP_USR_DIR == null)
-                throw new IllegalStateException("The 'WLP_USR_DIR' or '" + CONFIG_FILE_PROP + "' property must be set in order to dynamically set config properties");
+                WLP_USR_DIR = System.getProperty("wlp.user.dir");
+            if (WLP_USR_DIR == null)
+                throw new IllegalStateException("The 'w.p.user.dir', 'WLP_USR_DIR', or '" + CONFIG_FILE_PROP
+                                                + "' property must be set in order to dynamically set config properties");
             Path usrDir = Paths.get(WLP_USR_DIR);
             configFile = usrDir.resolve("servers/defaultServer/configDropins/defaults/system-test-vars.xml");
         } else {
             configFile = Paths.get(MP_TEST_CONFIG_FILE);
         }
+        configFile.getParent().toFile().mkdirs();
 
         // TODO: Liberty server.xml only supports MP JWT variables with dots but not underscores
         if (properties.containsKey("mp_jwt_verify_publickey"))
