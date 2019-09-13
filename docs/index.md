@@ -132,7 +132,7 @@ Then add `system-test` and `junit-jupiter` as test-scoped dependencies:
 <dependency>
     <groupId>com.github.microshed.microshed-testing</groupId>
     <artifactId>microshed-testing-testcontainers</artifactId>
-    <version>v0.4-beta</version>
+    <version>0.4.1-beta</version>
     <scope>test</scope>
 </dependency>
 
