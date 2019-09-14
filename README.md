@@ -1,6 +1,7 @@
-# MicroShed Testing
+[![MicroShed Testing](docs/images/MicroShed_Testing_slim.png)](http://microshed.org/microshed-testing)
 
 [![Jitpack](https://jitpack.io/v/microshed/microshed-testing.svg)](https://jitpack.io/#microshed/microshed-testing)
+[![Website](https://img.shields.io/website/http/microshed.org/microshed-testing?up_color=informational)](http://microshed.org/microshed-testing)
 [![Build Status](https://travis-ci.org/MicroShed/microshed-testing.svg?branch=master)](https://travis-ci.org/MicroShed/microshed-testing)
 [![License](https://img.shields.io/badge/License-ASL%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Gitter](https://badges.gitter.im/MicroShed/microshed-testing.svg)](https://gitter.im/MicroShed/microshed-testing)
