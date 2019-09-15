@@ -483,6 +483,11 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
         public int getDefaultHttpsPort() {
             return -1;
         }
+
+        @Override
+        public String getReadinessPath() {
+            return null;
+        }
     }
 
 }

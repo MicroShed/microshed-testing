@@ -30,25 +30,26 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
  * <li>Default HTTPS port</li>
  * <li>Default startup timeout</li>
  * <li>Default Dockerfile</li>
+ * <li>Default readiness path</li>
  * </ul>
  *
  * @author aguibert
  */
 public interface ServerAdapter {
 
-    public default int getPriority() {
+    default int getPriority() {
         return 0;
     }
 
     /**
      * @return The default HTTP port for this runtime
      */
-    public int getDefaultHttpPort();
+    int getDefaultHttpPort();
 
     /**
      * @return The default HTTPS port for this runtime
      */
-    public int getDefaultHttpsPort();
+    int getDefaultHttpsPort();
 
     /**
      * @return The default amount of time (in seconds) to wait for a runtime to start before
@@ -58,7 +59,7 @@ public interface ServerAdapter {
      *         It is reccomended to increase the default app start timeout when running in
      *         remote CI environments such as TravisCI by checking for the CI=true env var.
      */
-    public default int getDefaultAppStartTimeout() {
+    default int getDefaultAppStartTimeout() {
         return "true".equalsIgnoreCase(System.getenv("CI")) ? 90 : 30;
     }
 
@@ -71,7 +72,7 @@ public interface ServerAdapter {
      *
      * @param properties A map of key/value pairs that should be set on the runtime
      */
-    public default void setConfigProperties(Map<String, String> properties) {
+    default void setConfigProperties(Map<String, String> properties) {
         throw new UnsupportedOperationException("Dynamically setting config properties is not supported for the default ServerAdapter.");
     }
 
@@ -83,8 +84,14 @@ public interface ServerAdapter {
      * @param appFile The applicaiton file to include in the resulting Docker image
      * @return The default docker image including the supplied appFile
      */
-    public default ImageFromDockerfile getDefaultImage(File appFile) {
+    default ImageFromDockerfile getDefaultImage(File appFile) {
         throw new UnsupportedOperationException("Dynamically building image is not supported for the default ServerAdapter.");
     }
 
+    /**
+     * Defines the readiness path for the Server which will be used by default when the developer. The implementation
+     * can choose to return null and then no value is defined by default.
+     * @return the readiness path to be used by default.
+     */
+    String getReadinessPath();
 }

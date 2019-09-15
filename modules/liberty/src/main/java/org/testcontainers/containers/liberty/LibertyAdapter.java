@@ -112,4 +112,8 @@ public class LibertyAdapter implements ServerAdapter {
         return image;
     }
 
+    @Override
+    public String getReadinessPath() {
+        return "health/ready";
+    }
 }
