@@ -231,10 +231,15 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
     protected void configure() {
         super.configure();
         // If the readiness path was not set explicitly, default it to:
-        // A) The standard MP Health 2.0 readiness endpoint (if available)
-        // B) the app context root
+        // A) The value defined by ServerAdapter.getReadinessPath(), if any
+        // B) The standard MP Health 2.0 readiness endpoint (if available)
+        // C) the app context root
         if (!readinessPathSet) {
-            withReadinessPath(mpHealth20Available ? MP_HEALTH_READINESS_PATH : appContextRoot);
+            if (serverAdapter != null && serverAdapter.getReadinessPath() != null && !serverAdapter.getReadinessPath().trim().isEmpty()) {
+                withReadinessPath(serverAdapter.getReadinessPath());
+            } else {
+                withReadinessPath(mpHealth20Available ? MP_HEALTH_READINESS_PATH : appContextRoot);
+            }
         }
     }
 
