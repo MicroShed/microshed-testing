@@ -6,10 +6,16 @@
 [![License](https://img.shields.io/badge/License-ASL%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Gitter](https://badges.gitter.im/MicroShed/microshed-testing.svg)](https://gitter.im/MicroShed/microshed-testing)
 
-# Goals
-1. Simple to setup
-1. Work with any JavaEE or MicroProfile runtime
-1. Provide true-to-production tests that are easy to write and fast to run
+# Why use MicroShed Testing?
+
+MicroShed Testing offers a fast and simple way of writing and running true-to-production integration
+tests for Java microservice applications. MicroShed Testing exercises your containerized application
+from outside the container so you are testing the exact same image that runs in production.
+
+MicroShed Testing aims to:
+1. be easy to get started with
+1. work with any Java EE, Jakarta EE or MicroProfile runtime
+1. provide true-to-production tests
 
 # How to use in an existing project:
 
@@ -46,11 +52,6 @@ Then add `microshed-testing` and `junit-jupiter` as test-scoped dependencies:
 
 # How to try out a sample locally:
 
-### Run with Gradle:
-```
-./gradlew :microshed-testing-jaxrs-json:test
-```
-
 ### Run with Maven:
 ```bash
 ./gradlew publishToMavenLocal
@@ -58,13 +59,18 @@ cd sample-apps/maven-app
 mvn clean install
 ```
 
+### Run with Gradle:
+```
+./gradlew :microshed-testing-jaxrs-json:test
+```
+
 NOTE: The first run will take longer due to downloading required container layers. Subsequent runs will be faster.
 
 ### Tested with:
-- OpenLiberty / WAS Liberty
+- OpenLiberty
 - Wildfly
 - Payara Micro
-- TomEE
+- Apache TomEE
 
 To change which app server is used, [un]comment sections of the test app's Dockerfile at `sample-apps/jaxrs-json/Dockerfile`
 
