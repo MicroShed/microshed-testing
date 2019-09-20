@@ -22,6 +22,7 @@ import org.microshed.testing.testcontainers.spi.ServerAdapter;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
 import java.io.File;
+import java.util.Optional;
 
 public class PayaraMicroAdapter implements ServerAdapter {
     @Override
@@ -52,7 +53,7 @@ public class PayaraMicroAdapter implements ServerAdapter {
     }
 
     @Override
-    public String getReadinessPath() {
-        return "/health";
+    public Optional<String> getReadinessPath() {
+        return Optional.of("/health");
     }
 }
