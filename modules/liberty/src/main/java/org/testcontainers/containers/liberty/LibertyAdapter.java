@@ -26,6 +26,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.microshed.testing.testcontainers.spi.ServerAdapter;
 import org.testcontainers.images.builder.ImageFromDockerfile;
@@ -113,7 +114,7 @@ public class LibertyAdapter implements ServerAdapter {
     }
 
     @Override
-    public String getReadinessPath() {
-        return "health/ready";
+    public Optional<String> getReadinessPath() {
+        return Optional.empty();
     }
 }

@@ -6,7 +6,7 @@ layout: post
 
 ### Get going on true-to-production tests without the hassle
 
-## About
+## Why use MicroShed Testing?
 
 MicroShed Testing offers a fast and simple way of writing and running true-to-production integration
 tests for Java microservice applications. MicroShed Testing exercises your containerized application

@@ -20,6 +20,7 @@ package org.microshed.testing.testcontainers.spi;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Optional;
 
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
@@ -89,9 +90,9 @@ public interface ServerAdapter {
     }
 
     /**
-     * Defines the readiness path for the Server which will be used by default when the developer. The implementation
-     * can choose to return null and then no value is defined by default.
+     * Defines the readiness path for the Server which will be used by default when the developer did not specify such value.
+     * The implementation can choose to return null and then no value is defined by default.
      * @return the readiness path to be used by default.
      */
-    String getReadinessPath();
+    Optional<String> getReadinessPath();
 }
