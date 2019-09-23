@@ -1,0 +1,20 @@
+plugins {
+    id 'maven-publish'
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifactId = 'microshed-testing-payara-micro'
+            from components.java
+        }
+    }
+}
+
+description = "MicroShed Testing framework :: Payara Micro extensions"
+
+dependencies {
+  compile project(':microshed-testing-testcontainers')
+}
+
+publishToMavenLocal.dependsOn ':microshed-testing-testcontainers:publishToMavenLocal'
