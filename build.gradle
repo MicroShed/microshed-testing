@@ -1,8 +1,10 @@
 subprojects {
     apply plugin: 'java'
+    
+    ext.publishScript = rootProject.rootDir.absolutePath + '/publish.gradle'
 
     group = 'org.microshed'
-    version = '0.1-SNAPSHOT'
+    version = '0.4.2-SNAPSHOT'
     
     sourceCompatibility = 1.8
     targetCompatibility = 1.8

@@ -1,17 +1,5 @@
-plugins {
-    id 'maven-publish'
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            artifactId = 'microshed-testing'
-            from components.java
-        }
-    }
-}
-
-description = "MicroShed Testing Framework"
+ext.title = "MicroShed Testing Framework"
+description = "A test framework for black-box testing MicroProfile and JavaEE applications"
 
 dependencies {
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
@@ -24,3 +12,5 @@ dependencies {
   implementation group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.5.1'
 }
+
+apply from: publishScript

@@ -1,0 +1,78 @@
+apply plugin: 'maven-publish'
+
+ext.performRelease = !version.endsWith('SNAPSHOT')
+
+if (performRelease)
+    apply plugin: 'signing'
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier = 'javadoc'
+}
+
+publishing {
+    if (performRelease) {
+        repositories {
+            maven {
+                url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                credentials {
+                    username ossrhUsername
+                    password ossrhPassword
+                }
+            }
+        }
+    } else {
+        repositories {
+            mavenLocal()
+        }
+    }
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = project.name
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            pom {
+                name = project.properties.title
+                description = project.description
+                url = 'https://microshed.org/microshed-testing/'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'aguibert'
+                        name = 'Andy Guibert'
+                        email = 'andy.guibert@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:ssh://git@github.com/MicroShed/microshed-testing.git'
+                    developerConnection = 'scm:git:ssh://git@github.com/MicroShed/microshed-testing.git'
+                    url = 'https://github.com/MicroShed/microshed-testing.git'
+                }
+            }
+        }
+    }
+}
+
+if (performRelease) {
+    signing {
+        sign publishing.publications.mavenJava
+    }
+}
+
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
