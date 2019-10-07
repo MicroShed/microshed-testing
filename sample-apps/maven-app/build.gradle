@@ -10,10 +10,10 @@ task runMvnCompile(type:Exec) {
   environment System.getProperties()
   if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
     executable "cmd"
-    args '/c', 'mvn', "clean", 'compile', '-DprojectVersion=' + version
+    args '/c', 'mvn', "clean", 'compile'
   } else {
     executable "mvn"
-    args 'clean', 'compile', '-DprojectVersion=' + version
+    args 'clean', 'compile'
   }
 }
 
@@ -22,10 +22,10 @@ task runMvnVerify(type:Exec) {
   environment System.getProperties()
   if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
     executable "cmd"
-    args '/c', 'mvn', "clean", 'verify', '-DprojectVersion=' + version
+    args '/c', 'mvn', "clean", 'verify'
   } else {
     executable "mvn"
-    args 'clean', 'verify', '-DprojectVersion=' + version
+    args 'clean', 'verify'
   }
 }
 

@@ -1,10 +1,13 @@
+ext.currentVersion = '0.4.2-SNAPSHOT'
+ext.lastRelease = '0.4.1'
+
 subprojects {
     apply plugin: 'java'
     
     ext.publishScript = rootProject.rootDir.absolutePath + '/publish.gradle'
 
     group = 'org.microshed'
-    version = '0.4.2-SNAPSHOT'
+    version = currentVersion
     
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -27,6 +30,33 @@ subprojects {
             showStackTraces = true
             exceptionFormat = 'full'
             events 'PASSED', 'FAILED', 'SKIPPED'
+        }
+    }
+}
+
+task updateVersion {
+    doLast {
+        if (!project.hasProperty('nextVersion'))
+            throw new GradleException("Must define '-PnextVersion=X.Y.Z' when running this task")
+        def isRelease = !nextVersion.endsWith('SNAPSHOT')
+
+        println 'Updating project version: ' + currentVersion + ' --> ' + nextVersion
+        ant.replaceregexp(match: currentVersion, replace: nextVersion, flags: 'g', byline: true) {
+            fileset(dir: '.', includes: '**/*.gradle')
+            fileset(dir: '.', includes: '**/pom.xml')
+        }
+
+        if (isRelease) {
+            println 'Updating doc version: ' + lastRelease + ' --> ' + nextVersion
+            ant.replaceregexp(match: lastRelease, replace: nextVersion, flags: 'g', byline: true) {
+                fileset(dir: '.', includes: '**/*.md')
+            }
+        } else {
+            // For non-release updates need to revert ext.lastRelease to a release version
+            ant.replaceregexp(match: "ext\\.lastRelease = '" + nextVersion, 
+                            replace: "ext\\.lastRelease = '" + lastRelease, flags: 'g', byline: true) {
+                fileset(dir: '.', includes: 'build.gradle')
+            }
         }
     }
 }

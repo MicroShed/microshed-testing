@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>org.microshed</groupId>
 			<artifactId>microshed-testing-testcontainers</artifactId>
-			<version>${projectVersion}</version>
+			<version>0.4.2-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
