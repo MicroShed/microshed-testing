@@ -1,6 +1,8 @@
 [![MicroShed Testing](docs/images/MicroShed_Testing_slim.png)](http://microshed.org/microshed-testing)
 
-[![Jitpack](https://jitpack.io/v/microshed/microshed-testing.svg)](https://jitpack.io/#microshed/microshed-testing)
+[![Maven Central](https://img.shields.io/maven-central/v/org.microshed/microshed-testing-testcontainers.svg?label=Maven%20Central)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.microshed%22%20a%3A%22microshed-testing-testcontainers%22)
+[![Javadocs](https://www.javadoc.io/badge/org.microshed/microshed-testing-testcontainers.svg)](https://www.javadoc.io/doc/org.microshed/microshed-testing-testcontainers)
+[![Jitpack (Snapshots)](https://jitpack.io/v/microshed/microshed-testing.svg)](https://jitpack.io/#microshed/microshed-testing)
 [![Website](https://img.shields.io/website/http/microshed.org/microshed-testing?up_color=informational)](http://microshed.org/microshed-testing)
 [![Build Status](https://travis-ci.org/MicroShed/microshed-testing.svg?branch=master)](https://travis-ci.org/MicroShed/microshed-testing)
 [![License](https://img.shields.io/badge/License-ASL%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -19,23 +21,13 @@ MicroShed Testing aims to:
 
 # How to use in an existing project:
 
-Add jitpack.io repository configuration to your pom.xml:
-```xml
-<repositories>
-    <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
-    </repository>
-</repositories>
-```
-
-Then add `microshed-testing` and `junit-jupiter` as test-scoped dependencies:
+Add `microshed-testing-testcontainers` and `junit-jupiter` as test-scoped dependencies:
 ```xml
 <dependencies>
     <dependency>
-        <groupId>com.github.microshed.microshed-testing</groupId>
+        <groupId>org.microshed</groupId>
         <artifactId>microshed-testing-testcontainers</artifactId>
-        <version>0.4.1-beta</version>
+        <version>0.4.1</version>
        <scope>test</scope>
     </dependency>
     

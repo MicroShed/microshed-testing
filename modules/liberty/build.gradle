@@ -1,20 +1,10 @@
-plugins {
-    id 'maven-publish'
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            artifactId = 'microshed-testing-liberty'
-            from components.java
-        }
-    }
-}
-
-description = "MicroShed Testing framework :: Liberty extensions"
+ext.title = "MicroShed Testing Framework :: Liberty extensions"
+description = "Extensions for using MicroShed Testing with Liberty servers"
 
 dependencies {
   compile project(':microshed-testing-testcontainers')
 }
+
+apply from: publishScript
 
 publishToMavenLocal.dependsOn ':microshed-testing-testcontainers:publishToMavenLocal'

@@ -56,23 +56,15 @@ It doesn't really matter what's in the Dockerfile. What matters is we can start 
 Given the above application code, we can start by adding maven dependencies:
 
 ```xml
-<repositories>
-    <!-- https://jitpack.io/#microshed/microshed-testing -->
-    <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
-    </repository>
-</repositories>
-
 <dependencies>
     <dependency>
-        <groupId>com.github.microshed.microshed-testing</groupId>
+        <groupId>org.microshed</groupId>
         <artifactId>microshed-testing-testcontainers</artifactId>
-        <version>0.4.1-beta</version>
+        <version>0.4.1</version>
         <scope>test</scope>
     </dependency>
     
-    <!-- Any compatible version of JUnit Jupiter will work -->
+    <!-- Any compatible version of JUnit Jupiter 5.X will work -->
     <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter</artifactId>
