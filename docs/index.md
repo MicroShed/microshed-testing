@@ -114,29 +114,17 @@ COPY src/main/liberty/config /config/
 
 ## Quick Start
 
-To get started writing a test with MicroShed Testing, add the following repository configuration to your pom.xml:
-
-```xml
-<repositories>
-    <!-- https://jitpack.io/#microshed/microshed-testing -->
-    <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
-    </repository>
-</repositories>
-```
-
-Then add `system-test` and `junit-jupiter` as test-scoped dependencies:
+To get started writing a test with MicroShed Testing, add `system-test` and `junit-jupiter` as test-scoped dependencies:
 
 ```xml
 <dependency>
-    <groupId>com.github.microshed.microshed-testing</groupId>
+    <groupId>org.microshed</groupId>
     <artifactId>microshed-testing-testcontainers</artifactId>
-    <version>0.4.1-beta</version>
+    <version>0.4.1</version>
     <scope>test</scope>
 </dependency>
 
-<!-- Any compatible version of JUnit Jupiter will work -->
+<!-- Any compatible version of JUnit Jupiter 5.X will work -->
 <dependency>
     <groupId>org.junit.jupiter</groupId>
     <artifactId>junit-jupiter</artifactId>

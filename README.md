@@ -19,23 +19,13 @@ MicroShed Testing aims to:
 
 # How to use in an existing project:
 
-Add jitpack.io repository configuration to your pom.xml:
-```xml
-<repositories>
-    <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
-    </repository>
-</repositories>
-```
-
-Then add `microshed-testing` and `junit-jupiter` as test-scoped dependencies:
+Add `microshed-testing` and `junit-jupiter` as test-scoped dependencies:
 ```xml
 <dependencies>
     <dependency>
-        <groupId>com.github.microshed.microshed-testing</groupId>
+        <groupId>org.microshed</groupId>
         <artifactId>microshed-testing-testcontainers</artifactId>
-        <version>0.4.1-beta</version>
+        <version>0.4.1</version>
        <scope>test</scope>
     </dependency>
     
