@@ -43,8 +43,8 @@ Now assume we also have simple Dockerfile in our repository that packages up our
 
 ```
 FROM open-liberty:microProfile3
-ADD build/libs/myservice.war /config/dropins
 COPY src/main/liberty/config /config/
+ADD build/libs/myservice.war /config/dropins
 ```
 
 It doesn't really matter what's in the Dockerfile. What matters is we can start it using Docker and interact with it over HTTP or some other protocol.
