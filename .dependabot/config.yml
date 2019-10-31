@@ -1,0 +1,47 @@
+version: 1
+
+update_configs:
+# Generic modules
+  - package_manager: "java:gradle"
+    directory: "/core"
+    update_schedule: "daily"
+  - package_manager: "java:gradle"
+    directory: "/testcontainers"
+    update_schedule: "daily"
+  
+# Server modules  
+  - package_manager: "java:gradle"
+    directory: "/liberty"
+    update_schedule: "daily"
+  - package_manager: "java:gradle"
+    directory: "/payara-micro"
+    update_schedule: "daily"
+  - package_manager: "java:gradle"
+    directory: "/payara-server"
+    update_schedule: "daily"
+    
+# Test modules
+  - package_manager: "java:gradle"
+    directory: "/everything-app"
+    update_schedule: "daily"
+  - package_manager: "java:gradle"
+    directory: "/jaxrs-json"
+    update_schedule: "daily"
+  - package_manager: "java:gradle"
+    directory: "/jaxrs-mpjwt"
+    update_schedule: "daily"
+  - package_manager: "java:gradle"
+    directory: "/jdbc-app"
+    update_schedule: "daily"
+  - package_manager: "java:gradle"
+    directory: "/liberty-app"
+    update_schedule: "daily"
+  - package_manager: "java:maven"
+    directory: "/maven-app"
+    update_schedule: "daily"
+  - package_manager: "java:gradle"
+    directory: "/payara-app"
+    update_schedule: "daily"
+  - package_manager: "java:gradle"
+    directory: "/wildfly-app"
+    update_schedule: "daily"
