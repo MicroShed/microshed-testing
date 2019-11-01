@@ -7,13 +7,13 @@ configurations {
 }
 
 dependencies {
-  providedCompile 'javax:javaee-api:8.0'
+  providedCompile 'javax:javaee-api:8.0.1'
   providedCompile 'org.eclipse.microprofile:microprofile:2.1'
-  testCompile "org.testcontainers:postgresql:1.12.0"
+  testCompile 'org.testcontainers:postgresql:1.12.3'
   testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.26'
   testCompile project(':microshed-testing-testcontainers')
-  testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
-  postgres "org.postgresql:postgresql:42.2.5"
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
+  postgres 'org.postgresql:postgresql:42.2.8'
 }
 
 task copyDriver(type: Copy) {

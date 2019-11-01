@@ -3,11 +3,11 @@ plugins {
 }
 
 dependencies {
-  providedCompile 'javax:javaee-api:8.0'
+  providedCompile 'javax:javaee-api:8.0.1'
   providedCompile 'org.eclipse.microprofile:microprofile:2.1'
   testCompile project(':microshed-testing-testcontainers')
   testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.26'
-  testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
 }
 
 war.archiveName 'myservice.war'
