@@ -2,7 +2,7 @@
 layout: post
 ---
 
-![alt text](images/MicroShed_Testing_slim.png "MicroShed Testing")
+![alt text](images/microshed-logo-type.png "MicroShed Testing")
 
 ### Get going on true-to-production tests without the hassle
 
