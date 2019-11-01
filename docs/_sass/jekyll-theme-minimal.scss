@@ -4,8 +4,8 @@
 
 //Colors
 $dark: #2f2f2f;
-$birch: #f8dfa1;
-$light-birch: #ffedc1;
+$light-blue: #00c3dd;
+$white-blue: #cfedf3;
 $dark-birch: #96855b;
 $grey: #948f8f;
 $dark-grey: #4e4e4e;
@@ -63,16 +63,16 @@ a:hover svg, a:focus {
 
 sidebar {
   a {
-    color:$birch;
+    color:$white-blue;
     text-decoration:none;
   }
   
   a:hover, a:focus {
-    color: $light-birch;
+    color: $light-blue;
   }
   
   a:hover svg, a:focus {
-    fill: $light-birch;
+    fill: $light-blue;
   }
 }
 
@@ -302,7 +302,7 @@ footer {
 .octicon-mark {
 	width: 32px;
 	height: 32px;
-	fill: $birch;
+	fill: $white-blue;
 }
 
 a#text {

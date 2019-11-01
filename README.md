@@ -1,4 +1,4 @@
-[![MicroShed Testing](docs/images/MicroShed_Testing_slim.png)](http://microshed.org/microshed-testing)
+[![MicroShed Testing](docs/images/microshed-testing.png)](http://microshed.org/microshed-testing)
 
 [![Maven Central](https://img.shields.io/maven-central/v/org.microshed/microshed-testing-testcontainers.svg?label=Maven%20Central)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.microshed%22%20a%3A%22microshed-testing-testcontainers%22)
 [![Javadocs](https://www.javadoc.io/badge/org.microshed/microshed-testing-testcontainers.svg)](https://www.javadoc.io/doc/org.microshed/microshed-testing-testcontainers)
