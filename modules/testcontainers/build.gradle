@@ -3,8 +3,8 @@ description = "Extensions for using MicroShed Testing with Testcontainers for ma
 
 dependencies {
   compile project(':microshed-testing-core')
-  compile "org.testcontainers:junit-jupiter:1.12.1"
-  testImplementation 'org.junit.jupiter:junit-jupiter:5.5.1'
+  compile 'org.testcontainers:junit-jupiter:1.12.3'
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
 }
 
 apply from: publishScript
