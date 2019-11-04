@@ -3,7 +3,7 @@ description = "A test framework for black-box testing MicroProfile and JavaEE ap
 
 dependencies {
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
-  compile 'org.junit.jupiter:junit-jupiter-api:5.5.1'
+  compile 'org.junit.jupiter:junit-jupiter-api:5.5.2'
   implementation group: 'cglib', name: 'cglib-nodep', version: '3.3.0'
   implementation group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version: '3.3.4'
   implementation group: 'org.apache.cxf', name: 'cxf-rt-rs-extension-providers', version: '3.3.4'
