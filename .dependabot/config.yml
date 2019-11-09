@@ -4,8 +4,6 @@ update_configs:
   - package_manager: "java:gradle"
     directory: "/core"
     update_schedule: "daily"
-  
-# Modules
   - package_manager: "java:gradle"
     directory: "/modules/testcontainers"
     update_schedule: "daily"  
@@ -18,8 +16,6 @@ update_configs:
   - package_manager: "java:gradle"
     directory: "/modules/payara-server"
     update_schedule: "daily"
-    
-# Test apps
   - package_manager: "java:gradle"
     directory: "/sample-apps/everything-app"
     update_schedule: "daily"
