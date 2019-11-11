@@ -9,7 +9,7 @@ dependencies {
   testCompile project(':microshed-testing-testcontainers')
   testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
   testCompile 'org.testcontainers:mockserver:1.12.3'
-  testCompile 'org.mock-server:mockserver-client-java:5.5.4'
+  testCompile 'org.mock-server:mockserver-client-java:5.7.1'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
 }
 
