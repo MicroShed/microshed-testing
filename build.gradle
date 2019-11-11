@@ -2,7 +2,7 @@ plugins {
     // to check for updates run: ./gradlew dependencyUpdates -Drevision=release
     id 'com.github.ben-manes.versions' version '0.27.0'
 }
-ext.currentVersion = '0.4.2-SNAPSHOT'
+ext.currentVersion = '0.4.3-SNAPSHOT'
 ext.lastRelease = '0.4.1'
 
 subprojects {
