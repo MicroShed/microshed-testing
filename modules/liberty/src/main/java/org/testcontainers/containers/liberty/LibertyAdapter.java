@@ -97,18 +97,25 @@ public class LibertyAdapter implements ServerAdapter {
 
     @Override
     public ImageFromDockerfile getDefaultImage(File appFile) {
-        String appName = appFile.getName();
+        final String appName = appFile.getName();
+        final File configDir = new File("src/main/liberty/config");
+        final boolean configDirExists = configDir.exists() && configDir.canRead();
         // Compose a docker image equivalent to doing:
         // FROM open-liberty:microProfile3
-        // ADD build/libs/<appFile> /config/dropins
         // COPY src/main/liberty/config /config/
+        // ADD build/libs/<appFile> /config/dropins
         ImageFromDockerfile image = new ImageFromDockerfile()
-                        .withDockerfileFromBuilder(builder -> builder.from(getBaseDockerImage())
-                                        .add("/config/dropins/" + appName, "/config/dropins/" + appName)
-                                        .copy("/config", "/config")
-                                        .build())
-                        .withFileFromFile("/config/dropins/" + appName, appFile)
-                        .withFileFromFile("/config", new File("src/main/liberty/config"));
+                        .withDockerfileFromBuilder(builder -> {
+                            builder.from(getBaseDockerImage());
+                            if (configDirExists) {
+                                builder.copy("/config", "/config");
+                            }
+                            builder.add("/config/dropins/" + appName, "/config/dropins/" + appName);
+                            builder.build();
+                        })
+                        .withFileFromFile("/config/dropins/" + appName, appFile);
+        if (configDirExists)
+            image.withFileFromFile("/config", configDir);
         return image;
     }
 

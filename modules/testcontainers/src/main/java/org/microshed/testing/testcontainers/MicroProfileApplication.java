@@ -65,18 +65,13 @@ import com.github.dockerjava.api.model.ExposedPort;
  */
 public class MicroProfileApplication extends GenericContainer<MicroProfileApplication> {
 
-    private static final String MP_HEALTH_READINESS_PATH = "/health/ready";
+    /**
+     * A path representing the MicroProfile Health 2.0 readiness check
+     */
+    public static final String MP_HEALTH_READINESS_PATH = "/health/ready";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MicroProfileApplication.class);
-    private static final boolean mpHealth20Available;
     private static final boolean isHollow = isHollow();
-    static {
-        Class<?> readinessClass = null;
-        try {
-            readinessClass = Class.forName("org.eclipse.microprofile.health.Readiness");
-        } catch (ClassNotFoundException e) {
-        }
-        mpHealth20Available = readinessClass != null;
-    }
 
     private String appContextRoot;
     private ServerAdapter serverAdapter;
@@ -232,13 +227,12 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
         super.configure();
         // If the readiness path was not set explicitly, default it to:
         // A) The value defined by ServerAdapter.getReadinessPath(), if any
-        // B) The standard MP Health 2.0 readiness endpoint (if available)
-        // C) the app context root
+        // B) the app context root
         if (!readinessPathSet) {
-            if (serverAdapter != null && serverAdapter.getReadinessPath().isPresent() && !serverAdapter.getReadinessPath().get().trim().isEmpty()) {
+            if (serverAdapter != null && serverAdapter.getReadinessPath().isPresent()) {
                 withReadinessPath(serverAdapter.getReadinessPath().get());
             } else {
-                withReadinessPath(mpHealth20Available ? MP_HEALTH_READINESS_PATH : appContextRoot);
+                withReadinessPath(appContextRoot);
             }
         }
     }
@@ -322,11 +316,7 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
     /**
      * Sets the path to be used to determine container readiness. The readiness check will
      * timeout after a sensible amount of time has elapsed.
-     * If unspecified, the readiness path with defailt to either:
-     * <ol><li>The MicroProfile Health 2.0 readiness endpoint <code>/health/readiness</code>,
-     * if MP Health 2.0 API is accessible</li>
-     * <li>Otherwise, the application context root</li>
-     * </ol>
+     * If unspecified, the readiness path with defailt to the application context root
      *
      * @param readinessUrl The HTTP endpoint to be polled for readiness. Once the endpoint
      *            returns HTTP 200 (OK), the container is considered to be ready.
@@ -340,11 +330,7 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
     /**
      * Sets the path to be used to determine container readiness. The readiness check will
      * timeout after a sensible amount of time has elapsed.
-     * If unspecified, the readiness path with defailt to either:
-     * <ol><li>The MicroProfile Health 2.0 readiness endpoint <code>/health/readiness</code>,
-     * if MP Health 2.0 API is accessible</li>
-     * <li>Otherwise, the application context root</li>
-     * </ol>
+     * If unspecified, the readiness path with defailt to the application context root
      *
      * @param readinessUrl The HTTP endpoint to be polled for readiness. Once the endpoint
      *            returns HTTP 200 (OK), the container is considered to be ready.
