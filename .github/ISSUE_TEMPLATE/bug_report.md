@@ -19,7 +19,7 @@ A clear and concise description of what you expected to happen.
 **System information:**
  - OS: [e.g. Linux, Windows, Mac]
  - Java Version: [e.g. 8, 11]
- - MicroShed Testing Version: [e.g. 0.4.1]
+ - MicroShed Testing Version: [e.g. 0.4.2]
 
 **Additional context**
 Add any other context about the problem here.
