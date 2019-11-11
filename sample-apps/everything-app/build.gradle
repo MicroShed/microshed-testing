@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
   providedCompile 'javax:javaee-api:8.0.1'
-  providedCompile 'org.eclipse.microprofile:microprofile:2.1'
+  providedCompile 'org.eclipse.microprofile:microprofile:3.1'
   compile group: 'org.mongodb', name: 'mongo-java-driver', version: '3.11.2'
   testCompile project(':microshed-testing-testcontainers')
   testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
