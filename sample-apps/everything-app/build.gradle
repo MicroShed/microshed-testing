@@ -7,7 +7,7 @@ dependencies {
   providedCompile 'org.eclipse.microprofile:microprofile:2.1'
   compile group: 'org.mongodb', name: 'mongo-java-driver', version: '3.11.1'
   testCompile project(':microshed-testing-testcontainers')
-  testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.26'
+  testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
   testCompile 'org.testcontainers:mockserver:1.12.3'
   testCompile 'org.mock-server:mockserver-client-java:5.5.4'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
