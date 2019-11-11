@@ -16,4 +16,3 @@ update_configs:
   - package_manager: "java:gradle"
     directory: "/modules/payara-server"
     update_schedule: "daily"
-  - package_manager: "java:gradle"
