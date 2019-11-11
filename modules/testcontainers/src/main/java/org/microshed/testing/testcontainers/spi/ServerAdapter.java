@@ -38,8 +38,12 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
  */
 public interface ServerAdapter {
 
+    static final int PRIORITY_USER_DEFAULT = 50;
+    static final int PRIORITY_DEFAULT = 0;
+    static final int PRIORITY_RUNTIME_MODULE = -50;
+
     default int getPriority() {
-        return 0;
+        return PRIORITY_DEFAULT;
     }
 
     /**
@@ -91,8 +95,10 @@ public interface ServerAdapter {
 
     /**
      * Defines the readiness path for the Server which will be used by default when the developer did not specify such value.
-     * The implementation can choose to return null and then no value is defined by default.
-     * @return the readiness path to be used by default.
+     *
+     * @return the readiness path to be used by default, or an empty Optional if no default value is provided.
      */
-    Optional<String> getReadinessPath();
+    default Optional<String> getReadinessPath() {
+        return Optional.empty();
+    }
 }

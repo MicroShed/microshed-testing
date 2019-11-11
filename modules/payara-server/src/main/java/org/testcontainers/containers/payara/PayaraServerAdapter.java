@@ -25,6 +25,12 @@ import java.io.File;
 import java.util.Optional;
 
 public class PayaraServerAdapter implements ServerAdapter {
+    
+    @Override
+    public int getPriority() {
+        return PRIORITY_RUNTIME_MODULE;
+    }
+    
     @Override
     public int getDefaultHttpPort() {
         return 8080;
