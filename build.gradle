@@ -2,8 +2,8 @@ plugins {
     // to check for updates run: ./gradlew dependencyUpdates -Drevision=release
     id 'com.github.ben-manes.versions' version '0.27.0'
 }
-ext.currentVersion = '0.4.3-SNAPSHOT'
-ext.lastRelease = '0.4.1'
+ext.currentVersion = '0.5.1-SNAPSHOT'
+ext.lastRelease = '0.5'
 
 subprojects {
     apply plugin: 'java'
@@ -45,15 +45,16 @@ task updateVersion {
         def isRelease = !nextVersion.endsWith('SNAPSHOT')
 
         println 'Updating project version: ' + currentVersion + ' --> ' + nextVersion
-        ant.replaceregexp(match: currentVersion, replace: nextVersion, flags: 'g', byline: true) {
+        ant.replaceregexp(match: '(["\'>])' + currentVersion, replace: '\\1' + nextVersion, flags: 'g', byline: true) {
             fileset(dir: '.', includes: '**/*.gradle')
             fileset(dir: '.', includes: '**/pom.xml')
         }
 
         if (isRelease) {
             println 'Updating doc version: ' + lastRelease + ' --> ' + nextVersion
-            ant.replaceregexp(match: lastRelease, replace: nextVersion, flags: 'g', byline: true) {
+            ant.replaceregexp(match: '(["\'>])' + lastRelease, replace: '\\1' + nextVersion, flags: 'g', byline: true) {
                 fileset(dir: '.', includes: '**/*.md')
+                fileset(dir: '.', includes: 'build.gradle')
             }
         } else {
             // For non-release updates need to revert ext.lastRelease to a release version

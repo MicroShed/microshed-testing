@@ -120,7 +120,7 @@ To get started writing a test with MicroShed Testing, add `system-test` and `jun
 <dependency>
     <groupId>org.microshed</groupId>
     <artifactId>microshed-testing-testcontainers</artifactId>
-    <version>0.4.2</version>
+    <version>0.5</version>
     <scope>test</scope>
 </dependency>
 
