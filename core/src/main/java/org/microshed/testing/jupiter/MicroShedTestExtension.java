@@ -53,10 +53,10 @@ class MicroShedTestExtension implements BeforeAllCallback {
         LOGGER.info("Using ApplicationEnvironment class: " + config.getClass().getCanonicalName());
         config.applyConfiguration(testClass);
         config.start();
-        injectRestClients(testClass, config);
+        injectRestClients(testClass);
     }
 
-    private static void injectRestClients(Class<?> clazz, ApplicationEnvironment config) {
+    private static void injectRestClients(Class<?> clazz) {
         List<Field> restClientFields = new ArrayList<>();
         restClientFields.addAll(AnnotationSupport.findAnnotatedFields(clazz, RESTClient.class));
         // Also tolerate people using the MicroProfile @RestClient annotation instead
@@ -66,15 +66,17 @@ class MicroShedTestExtension implements BeforeAllCallback {
         if (restClientFields.size() == 0)
             return;
 
-        String mpAppURL = config.getApplicationURL();
         for (Field restClientField : restClientFields) {
             if (!Modifier.isPublic(restClientField.getModifiers()) ||
                 !Modifier.isStatic(restClientField.getModifiers()) ||
                 Modifier.isFinal(restClientField.getModifiers())) {
                 throw new ExtensionConfigurationException("REST client field must be public, static, and non-final: " + restClientField);
             }
+            RestClientBuilder rcBuilder = new RestClientBuilder();
             String jwt = createJwtIfNeeded(restClientField);
-            Object restClient = RestClientBuilder.createRestClient(restClientField.getType(), mpAppURL, jwt);
+            if (jwt != null)
+                rcBuilder.withJwt(jwt);
+            Object restClient = rcBuilder.build(restClientField.getType());
             try {
                 restClientField.set(null, restClient);
                 LOGGER.debug("Injected rest client for " + restClientField);

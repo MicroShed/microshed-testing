@@ -107,9 +107,9 @@ provide the default logic for building an application container. For example, th
 automatically produce a testable container image roughly equivalent to the following Dockerfile:
 
 ```
-FROM open-liberty:microProfile3
-ADD build/libs/$APP_FILE /config/dropins
+FROM openliberty/open-liberty:full-java8-openj9-ubi
 COPY src/main/liberty/config /config/
+ADD build/libs/$APP_FILE /config/dropins
 ```
 
 ## Quick Start

@@ -32,7 +32,7 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 
 public class LibertyAdapter implements ServerAdapter {
 
-    private static String BASE_DOCKER_IMAGE = "open-liberty:microProfile3";
+    private static String BASE_DOCKER_IMAGE = "openliberty/open-liberty:full-java8-openj9-ubi";
     private static final String CONFIG_FILE_PROP = "MICROSHED_TEST_LIBERTY_CONFIG_FILE";
 
     public static String getBaseDockerImage() {
@@ -101,8 +101,9 @@ public class LibertyAdapter implements ServerAdapter {
         final File configDir = new File("src/main/liberty/config");
         final boolean configDirExists = configDir.exists() && configDir.canRead();
         // Compose a docker image equivalent to doing:
-        // FROM open-liberty:microProfile3
+        // FROM openliberty/open-liberty:full-java8-openj9-ubi
         // COPY src/main/liberty/config /config/
+        // RUN configure.sh
         // ADD build/libs/<appFile> /config/dropins
         ImageFromDockerfile image = new ImageFromDockerfile()
                         .withDockerfileFromBuilder(builder -> {
@@ -110,6 +111,10 @@ public class LibertyAdapter implements ServerAdapter {
                             if (configDirExists) {
                                 builder.copy("/config", "/config");
                             }
+                            // Best practice is to run configure.sh after the app is added, but we will
+                            // run it before adding the app because due to how often the app changes while
+                            // running tests this will yeild the most overall time saved
+                            builder.run("configure.sh");
                             builder.add("/config/dropins/" + appName, "/config/dropins/" + appName);
                             builder.build();
                         })

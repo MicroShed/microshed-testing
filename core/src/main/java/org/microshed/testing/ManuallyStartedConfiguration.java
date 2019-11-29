@@ -21,8 +21,6 @@ package org.microshed.testing;
 /**
  * Configuration representing application and dependent services already
  * being started prior to running the tests.
- * 
- * @author aguibert
  */
 public class ManuallyStartedConfiguration implements ApplicationEnvironment {
 

@@ -18,6 +18,7 @@
  */
 package org.microshed.testing.jaxrs;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,25 +27,84 @@ import java.util.Objects;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.ReflectionSupport;
+import org.microshed.testing.ApplicationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A builder class for creating REST Client instances based on JAX-RS interfaces
+ * or concrete classes
+ */
 public class RestClientBuilder {
 
     static final Logger LOGGER = LoggerFactory.getLogger(RestClientBuilder.class);
 
-    public static <T> T createRestClient(Class<T> clazz, String appContextRoot, String applicationPath, String jwt) {
+    private String appContextRoot;
+    private String jaxrsPath;
+    private String jwt;
+    private List<Class<?>> providers;
+
+    /**
+     * @param appContextRoot The protocol, hostname, port, and application root path for the REST Client
+     *            For example, <code>http://localhost:8080/myapp/</code>. If unspecified, the app context
+     *            root will be automatically detected by {@link ApplicationEnvironment#getApplicationURL()}
+     */
+    public RestClientBuilder withAppContextRoot(String appContextRoot) {
         Objects.requireNonNull(appContextRoot, "Supplied 'appContextRoot' must not be null");
-        Objects.requireNonNull(applicationPath, "Supplied 'applicationPath' must not be null");
-        String basePath = join(appContextRoot, applicationPath);
-        // TODO: Allow the provider list to be customized
-        List<Class<?>> providers = Collections.singletonList(JsonBProvider.class);
-        LOGGER.info("Building rest client for " + clazz + " with base path: " + basePath + " and providers: " + providers);
+        this.appContextRoot = appContextRoot;
+        return this;
+    }
+
+    /**
+     * @param jaxrsPath The portion of the path after the app context root. For example, if a JAX-RS
+     *            endpoint is deployed at <code>http://localhost:8080/myapp/hello</code> and the app context root
+     *            is <code>http://localhost:8080/myapp/</code>, then the jaxrsPath is <code>hello</code>. If
+     *            unspecified, the JAX-RS path will be automatically detected by annotation scanning.
+     */
+    public RestClientBuilder withJaxrsPath(String jaxrsPath) {
+        Objects.requireNonNull(jaxrsPath, "Supplied 'jaxrsPath' must not be null");
+        this.jaxrsPath = jaxrsPath;
+        return this;
+    }
+
+    /**
+     * @param jwt The JWT (Json Web Token) to apply as an Authorization header
+     */
+    public RestClientBuilder withJwt(String jwt) {
+        Objects.requireNonNull(jwt, "Supplied 'jwt' must not be null");
+        this.jwt = jwt;
+        return this;
+    }
+
+    /**
+     * @param providers One or more providers to apply. Providers typically implement
+     *            {@link MessageBodyReader} and/or {@link MessageBodyWriter}. If unspecified,
+     *            the {@link JsonBProvider} will be applied.
+     */
+    public RestClientBuilder withProviders(Class<?>... providers) {
+        this.providers = Arrays.asList(providers);
+        return this;
+    }
+
+    public <T> T build(Class<T> clazz) {
+        // Apply default values if unspecified
+        if (appContextRoot == null)
+            appContextRoot = ApplicationEnvironment.load().getApplicationURL();
+        if (jaxrsPath == null)
+            jaxrsPath = locateApplicationPath(clazz);
+        if (providers == null)
+            providers = Collections.singletonList(JsonBProvider.class);
+
         JAXRSClientFactoryBean bean = new org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean();
+        String basePath = join(appContextRoot, jaxrsPath);
+        LOGGER.info("Building rest client for " + clazz + " with base path: " + basePath + " and providers: " + providers);
+        bean.setResourceClass(clazz);
         bean.setProviders(providers);
         bean.setAddress(basePath);
         if (jwt != null && jwt.length() > 0) {
@@ -53,18 +113,7 @@ public class RestClientBuilder {
             bean.setHeaders(headers);
             LOGGER.debug("Using provided JWT auth header: " + jwt);
         }
-        bean.setResourceClass(clazz);
         return bean.create(clazz);
-        //return JAXRSClientFactory.create(basePath, clazz, providers);
-    }
-
-    public static <T> T createRestClient(Class<T> clazz, String appContextRoot, String jwt) {
-        String appPath = locateApplicationPath(clazz);
-        return createRestClient(clazz, appContextRoot, appPath, jwt);
-    }
-
-    public static <T> T createRestClient(Class<T> clazz, String appContextRoot) {
-        return createRestClient(clazz, appContextRoot, null);
     }
 
     private static String locateApplicationPath(Class<?> clazz) {
