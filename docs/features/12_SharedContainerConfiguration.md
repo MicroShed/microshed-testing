@@ -10,7 +10,7 @@ the following test classes:
 @MicroShedTest
 public class MyTestA {
     @Container
-    public static MicroProfileApplication app = new MicroProfileApplication()
+    public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/myservice");
     // ...
 }
@@ -18,7 +18,7 @@ public class MyTestA {
 @MicroShedTest
 public class MyTestB {
     @Container
-    public static MicroProfileApplication app = new MicroProfileApplication()
+    public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/myservice");
     // ...
 }
@@ -36,7 +36,7 @@ that implements `SharedContainerConfiguration` like so:
 ```java
 public class AppContainerConfig implements SharedContainerConfiguration {
     @Container
-    public static MicroProfileApplication app = new MicroProfileApplication()
+    public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/myservice");
 }
 
@@ -71,7 +71,7 @@ The Testcontainers API has a built-in dependency mechanism which can be used to 
                     .withNetworkAliases("testmongo");
                     
     @Container
-    public static MicroProfileApplication app = new MicroProfileApplication()
+    public static ApplicationContainer app = new ApplicationContainer()
                     .dependsOn(mongo)
                     // ...
 ```
@@ -91,7 +91,7 @@ public class AppContainerConfig implements SharedContainerConfiguration {
                     // ...
 
     @Container
-    public static MicroProfileApplication app = new MicroProfileApplication()
+    public static ApplicationContainer app = new ApplicationContainer()
                     // ...
 
     @Override

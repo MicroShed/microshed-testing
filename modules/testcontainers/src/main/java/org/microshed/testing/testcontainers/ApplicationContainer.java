@@ -58,19 +58,17 @@ import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.ExposedPort;
 
 /**
- * Represents a MicroProfile (or JavaEE or JakartaEE) application running inside a Docker
+ * Represents a MicroProfile, JavaEE, or JakartaEE application running inside a Docker
  * container.
- *
- * @author aguibert
  */
-public class MicroProfileApplication extends GenericContainer<MicroProfileApplication> {
+public class ApplicationContainer extends GenericContainer<ApplicationContainer> {
 
     /**
      * A path representing the MicroProfile Health 2.0 readiness check
      */
     public static final String MP_HEALTH_READINESS_PATH = "/health/ready";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MicroProfileApplication.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContainer.class);
     private static final boolean isHollow = isHollow();
 
     private String appContextRoot;
@@ -179,11 +177,11 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
      * a {@link ServerAdapter} may be used to supply a default Dockerfile.
      * A docker build will be performed before the resulting container image is started.
      */
-    public MicroProfileApplication() {
+    public ApplicationContainer() {
         this(autoDiscoverDockerfile());
     }
 
-    private MicroProfileApplication(Optional<Path> dockerfilePath) {
+    private ApplicationContainer(Optional<Path> dockerfilePath) {
         this(resolveImage(dockerfilePath));
     }
 
@@ -194,12 +192,12 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
      *            build the container image.
      *            A docker build will be performed before the resulting container image is started.
      */
-    public MicroProfileApplication(Path dockerfilePath) {
+    public ApplicationContainer(Path dockerfilePath) {
         this(Optional.of(dockerfilePath));
         LOGGER.info("Using Dockerfile at:" + dockerfilePath);
     }
 
-    public MicroProfileApplication(Future<String> dockerImageName) {
+    public ApplicationContainer(Future<String> dockerImageName) {
         super(dockerImageName);
         commonInit();
     }
@@ -209,7 +207,7 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
      *
      * @param dockerImageName The docker image to be used for this instance
      */
-    public MicroProfileApplication(final String dockerImageName) {
+    public ApplicationContainer(final String dockerImageName) {
         super(dockerImageName);
         commonInit();
     }
@@ -307,7 +305,7 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
      *            be set using <code>withAppContextRoot("/foo")</code>
      * @return the current instance
      */
-    public MicroProfileApplication withAppContextRoot(String appContextRoot) {
+    public ApplicationContainer withAppContextRoot(String appContextRoot) {
         Objects.requireNonNull(appContextRoot);
         this.appContextRoot = appContextRoot = buildPath(appContextRoot);
         return this;
@@ -322,7 +320,7 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
      *            returns HTTP 200 (OK), the container is considered to be ready.
      * @return the current instance
      */
-    public MicroProfileApplication withReadinessPath(String readinessUrl) {
+    public ApplicationContainer withReadinessPath(String readinessUrl) {
         withReadinessPath(readinessUrl, serverAdapter.getDefaultAppStartTimeout());
         return this;
     }
@@ -337,7 +335,7 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
      * @param timeoutSeconds The amount of time (in seconds) to wait for the container to be ready.
      * @return the current instance
      */
-    public MicroProfileApplication withReadinessPath(String readinessUrl, int timeoutSeconds) {
+    public ApplicationContainer withReadinessPath(String readinessUrl, int timeoutSeconds) {
         Objects.requireNonNull(readinessUrl);
         readinessUrl = buildPath(readinessUrl);
         waitingFor(Wait.forHttp(readinessUrl)
@@ -346,7 +344,7 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
     }
 
     @Override
-    public MicroProfileApplication waitingFor(WaitStrategy waitStrategy) {
+    public ApplicationContainer waitingFor(WaitStrategy waitStrategy) {
         readinessPathSet = true;
         return super.waitingFor(waitStrategy);
     }
@@ -365,7 +363,7 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
      * @param hostUrl The URL that the {@code restClientClass} will act as a REST client for
      * @return the current instance
      */
-    public MicroProfileApplication withMpRestClient(Class<?> restClientClass, String hostUrl) {
+    public ApplicationContainer withMpRestClient(Class<?> restClientClass, String hostUrl) {
         return withMpRestClient(restClientClass.getCanonicalName(), hostUrl);
     }
 
@@ -377,7 +375,7 @@ public class MicroProfileApplication extends GenericContainer<MicroProfileApplic
      * @param hostUrl The URL that the {@code restClientClass} will act as a REST client for
      * @return the current instance
      */
-    public MicroProfileApplication withMpRestClient(String restClientClass, String hostUrl) {
+    public ApplicationContainer withMpRestClient(String restClientClass, String hostUrl) {
         String envName = restClientClass//
                         .replaceAll("\\.", "_")
                         .replaceAll("\\$", "_") +

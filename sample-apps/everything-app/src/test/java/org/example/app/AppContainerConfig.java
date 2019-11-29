@@ -19,7 +19,7 @@
 package org.example.app;
 
 import org.microshed.testing.SharedContainerConfiguration;
-import org.microshed.testing.testcontainers.MicroProfileApplication;
+import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MockServerContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -27,7 +27,7 @@ import org.testcontainers.junit.jupiter.Container;
 public class AppContainerConfig implements SharedContainerConfiguration {
 
     @Container
-    public static MicroProfileApplication app = new MicroProfileApplication()
+    public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/myservice")
                     .withEnv("MONGO_HOSTNAME", "testmongo")
                     .withEnv("MONGO_PORT", "27017")

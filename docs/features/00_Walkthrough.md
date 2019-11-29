@@ -104,7 +104,7 @@ Here we can see that the application is available at `http://localhost:9080/myse
 public class MyTest {
 
     @Container
-    public static MicroProfileApplication app = new MicroProfileApplication()
+    public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/myservice");
                     
     @Inject
@@ -162,7 +162,7 @@ However, our application does not respond at this endpoint, so we need to config
 
 ```java
     @Container
-    public static MicroProfileApplication app = new MicroProfileApplication()
+    public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/myservice")
                     .withReadinessPath("/myservice/people");
 ```

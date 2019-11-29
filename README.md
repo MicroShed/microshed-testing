@@ -107,7 +107,7 @@ public class BasicJAXRSServiceTest {
     // This will search for a Dockerfile in the repository and start up the application
     // in a Docker container, and wait for it to be ready before starting the tests.
     @Container
-    public static MicroProfileApplication app = new MicroProfileApplication()
+    public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/myservice");
 
     // This injects a REST _Client_ proxy of the PersonService shown above

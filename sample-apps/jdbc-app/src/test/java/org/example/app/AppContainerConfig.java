@@ -19,7 +19,7 @@
 package org.example.app;
 
 import org.microshed.testing.SharedContainerConfiguration;
-import org.microshed.testing.testcontainers.MicroProfileApplication;
+import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 
@@ -31,7 +31,7 @@ public class AppContainerConfig implements SharedContainerConfiguration {
 					.withDatabaseName("testdb");
 	
     @Container
-    public static MicroProfileApplication app = new MicroProfileApplication()
+    public static ApplicationContainer app = new ApplicationContainer()
                     .withEnv("POSTGRES_HOSTNAME", "testpostgres")
                     .withEnv("POSTGRES_PORT", "5432")
                     .withAppContextRoot("/myservice");

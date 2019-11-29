@@ -58,7 +58,7 @@ public class BasicJAXRSServiceTest {
     // This will search for a Dockerfile in the repository and start up the application
     // in a Docker container, and wait for it to be ready before starting the tests.
     @Container
-    public static MicroProfileApplication app = new MicroProfileApplication()
+    public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/myservice");
 
     // This injects a REST _Client_ proxy of the PersonService shown above
@@ -99,7 +99,7 @@ supplied instead:
 
 ```java
     @Container
-    public static MicroProfileApplication app = new MicroProfileApplication("myservice:latest")
+    public static ApplicationContainer app = new ApplicationContainer("myservice:latest")
                     .withAppContextRoot("/myservice");
 ```
 * If a Dockerfile or container image label is not available, it is possible to use vendor-specific adapters that will
@@ -135,7 +135,7 @@ To get started writing a test with MicroShed Testing, add `system-test` and `jun
 
 Once you have the above dependencies added, create a new test class with the following items:
 1. Annotate the class with `@MicroShedTest` 
-1. Create a `public static MicroProfileApplication` field
+1. Create a `public static ApplicationContainer` field
 1. Inject one or more `public static` JAX-RS resource classes
 
 ```java
@@ -143,7 +143,7 @@ Once you have the above dependencies added, create a new test class with the fol
 public class MyTest {
 
     @Container
-    public static MicroProfileApplication app = new MicroProfileApplication()
+    public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/myservice");
                     
     @Inject
