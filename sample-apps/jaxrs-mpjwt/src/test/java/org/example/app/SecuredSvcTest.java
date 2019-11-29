@@ -21,11 +21,11 @@ package org.example.app;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import javax.inject.Inject;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;
 
 import org.junit.jupiter.api.Test;
+import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.jwt.JwtConfig;
 import org.microshed.testing.testcontainers.ApplicationContainer;
@@ -39,15 +39,15 @@ public class SecuredSvcTest {
                     .withAppContextRoot("/myservice")
                     .withReadinessPath("/myservice/app/data/ping");
 
-    @Inject
+    @RESTClient
     @JwtConfig(claims = { "groups=users" })
     public static SecuredService securedSvc;
 
-    @Inject
+    @RESTClient
     @JwtConfig(claims = { "groups=wrong" })
     public static SecuredService misSecuredSvc;
 
-    @Inject
+    @RESTClient
     public static SecuredService noJwtSecuredSvc;
 
     @Test

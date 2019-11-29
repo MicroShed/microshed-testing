@@ -112,7 +112,7 @@ public class BasicJAXRSServiceTest {
 
     // This injects a REST _Client_ proxy of the PersonService shown above
     // This allows us to easily invoke HTTP requests on the running application container
-    @Inject
+    @RESTClient
     public static PersonService personSvc;
 
     @Test

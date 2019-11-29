@@ -23,14 +23,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
-import javax.inject.Inject;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 
-import org.example.app.Person;
-import org.example.app.PersonServiceWithPassthrough;
 import org.junit.jupiter.api.Test;
 import org.microshed.testing.SharedContainerConfig;
+import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jupiter.MicroShedTest;
 import org.mockserver.client.MockServerClient;
 
@@ -42,7 +40,7 @@ import com.google.common.net.MediaType;
 @SharedContainerConfig(AppContainerConfig.class)
 public class DependentServiceTest {
 
-    @Inject
+    @RESTClient
     public static PersonServiceWithPassthrough personSvc;
 
     static final Jsonb jsonb = JsonbBuilder.create();

@@ -18,18 +18,19 @@
  */
 package org.example.app;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 
-import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.ProcessingException;
 
-import org.example.app.Person;
-import org.example.app.PersonService;
 import org.junit.jupiter.api.Test;
+import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -42,7 +43,7 @@ public class JaxrsJsonTest {
                     .withAppContextRoot("/myservice")
                     .withReadinessPath("/myservice/app/people");
     
-    @Inject
+    @RESTClient
     public static PersonService personSvc;
     
     @Test

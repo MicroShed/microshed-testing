@@ -25,11 +25,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Collection;
 
-import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 
 import org.junit.jupiter.api.Test;
+import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -41,7 +41,7 @@ public class BasicLibertyAppTest {
     public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/myservice");
 
-    @Inject
+    @RESTClient
     public static PersonService personSvc;
 
     @Test

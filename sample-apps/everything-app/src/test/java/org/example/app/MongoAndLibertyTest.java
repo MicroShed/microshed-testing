@@ -23,19 +23,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 
-import javax.inject.Inject;
-
-import org.example.app.Person;
-import org.example.app.PersonServiceWithMongo;
 import org.junit.jupiter.api.Test;
 import org.microshed.testing.SharedContainerConfig;
+import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jupiter.MicroShedTest;
 
 @MicroShedTest
 @SharedContainerConfig(AppContainerConfig.class)
 public class MongoAndLibertyTest {
 
-    @Inject
+    @RESTClient
     public static PersonServiceWithMongo personSvc;
 
     @Test

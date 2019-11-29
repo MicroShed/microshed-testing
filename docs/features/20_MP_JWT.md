@@ -48,15 +48,15 @@ public class SecuredSvcTest {
                     .withAppContextRoot("/")
                     .withReadinessPath("/data/ping");
 
-    @Inject
+    @RESTClient
     @JwtConfig(claims = { "groups=users" })
     public static SecuredService securedSvc;
 
-    @Inject
+    @RESTClient
     @JwtConfig(claims = { "groups=wrong" })
     public static SecuredService misSecuredSvc;
 
-    @Inject
+    @RESTClient
     public static SecuredService noJwtSecuredSvc;
 
     @Test

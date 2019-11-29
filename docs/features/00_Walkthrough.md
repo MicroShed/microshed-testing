@@ -76,13 +76,13 @@ Given the above application code, we can start by adding maven dependencies:
 
 ## Starting the application container
 
-Next, we create the basic test class and `@Inject` the REST endpoint we want to test:
+Next, we create the basic test class and inject the REST endpoint we want to test:
 
 ```java
 @MicroShedTest
 public class MyTest {
 
-    @Inject
+    @RESTClient
     public static MyService mySvc;
 }
 ```
@@ -107,7 +107,7 @@ public class MyTest {
     public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/myservice");
                     
-    @Inject
+    @RESTClient
     public static MyService mySvc;
 }
 ```
