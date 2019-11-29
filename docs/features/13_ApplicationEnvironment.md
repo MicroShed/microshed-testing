@@ -40,7 +40,7 @@ The envionment is called "hollow" because everything _except_ your application w
 
 ```java
     @Container
-    public static MicroProfileApplication app = new MicroProfileApplication()
+    public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/myservice")
                     .withEnv("MONGO_HOSTNAME", "testmongo")
                     .withEnv("MONGO_PORT", "27017");

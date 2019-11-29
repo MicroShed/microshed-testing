@@ -24,7 +24,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.OutputFrame;
 
 /**
- * Can be supplied to {@link MicroProfileApplication#withLogConsumer(Consumer)}, or any other
+ * Can be supplied to {@link ApplicationContainer#withLogConsumer(Consumer)}, or any other
  * {@link GenericContainer} to pipe all container output to System.out
  *
  * @author aguibert

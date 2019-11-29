@@ -37,14 +37,14 @@ As the `@RolesAllowed` annotations imply, anyone can access the `GET /data/ping`
 
 ## Testing a MP JWT secured endpoint
 
-When MicroShed Testing will automatically generate and configure a pair of JWT secrets for the `MicroProfileApplication` container. Then a test client may access these endpoints using the `@JwtConfig` annotation on injected REST clients as follows:
+When MicroShed Testing will automatically generate and configure a pair of JWT secrets for the `ApplicationContainer` container. Then a test client may access these endpoints using the `@JwtConfig` annotation on injected REST clients as follows:
 
 ```java
 @MicroShedTest
 public class SecuredSvcTest {
 
     @Container
-    public static MicroProfileApplication app = new MicroProfileApplication()
+    public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/")
                     .withReadinessPath("/data/ping");
 

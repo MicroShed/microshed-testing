@@ -34,7 +34,7 @@ import org.microshed.testing.SharedContainerConfig;
 import org.microshed.testing.SharedContainerConfiguration;
 import org.microshed.testing.jwt.JwtBuilder;
 import org.microshed.testing.jwt.JwtConfig;
-import org.microshed.testing.testcontainers.MicroProfileApplication;
+import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
@@ -91,7 +91,7 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
 
         if (isJwtNeeded()) {
             Stream.concat(unsharedContainers.stream(), sharedContainers.stream())
-                            .filter(c -> MicroProfileApplication.class.isAssignableFrom(c.getClass()))
+                            .filter(c -> ApplicationContainer.class.isAssignableFrom(c.getClass()))
                             .filter(c -> !c.isRunning())
                             .filter(c -> !c.getEnvMap().containsKey(JwtBuilder.MP_JWT_PUBLIC_KEY))
                             .filter(c -> !c.getEnvMap().containsKey(JwtBuilder.MP_JWT_ISSUER))
@@ -137,11 +137,11 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
 
     @Override
     public String getApplicationURL() {
-        MicroProfileApplication mpApp = autoDiscoverMPApp(testClass, true);
+        ApplicationContainer mpApp = autoDiscoverMPApp(testClass, true);
 
-        // At this point we have found exactly one MicroProfileApplication
+        // At this point we have found exactly one ApplicationContainer
         if (!mpApp.isCreated() || !mpApp.isRunning())
-            throw new ExtensionConfigurationException("MicroProfileApplication " + mpApp.getDockerImageName() + " is not running yet. " +
+            throw new ExtensionConfigurationException("ApplicationContainer " + mpApp.getDockerImageName() + " is not running yet. " +
                                                       "The contianer must be running in order to obtain its URL.");
 
         return mpApp.getApplicationURL();
@@ -158,34 +158,34 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
         return AnnotationSupport.findAnnotatedFields(testClass, JwtConfig.class).size() > 0;
     }
 
-    private MicroProfileApplication autoDiscoverMPApp(Class<?> clazz, boolean errorIfNone) {
+    private ApplicationContainer autoDiscoverMPApp(Class<?> clazz, boolean errorIfNone) {
         // First check for any MicroProfileApplicaiton directly present on the test class
         List<Field> mpApps = AnnotationSupport.findAnnotatedFields(clazz, Container.class,
                                                                    f -> Modifier.isStatic(f.getModifiers()) &&
                                                                         Modifier.isPublic(f.getModifiers()) &&
-                                                                        MicroProfileApplication.class.isAssignableFrom(f.getType()),
+                                                                        ApplicationContainer.class.isAssignableFrom(f.getType()),
                                                                    HierarchyTraversalMode.TOP_DOWN);
         if (mpApps.size() == 1)
             try {
-                return (MicroProfileApplication) mpApps.get(0).get(null);
+                return (ApplicationContainer) mpApps.get(0).get(null);
             } catch (IllegalArgumentException | IllegalAccessException e) {
                 // This should never happen because we only look for fields that are public+static
                 e.printStackTrace();
             }
         if (mpApps.size() > 1)
-            throw new ExtensionConfigurationException("Should be no more than 1 public static MicroProfileApplication field on " + clazz);
+            throw new ExtensionConfigurationException("Should be no more than 1 public static ApplicationContainer field on " + clazz);
 
         // If none found, check any SharedContainerConfig
         String sharedConfigMsg = "";
         if (sharedConfigClass != null) {
-            MicroProfileApplication mpApp = autoDiscoverMPApp(sharedConfigClass, false);
+            ApplicationContainer mpApp = autoDiscoverMPApp(sharedConfigClass, false);
             if (mpApp != null)
                 return mpApp;
             sharedConfigMsg = " or " + sharedConfigClass;
         }
 
         if (errorIfNone)
-            throw new ExtensionConfigurationException("No public static MicroProfileApplication fields annotated with @Container were located " +
+            throw new ExtensionConfigurationException("No public static ApplicationContainer fields annotated with @Container were located " +
                                                       "on " + clazz + sharedConfigMsg + " to auto-connect with REST-client fields.");
         return null;
     }

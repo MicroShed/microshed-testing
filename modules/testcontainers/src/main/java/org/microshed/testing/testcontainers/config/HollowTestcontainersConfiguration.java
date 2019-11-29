@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.microshed.testing.ApplicationEnvironment;
 import org.microshed.testing.ManuallyStartedConfiguration;
-import org.microshed.testing.testcontainers.MicroProfileApplication;
+import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
@@ -66,12 +66,12 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
 
         // Translate any Docker network hosts that may have been configured in environment variables
         Set<String> networkAliases = allContainers().stream()
-                        .filter(c -> !(c instanceof MicroProfileApplication))
+                        .filter(c -> !(c instanceof ApplicationContainer))
                         .flatMap(c -> c.getNetworkAliases().stream())
                         .collect(Collectors.toSet());
         allContainers().stream()
-                        .filter(c -> c instanceof MicroProfileApplication)
-                        .map(c -> (MicroProfileApplication) c)
+                        .filter(c -> c instanceof ApplicationContainer)
+                        .map(c -> (ApplicationContainer) c)
                         .forEach(mpApp -> sanitizeEnvVar(mpApp, networkAliases));
 
         // Expose any external resources (such as DBs) on fixed exposed ports
@@ -104,8 +104,8 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
             throw new ExtensionConfigurationException("The application URL '" + runtimeURL + "' was not a valid URL.", e);
         }
         allContainers().stream()
-                        .filter(c -> c instanceof MicroProfileApplication)
-                        .map(c -> (MicroProfileApplication) c)
+                        .filter(c -> c instanceof ApplicationContainer)
+                        .map(c -> (ApplicationContainer) c)
                         .forEach(c -> c.setRunningURL(appURL));
     }
 
@@ -115,7 +115,7 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
      * to accomodate for the fixed exposed port such as:
      * FOO_HOSTNAME=localhost
      */
-    private void sanitizeEnvVar(MicroProfileApplication mpApp, Set<String> networkAliases) {
+    private void sanitizeEnvVar(ApplicationContainer mpApp, Set<String> networkAliases) {
         mpApp.getEnvMap().forEach((k, v) -> {
             URL url = null;
             try {

@@ -31,14 +31,14 @@ import org.example.app.Person;
 import org.example.app.PersonService;
 import org.junit.jupiter.api.Test;
 import org.microshed.testing.jupiter.MicroShedTest;
-import org.microshed.testing.testcontainers.MicroProfileApplication;
+import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.junit.jupiter.Container;
 
 @MicroShedTest
 public class JaxrsJsonIT {
     
     @Container
-    public static MicroProfileApplication app = new MicroProfileApplication()
+    public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/myservice")
                     .withReadinessPath("/health/ready");
     

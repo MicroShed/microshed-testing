@@ -28,14 +28,14 @@ import javax.ws.rs.NotAuthorizedException;
 import org.junit.jupiter.api.Test;
 import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.jwt.JwtConfig;
-import org.microshed.testing.testcontainers.MicroProfileApplication;
+import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.junit.jupiter.Container;
 
 @MicroShedTest
 public class SecuredSvcTest {
 
     @Container
-    public static MicroProfileApplication app = new MicroProfileApplication()
+    public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/myservice")
                     .withReadinessPath("/myservice/app/data/ping");
 
