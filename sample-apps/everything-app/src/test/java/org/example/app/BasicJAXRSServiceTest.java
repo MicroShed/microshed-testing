@@ -25,21 +25,19 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Collection;
 
-import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 
-import org.example.app.Person;
-import org.example.app.PersonService;
 import org.junit.jupiter.api.Test;
 import org.microshed.testing.SharedContainerConfig;
+import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jupiter.MicroShedTest;
 
 @MicroShedTest
 @SharedContainerConfig(AppContainerConfig.class)
 public class BasicJAXRSServiceTest {
 
-    @Inject
+    @RESTClient
     public static PersonService personSvc;
 
     @Test

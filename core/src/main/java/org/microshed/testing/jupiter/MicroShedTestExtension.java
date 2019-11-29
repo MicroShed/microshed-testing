@@ -18,17 +18,19 @@
  */
 package org.microshed.testing.jupiter;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
+import java.util.Optional;
 
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.microshed.testing.ApplicationEnvironment;
+import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jaxrs.RestClientBuilder;
 import org.microshed.testing.jwt.JwtBuilder;
 import org.microshed.testing.jwt.JwtConfig;
@@ -55,27 +57,30 @@ class MicroShedTestExtension implements BeforeAllCallback {
     }
 
     private static void injectRestClients(Class<?> clazz, ApplicationEnvironment config) {
-        List<Field> restClientFields = AnnotationSupport.findAnnotatedFields(clazz, Inject.class);
+        List<Field> restClientFields = new ArrayList<>();
+        restClientFields.addAll(AnnotationSupport.findAnnotatedFields(clazz, RESTClient.class));
+        // Also tolerate people using the MicroProfile @RestClient annotation instead
+        getMpRestClient().ifPresent(mpRestClient -> {
+            restClientFields.addAll(AnnotationSupport.findAnnotatedFields(clazz, mpRestClient));
+        });
         if (restClientFields.size() == 0)
             return;
 
-        try {
-            String mpAppURL = config.getApplicationURL();
-
-            for (Field restClientField : restClientFields) {
-                if (!Modifier.isPublic(restClientField.getModifiers()) ||
-                    !Modifier.isStatic(restClientField.getModifiers()) ||
-                    Modifier.isFinal(restClientField.getModifiers())) {
-                    throw new ExtensionConfigurationException("REST-client field must be public, static, and non-final: " + restClientField.getName());
-                }
-                String jwt = createJwtIfNeeded(restClientField);
-                Object restClient = RestClientBuilder.createRestClient(restClientField.getType(), mpAppURL, jwt);
-                //Object restClient = JAXRSUtilities.createRestClient(restClientField.getType(), mpAppURL);
-                restClientField.set(null, restClient);
-                LOGGER.debug("Injecting rest client for " + restClientField);
+        String mpAppURL = config.getApplicationURL();
+        for (Field restClientField : restClientFields) {
+            if (!Modifier.isPublic(restClientField.getModifiers()) ||
+                !Modifier.isStatic(restClientField.getModifiers()) ||
+                Modifier.isFinal(restClientField.getModifiers())) {
+                throw new ExtensionConfigurationException("REST client field must be public, static, and non-final: " + restClientField);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            String jwt = createJwtIfNeeded(restClientField);
+            Object restClient = RestClientBuilder.createRestClient(restClientField.getType(), mpAppURL, jwt);
+            try {
+                restClientField.set(null, restClient);
+                LOGGER.debug("Injected rest client for " + restClientField);
+            } catch (Exception e) {
+                throw new ExtensionConfigurationException("Unable to set field " + restClientField, e);
+            }
         }
     }
 
@@ -90,5 +95,14 @@ class MicroShedTestExtension implements BeforeAllCallback {
             }
         }
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Optional<Class<? extends Annotation>> getMpRestClient() {
+        try {
+            return Optional.of((Class<? extends Annotation>) Class.forName("org.eclipse.microprofile.rest.client.inject.RestClient"));
+        } catch (ClassNotFoundException e) {
+            return Optional.empty();
+        }
     }
 }

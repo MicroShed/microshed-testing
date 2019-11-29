@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collection;
 
-import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.ProcessingException;
@@ -30,6 +29,7 @@ import javax.ws.rs.ProcessingException;
 import org.example.app.Person;
 import org.example.app.PersonService;
 import org.junit.jupiter.api.Test;
+import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -42,7 +42,7 @@ public class JaxrsJsonIT {
                     .withAppContextRoot("/myservice")
                     .withReadinessPath("/health/ready");
     
-    @Inject
+    @RESTClient
     public static PersonService personSvc;
     
     @Test
