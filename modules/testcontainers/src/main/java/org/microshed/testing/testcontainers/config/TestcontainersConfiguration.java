@@ -45,10 +45,11 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestcontainersConfiguration.class);
 
-    private Class<?> testClass;
-    private Class<? extends SharedContainerConfiguration> sharedConfigClass;
-    final Set<GenericContainer<?>> unsharedContainers = new HashSet<>();
-    final Set<GenericContainer<?>> sharedContainers = new HashSet<>();
+    // Will need to rework this if we will ever support parallel test execution
+    private static Class<?> currentTestClass;
+    private static Class<? extends SharedContainerConfiguration> sharedConfigClass;
+    private static final Set<GenericContainer<?>> unsharedContainers = new HashSet<>();
+    private static final Set<GenericContainer<?>> sharedContainers = new HashSet<>();
 
     @Override
     public int getPriority() {
@@ -62,7 +63,7 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
 
     @Override
     public void applyConfiguration(Class<?> testClass) {
-        this.testClass = testClass;
+        TestcontainersConfiguration.currentTestClass = testClass;
 
         if (testClass.isAnnotationPresent(SharedContainerConfig.class)) {
             sharedConfigClass = testClass.getAnnotation(SharedContainerConfig.class).value();
@@ -127,7 +128,7 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
         if (containersToStart.size() == 0)
             return;
 
-        LOG.info("Starting containers in parallel for " + testClass);
+        LOG.info("Starting containers in parallel for " + currentTestClass);
         for (GenericContainer<?> c : containersToStart)
             LOG.info("  " + c.getImage());
         long start = System.currentTimeMillis();
@@ -137,7 +138,7 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
 
     @Override
     public String getApplicationURL() {
-        ApplicationContainer mpApp = autoDiscoverMPApp(testClass, true);
+        ApplicationContainer mpApp = autoDiscoverMPApp(currentTestClass, true);
 
         // At this point we have found exactly one ApplicationContainer
         if (!mpApp.isCreated() || !mpApp.isRunning())
@@ -155,7 +156,7 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
     private boolean isJwtNeeded() {
         if (sharedConfigClass != null)
             return true;
-        return AnnotationSupport.findAnnotatedFields(testClass, JwtConfig.class).size() > 0;
+        return AnnotationSupport.findAnnotatedFields(currentTestClass, JwtConfig.class).size() > 0;
     }
 
     private ApplicationContainer autoDiscoverMPApp(Class<?> clazz, boolean errorIfNone) {
