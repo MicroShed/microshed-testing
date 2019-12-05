@@ -20,6 +20,9 @@ package org.microshed.testing.testcontainers;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,6 +43,7 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junit.platform.commons.support.AnnotationSupport;
 import org.microshed.testing.ApplicationEnvironment;
 import org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration;
 import org.microshed.testing.testcontainers.config.TestcontainersConfiguration;
@@ -373,7 +377,45 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
      * @return the current instance
      */
     public ApplicationContainer withMpRestClient(Class<?> restClientClass, String hostUrl) {
-        return withMpRestClient(restClientClass.getCanonicalName(), hostUrl);
+        String configToken = readMpRestClientConfigKey(restClientClass);
+        if (configToken == null || configToken.isEmpty())
+            configToken = restClientClass.getCanonicalName();
+        return withMpRestClient(configToken, hostUrl);
+    }
+
+    /**
+     * Checks to see if the given restClientClass is annotated with
+     * <code>@RegisterRestClient(configKey = "...")</code>
+     */
+    @SuppressWarnings("unchecked")
+    private String readMpRestClientConfigKey(Class<?> restClientClass) {
+        Class<? extends Annotation> RegisterRestClient = null;
+        try {
+            RegisterRestClient = (Class<? extends Annotation>) Class.forName("org.eclipse.microprofile.rest.client.inject.RegisterRestClient",
+                                                                             false,
+                                                                             getClass().getClassLoader());
+        } catch (ClassNotFoundException | LinkageError notFound) {
+            return null;
+        }
+
+        Method getConfigKey = null;
+        try {
+            getConfigKey = RegisterRestClient.getMethod("configKey");
+        } catch (NoSuchMethodException | SecurityException e) {
+            // Using a version of MP Rest Client that does not support configKey
+            return null;
+        }
+
+        Optional<Annotation> foundAnno = (Optional<Annotation>) AnnotationSupport.findAnnotation(restClientClass, RegisterRestClient);
+        if (!foundAnno.isPresent())
+            return null;
+
+        Annotation anno = foundAnno.get();
+        try {
+            return (String) getConfigKey.invoke(anno);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            return null;
+        }
     }
 
     /**
@@ -385,10 +427,9 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
      * @return the current instance
      */
     public ApplicationContainer withMpRestClient(String restClientClass, String hostUrl) {
-        String envName = restClientClass//
-                        .replaceAll("\\.", "_")
-                        .replaceAll("\\$", "_") +
-                         "_mp_rest_url";
+        // Sanitize environment variable name using Environment Variables Mapping Rules defined in MP Config:
+        // https://github.com/eclipse/microprofile-config/blob/master/spec/src/main/asciidoc/configsources.asciidoc#environment-variables-mapping-rules
+        String envName = restClientClass.replaceAll("[^a-zA-Z0-9_]", "_") + "_mp_rest_url";
         return withEnv(envName, hostUrl);
     }
 
