@@ -1,0 +1,94 @@
+/*
+ * Copyright (c) 2019 IBM Corporation and others
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.microshed.testing.testcontainers.config;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.nio.file.Paths;
+import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+import org.microshed.testing.ApplicationEnvironment;
+import org.microshed.testing.jupiter.MicroShedTest;
+import org.microshed.testing.testcontainers.ApplicationContainer;
+import org.testcontainers.containers.MockServerContainer;
+import org.testcontainers.junit.jupiter.Container;
+
+@MicroShedTest
+public class HollowTestcontainersConfigurationTest {
+
+    // This cointainer never actually gets started, since we are running in hollow mode
+    @Container
+    public static ApplicationContainer app = new ApplicationContainer(Paths.get("src", "test", "resources", "Dockerfile"))
+                    .withEnv("SVC_HOST", "mockserver")
+                    .withEnv("SVC_PORT", "1080")
+                    .withEnv("SVC_URL1", "mockserver")
+                    .withEnv("SVC_URL2", "mockserver:1080")
+                    .withEnv("SVC_URL3", "http://mockserver:1080")
+                    .withEnv("SVC_URL4", "http://mockserver:1080/hello/world")
+                    .withEnv("SVC_URL5", "http://mockserver:1080/hello/mockserver")
+                    .withEnv("SVC_URL6", oldValue -> "http://mockserver:1080")
+                    .withMpRestClient("com.foo.ExampleClass", "http://mockserver:1080");
+
+    @Container
+    public static MockServerContainer mockServer = new MockServerContainer()
+                    .withNetworkAliases("mockserver")
+                    .withEnv("STAYS_UNCHANGED", "mockserver");
+
+    @Test
+    public void testCorrectEnvironment() {
+        assertEquals(HollowTestcontainersConfiguration.class, ApplicationEnvironment.load().getClass());
+        assertTrue(ApplicationEnvironment.isSelected(HollowTestcontainersConfiguration.class),
+                   "Expected HollowTestcontainersConfiguration to be selected but it was not");
+        assertTrue(HollowTestcontainersConfiguration.available(),
+                   "Expected HollowTestcontainersConfiguration to be available but it was not");
+    }
+
+    @Test
+    public void testFixedExposedPort() {
+        assertEquals(9080, app.getMappedPort(9080));
+        assertEquals(1080, mockServer.getMappedPort(1080));
+    }
+
+    @Test
+    public void testEnvVarTranslation() {
+        Map<String, String> envMap = app.getEnvMap();
+        assertEquals("localhost", envMap.get("SVC_HOST"));
+        assertEquals("localhost", envMap.get("SVC_URL1"));
+        assertEquals("localhost:1080", envMap.get("SVC_URL2"));
+        assertEquals("http://localhost:1080", envMap.get("SVC_URL3"));
+        assertEquals("http://localhost:1080/hello/world", envMap.get("SVC_URL4"));
+        assertEquals("http://localhost:1080/hello/mockserver", envMap.get("SVC_URL5"));
+        assertEquals("http://localhost:1080", envMap.get("SVC_URL6"));
+        assertEquals("http://localhost:1080", envMap.get("com_foo_ExampleClass_mp_rest_url"));
+    }
+
+    @Test
+    public void testEnvVarUnchanged() {
+        assertEquals("1080", app.getEnvMap().get("SVC_PORT"));
+        assertEquals("mockserver", mockServer.getEnvMap().get("STAYS_UNCHANGED"));
+    }
+
+    @Test
+    public void testApplicationURL() {
+        assertEquals("http://localhost:9080/", ApplicationEnvironment.load().getApplicationURL());
+    }
+
+}

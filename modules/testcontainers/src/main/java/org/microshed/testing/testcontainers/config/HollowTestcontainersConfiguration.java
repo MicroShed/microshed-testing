@@ -79,18 +79,18 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
             Method addFixedPort = GenericContainer.class.getDeclaredMethod("addFixedExposedPort", int.class, int.class);
             addFixedPort.setAccessible(true);
             Map<Integer, String> fixedExposedPorts = new HashMap<>();
-            for (GenericContainer<?> c : allContainers())
+            for (GenericContainer<?> c : allContainers()) {
                 for (Integer p : c.getExposedPorts()) {
-                    LOG.info("exposing port: " + p + " for container " + c.getDockerImageName());
                     if (fixedExposedPorts.containsKey(p)) {
                         throw new ExtensionConfigurationException("Cannot expose port " + p + " for " + c.getDockerImageName() +
                                                                   " because another container (" + fixedExposedPorts.get(p) +
                                                                   ") is already using it.");
-                    } else {
-                        fixedExposedPorts.put(p, c.getDockerImageName());
                     }
+                    LOG.info("Exposing fixed port " + p + " for container " + c.getDockerImageName());
+                    fixedExposedPorts.put(p, c.getDockerImageName());
                     addFixedPort.invoke(c, p, p);
                 }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -111,26 +111,26 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
 
     /**
      * Attempt to translate any environment variables such as:
-     * FOO_HOSTNAME=foo
+     * FOO_HOSTNAME=http://foo:8080
      * to accomodate for the fixed exposed port such as:
-     * FOO_HOSTNAME=localhost
+     * FOO_HOSTNAME=http://localhost:8080
      */
     private void sanitizeEnvVar(ApplicationContainer mpApp, Set<String> networkAliases) {
         mpApp.getEnvMap().forEach((k, v) -> {
             URL url = null;
             try {
                 url = new URL(v);
-            } catch (MalformedURLException ignore) {
-            }
-            for (String network : networkAliases) {
-                String newValue = null;
-                if (network.equals(v)) {
-                    newValue = "localhost";
-                } else if (url != null && url.getHost().equals(network)) {
-                    newValue = v.replaceFirst(url.getHost(), "localhost");
+            } catch (MalformedURLException e1) {
+                try {
+                    url = new URL("http://" + v);
+                } catch (MalformedURLException e2) {
+                    return;
                 }
-                if (newValue != null) {
-                    LOG.info("translating env var " + k + "=" + v + "-->localhost");
+            }
+            for (String networkAlias : networkAliases) {
+                if (url.getHost().equals(networkAlias)) {
+                    String newValue = v.replaceFirst(networkAlias, "localhost");
+                    LOG.info("Translating env var key=" + k + " from " + v + " to " + newValue);
                     mpApp.withEnv(k, newValue);
                 }
             }

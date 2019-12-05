@@ -4,7 +4,15 @@ description = "Extensions for using MicroShed Testing with Testcontainers for ma
 dependencies {
   compile project(':microshed-testing-core')
   compile 'org.testcontainers:junit-jupiter:1.12.4'
+  testCompile 'org.slf4j:slf4j-log4j12:1.7.29'
+  testCompile 'org.testcontainers:mockserver:1.12.3'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
+}
+
+test {
+  // These system properties will trigger hollow mode to be triggered during unit tests
+  systemProperty "microshed_hostname", "localhost"
+  systemProperty "microshed_http_port", "9080"
 }
 
 apply from: publishScript
