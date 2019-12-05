@@ -194,7 +194,7 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
      */
     public ApplicationContainer(Path dockerfilePath) {
         this(Optional.of(dockerfilePath));
-        LOGGER.info("Using Dockerfile at:" + dockerfilePath);
+        LOGGER.info("Using Dockerfile at: " + dockerfilePath);
     }
 
     public ApplicationContainer(Future<String> dockerImageName) {
@@ -296,6 +296,15 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         if (isHollow)
             return lateBind_port;
         return super.getFirstMappedPort();
+    }
+
+    @Override
+    public Integer getMappedPort(int originalPort) {
+        if (isHollow) {
+            return originalPort;
+        } else {
+            return super.getMappedPort(originalPort);
+        }
     }
 
     /**

@@ -93,6 +93,14 @@ public interface ApplicationEnvironment {
     }
 
     /**
+     * @param clazz The {@link ApplicationEnvironment} class to check is active
+     * @return True if the provided {@link ApplicationEnvironment} is currently active, false otherwise
+     */
+    public static boolean isSelected(Class<? extends ApplicationEnvironment> clazz) {
+        return load().getClass().equals(clazz);
+    }
+
+    /**
      * @return true if the ApplicationEnvironment is currently available
      *         false otherwise
      */
