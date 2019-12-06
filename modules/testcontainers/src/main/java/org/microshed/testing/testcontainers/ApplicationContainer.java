@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 IBM Corporation and others
+* Copyright (c) 2019 IBM Corporation and others
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -102,10 +102,9 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         } else if (dockerfile.isPresent()) {
             if (!Files.exists(dockerfile.get()))
                 throw new ExtensionConfigurationException("Dockerfile did not exist at: " + dockerfile.get());
-            ImageFromDockerfile image = new ImageFromDockerfile("testcontainers/mpapp-" + Base58.randomString(10).toLowerCase());
-            image.withDockerfile(dockerfile.get());
-            image.setBaseDirectory(Paths.get("."));
-            return image;
+            return new ImageFromDockerfile("testcontainers/mpapp-" + Base58.randomString(10).toLowerCase())
+                            .withBaseDirectory(Paths.get("."))
+                            .withDockerfile(dockerfile.get());
         } else {
             // Dockerfile is not present, use a ServerAdapter to build the image
             return resolveAdatper().orElseThrow(() -> {

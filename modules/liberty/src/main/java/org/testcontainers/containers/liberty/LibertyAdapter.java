@@ -27,8 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.microshed.testing.testcontainers.internal.ImageFromDockerfile;
 import org.microshed.testing.testcontainers.spi.ServerAdapter;
-import org.testcontainers.images.builder.ImageFromDockerfile;
 
 public class LibertyAdapter implements ServerAdapter {
 
@@ -100,29 +101,66 @@ public class LibertyAdapter implements ServerAdapter {
         final String appName = appFile.getName();
         final File configDir = new File("src/main/liberty/config");
         final boolean configDirExists = configDir.exists() && configDir.canRead();
-        // Compose a docker image equivalent to doing:
-        // FROM openliberty/open-liberty:full-java8-openj9-ubi
-        // COPY src/main/liberty/config /config/
-        // RUN configure.sh
-        // ADD build/libs/<appFile> /config/dropins
-        ImageFromDockerfile image = new ImageFromDockerfile()
-                        .withDockerfileFromBuilder(builder -> {
-                            builder.from(getBaseDockerImage());
-                            if (configDirExists) {
-                                builder.copy("/config", "/config");
-                            }
-//                            // Best practice is to run configure.sh after the app is added, but we will
-//                            // run it before adding the app because due to how often the app changes while
-//                            // running tests this will yeild the most overall time saved
-                            // TODO: Cache does not work correctly when running the previous docker line
-                            // which causes configure.sh to be run every time. See https://github.com/MicroShed/microshed-testing/issues/122
-//                            builder.run("configure.sh");
-                            builder.add("/config/dropins/" + appName, "/config/dropins/" + appName);
-                            builder.build();
-                        })
-                        .withFileFromFile("/config/dropins/" + appName, appFile);
+
+        String dockerfileContents = "FROM " + getBaseDockerImage();
         if (configDirExists)
-            image.withFileFromFile("/config", configDir);
+            dockerfileContents += "\nCOPY src/main/liberty/config /config";
+        dockerfileContents += "\nRUN configure.sh";
+        dockerfileContents += "\nADD " + appFile.getPath() + " /config/dropins/" + appName;
+
+        // Create dockerfile and ignore file
+        Path dockerfilePath = null;
+        if (Files.exists(Paths.get("build")))
+            dockerfilePath = Paths.get("build", "tmp", "Dockerfile-microshed-testing");
+        else if (Files.exists(Paths.get("target")))
+            dockerfilePath = Paths.get("target", "tmp", "Dockerfile-microshed-testing");
+        else {
+            dockerfilePath = Paths.get("tmp", "Dockerfile-microshed-testing");
+        }
+        dockerfilePath.getParent().toFile().mkdirs();
+        Path dockerignorePath = Paths.get(".dockerignore");
+
+        String dockerIgnoreContents = "*" +
+                                      "\n!" + dockerfilePath +
+                                      "\n!src/main/liberty/config" +
+                                      "\n!" + appFile.getPath();
+
+        try {
+            Files.deleteIfExists(dockerfilePath);
+            Files.write(dockerfilePath, dockerfileContents.getBytes());
+            if (!Files.exists(dockerignorePath))
+                Files.write(dockerignorePath, dockerIgnoreContents.getBytes());
+        } catch (Exception e) {
+            throw new ExtensionConfigurationException("Unable to create Dockerfile or .dockerignore", e);
+        }
+
+        ImageFromDockerfile image = (ImageFromDockerfile) new ImageFromDockerfile()
+                        .withBaseDirectory(Paths.get("."))
+                        .withDockerfile(dockerfilePath);
+
+//        // Compose a docker image equivalent to doing:
+//        // FROM openliberty/open-liberty:full-java8-openj9-ubi
+//        // COPY src/main/liberty/config /config/
+//        // RUN configure.sh
+//        // ADD build/libs/<appFile> /config/dropins
+//        ImageFromDockerfile image = new ExtendedImageFromDockerfile()
+//                        .withDockerfileFromBuilder(builder -> {
+//                            builder.from(getBaseDockerImage());
+//                            if (configDirExists) {
+//                                builder.copy("/config", "/config");
+//                            }
+////                            // Best practice is to run configure.sh after the app is added, but we will
+////                            // run it before adding the app because due to how often the app changes while
+////                            // running tests this will yeild the most overall time saved
+//                            // TODO: Cache does not work correctly when running the previous docker line
+//                            // which causes configure.sh to be run every time. See https://github.com/MicroShed/microshed-testing/issues/122
+//                            builder.run("configure.sh");
+//                            builder.add("/config/dropins/" + appName, "/config/dropins/" + appName);
+//                            builder.build();
+//                        })
+//                        .withFileFromFile("/config/dropins/" + appName, appFile);
+//        if (configDirExists)
+//            image.withFileFromFile("/config", configDir);
         return image;
     }
 

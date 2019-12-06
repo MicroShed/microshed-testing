@@ -45,8 +45,9 @@ public class ImageFromDockerfile extends org.testcontainers.images.builder.Image
         super.configure(buildImageCmd);
     }
 
-    public void setBaseDirectory(Path baseDir) {
+    public ImageFromDockerfile withBaseDirectory(Path baseDir) {
         this.baseDir = Optional.of(baseDir);
+        return this;
     }
 
 }
