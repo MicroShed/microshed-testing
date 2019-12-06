@@ -20,13 +20,13 @@ package org.microshed.testing.testcontainers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.nio.file.Paths;
 import java.util.Map;
 
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.junit.jupiter.api.Test;
-import org.microshed.testing.testcontainers.config.TestServerAdapter;
 
-public class ApplicationContainerTest {
+public class ApplicationContainerIT {
 
     // Base uri configured with: com_example_StringRestClient_mp_rest_url
     @RegisterRestClient
@@ -48,24 +48,24 @@ public class ApplicationContainerTest {
         final String clientUrl = "http://example.com";
 
         @SuppressWarnings("resource")
-        ApplicationContainer app = new ApplicationContainer("alpine:3.5")
+        ApplicationContainer app = new ApplicationContainer(Paths.get("src", "integrationTest", "resources", "Dockerfile"))
                         .withMpRestClient("com.example.StringRestClient", clientUrl)
                         .withMpRestClient(SampleRestClient1.class, clientUrl)
                         .withMpRestClient(SampleRestClient2.class, clientUrl)
                         .withMpRestClient(SampleRestClient3.class, clientUrl);
 
         Map<String, String> appEnv = app.getEnvMap();
-        assertEquals(clientUrl, appEnv.get("com.example.StringRestClient/mp-rest/url"), appEnv.toString());
-        assertEquals(clientUrl, appEnv.get("org.microshed.testing.testcontainers.ApplicationContainerTest.SampleRestClient1/mp-rest/url"), appEnv.toString());
-        assertEquals(clientUrl, appEnv.get("rc-config-key/mp-rest/url"), appEnv.toString());
-        assertEquals(clientUrl, appEnv.get("CLIENT_CONFIG_KEY/mp-rest/url"), appEnv.toString());
+        assertEquals(clientUrl, appEnv.get("com_example_StringRestClient_mp_rest_url"));
+        assertEquals(clientUrl, appEnv.get("org_microshed_testing_testcontainers_ApplicationContainerIT_SampleRestClient1_mp_rest_url"));
+        assertEquals(clientUrl, appEnv.get("rc_config_key_mp_rest_url"));
+        assertEquals(clientUrl, appEnv.get("CLIENT_CONFIG_KEY_mp_rest_url"));
     }
 
     @Test
     public void testCorrectServerAdapter() {
         @SuppressWarnings("resource")
-        ApplicationContainer app = new ApplicationContainer("alpine:3.5");
-        assertEquals(TestServerAdapter.class, app.getServerAdapter().getClass());
+        ApplicationContainer app = new ApplicationContainer(Paths.get("src", "integrationTest", "resources", "Dockerfile"));
+        assertEquals("org.microshed.testing.testcontainers.ApplicationContainer.DefaultServerAdapter", app.getServerAdapter().getClass().getCanonicalName());
     }
 
 }

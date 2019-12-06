@@ -19,10 +19,10 @@
 package org.microshed.testing.testcontainers.config;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.microshed.testing.ApplicationEnvironment;
@@ -32,11 +32,10 @@ import org.testcontainers.containers.MockServerContainer;
 import org.testcontainers.junit.jupiter.Container;
 
 @MicroShedTest
-public class HollowTestcontainersConfigurationTest {
+public class TestcontainersConfigurationIT {
 
-    // This cointainer never actually gets started, since we are running in hollow mode
     @Container
-    public static ApplicationContainer app = new ApplicationContainer(Paths.get("src", "test", "resources", "Dockerfile"))
+    public static ApplicationContainer app = new ApplicationContainer(Paths.get("src", "integrationTest", "resources", "Dockerfile"))
                     .withEnv("SVC_HOST", "mockserver")
                     .withEnv("SVC_PORT", "1080")
                     .withEnv("SVC_URL1", "mockserver")
@@ -54,41 +53,23 @@ public class HollowTestcontainersConfigurationTest {
 
     @Test
     public void testCorrectEnvironment() {
-        assertEquals(HollowTestcontainersConfiguration.class, ApplicationEnvironment.load().getClass());
-        assertTrue(ApplicationEnvironment.isSelected(HollowTestcontainersConfiguration.class),
-                   "Expected HollowTestcontainersConfiguration to be selected but it was not");
-        assertTrue(HollowTestcontainersConfiguration.available(),
-                   "Expected HollowTestcontainersConfiguration to be available but it was not");
+        assertEquals(TestcontainersConfiguration.class, ApplicationEnvironment.load().getClass());
+        assertTrue(ApplicationEnvironment.isSelected(TestcontainersConfiguration.class),
+                   "Expected TestcontainersConfiguration to be selected but it was not");
     }
 
     @Test
-    public void testFixedExposedPort() {
-        assertEquals(9080, app.getMappedPort(9080));
-        assertEquals(1080, mockServer.getMappedPort(1080));
-    }
-
-    @Test
-    public void testEnvVarTranslation() {
-        Map<String, String> envMap = app.getEnvMap();
-        assertEquals("localhost", envMap.get("SVC_HOST"), envMap.toString());
-        assertEquals("localhost", envMap.get("SVC_URL1"), envMap.toString());
-        assertEquals("localhost:1080", envMap.get("SVC_URL2"), envMap.toString());
-        assertEquals("http://localhost:1080", envMap.get("SVC_URL3"), envMap.toString());
-        assertEquals("http://localhost:1080/hello/world", envMap.get("SVC_URL4"), envMap.toString());
-        assertEquals("http://localhost:1080/hello/mockserver", envMap.get("SVC_URL5"), envMap.toString());
-        assertEquals("http://localhost:1080", envMap.get("SVC_URL6"), envMap.toString());
-        assertEquals("http://localhost:1080", envMap.get("com.foo.ExampleClass/mp-rest/url"), envMap.toString());
-    }
-
-    @Test
-    public void testEnvVarUnchanged() {
-        assertEquals("1080", app.getEnvMap().get("SVC_PORT"));
-        assertEquals("mockserver", mockServer.getEnvMap().get("STAYS_UNCHANGED"));
+    public void testExposedPort() {
+        assertTrue(app.getMappedPort(9080) != 9080, "Port 9080 should have been mapped to a random port but was not");
+        assertTrue(mockServer.getMappedPort(1080) != 1080, "Port 9080 should have been mapped to a random port but was not");
     }
 
     @Test
     public void testApplicationURL() {
-        assertEquals("http://localhost:9080/", ApplicationEnvironment.load().getApplicationURL());
+        String appUrl = ApplicationEnvironment.load().getApplicationURL();
+        assertNotNull(appUrl);
+        assertEquals(appUrl, app.getApplicationURL());
+        assertTrue(appUrl.startsWith("http://"), "Application URL did not start with 'http://' " + appUrl);
     }
 
 }
