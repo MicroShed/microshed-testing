@@ -427,10 +427,14 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
      * @return the current instance
      */
     public ApplicationContainer withMpRestClient(String restClientClass, String hostUrl) {
-        // Sanitize environment variable name using Environment Variables Mapping Rules defined in MP Config:
+        // If we will be running in Docker, sanitize environment variable name using Environment Variables Mapping Rules defined in MP Config:
         // https://github.com/eclipse/microprofile-config/blob/master/spec/src/main/asciidoc/configsources.asciidoc#environment-variables-mapping-rules
-        String envName = restClientClass.replaceAll("[^a-zA-Z0-9_]", "_") + "_mp_rest_url";
-        return withEnv(envName, hostUrl);
+        if (ApplicationEnvironment.isSelected(TestcontainersConfiguration.class)) {
+            restClientClass = restClientClass.replaceAll("[^a-zA-Z0-9_]", "_") + "_mp_rest_url";
+        } else {
+            restClientClass += "/mp-rest/url";
+        }
+        return withEnv(restClientClass, hostUrl);
     }
 
     /**

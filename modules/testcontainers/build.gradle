@@ -1,6 +1,19 @@
 ext.title = "MicroShed Testing Framework :: Testcontainers extension"
 description = "Extensions for using MicroShed Testing with Testcontainers for managing application and resource lifecycle"
 
+configurations {
+    intTestImplementation.extendsFrom testImplementation
+    intTestCompile.extendsFrom testCompile
+    intTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+sourceSets {
+    integrationTest {
+        compileClasspath += sourceSets.main.output + configurations.testCompile
+        runtimeClasspath += output + compileClasspath + configurations.intTestImplementation
+    }
+}
+
 dependencies {
   compile project(':microshed-testing-core')
   compile 'org.testcontainers:junit-jupiter:1.12.4'
@@ -19,3 +32,23 @@ test {
 apply from: publishScript
 
 publishToMavenLocal.dependsOn ':microshed-testing-core:publishToMavenLocal'
+
+task integrationTest(type: Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+    defaultCharacterEncoding = "UTF-8"
+    useJUnitPlatform()
+    testLogging {
+        displayGranularity 1
+        showStandardStreams = true
+        showStackTraces = true
+        exceptionFormat = 'full'
+        events 'PASSED', 'FAILED', 'SKIPPED'
+    }
+
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    shouldRunAfter test
+}
+
+check.dependsOn integrationTest

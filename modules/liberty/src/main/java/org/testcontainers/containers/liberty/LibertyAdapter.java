@@ -67,7 +67,7 @@ public class LibertyAdapter implements ServerAdapter {
             if (WLP_USR_DIR == null)
                 WLP_USR_DIR = System.getProperty("wlp.user.dir");
             if (WLP_USR_DIR == null)
-                throw new IllegalStateException("The 'w.p.user.dir', 'WLP_USR_DIR', or '" + CONFIG_FILE_PROP
+                throw new IllegalStateException("The 'wlp.user.dir', 'WLP_USR_DIR', or '" + CONFIG_FILE_PROP
                                                 + "' property must be set in order to dynamically set config properties");
             Path usrDir = Paths.get(WLP_USR_DIR);
             configFile = usrDir.resolve("servers/defaultServer/configDropins/defaults/system-test-vars.xml");
@@ -111,10 +111,12 @@ public class LibertyAdapter implements ServerAdapter {
                             if (configDirExists) {
                                 builder.copy("/config", "/config");
                             }
-                            // Best practice is to run configure.sh after the app is added, but we will
-                            // run it before adding the app because due to how often the app changes while
-                            // running tests this will yeild the most overall time saved
-                            builder.run("configure.sh");
+//                            // Best practice is to run configure.sh after the app is added, but we will
+//                            // run it before adding the app because due to how often the app changes while
+//                            // running tests this will yeild the most overall time saved
+                            // TODO: Cache does not work correctly when running the previous docker line
+                            // which causes configure.sh to be run every time. See https://github.com/MicroShed/microshed-testing/issues/122
+//                            builder.run("configure.sh");
                             builder.add("/config/dropins/" + appName, "/config/dropins/" + appName);
                             builder.build();
                         })
