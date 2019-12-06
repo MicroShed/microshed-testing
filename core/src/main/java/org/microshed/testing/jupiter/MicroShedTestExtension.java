@@ -102,8 +102,10 @@ class MicroShedTestExtension implements BeforeAllCallback {
     @SuppressWarnings("unchecked")
     private static Optional<Class<? extends Annotation>> getMpRestClient() {
         try {
-            return Optional.of((Class<? extends Annotation>) Class.forName("org.eclipse.microprofile.rest.client.inject.RestClient"));
-        } catch (ClassNotFoundException e) {
+            return Optional.of((Class<? extends Annotation>) Class.forName("org.eclipse.microprofile.rest.client.inject.RestClient",
+                                                                           false,
+                                                                           MicroShedTestExtension.class.getClassLoader()));
+        } catch (ClassNotFoundException | LinkageError e) {
             return Optional.empty();
         }
     }
