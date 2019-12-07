@@ -45,21 +45,23 @@ task updateVersion {
         def isRelease = !nextVersion.endsWith('SNAPSHOT')
 
         println 'Updating project version: ' + currentVersion + ' --> ' + nextVersion
-        ant.replaceregexp(match: '(["\'>])' + currentVersion, replace: '\\1' + nextVersion, flags: 'g', byline: true) {
+        ant.replaceregexp(match: '(["\'>])' + currentVersion + '(["\'<])',
+                        replace: '\\1' + nextVersion + '\\2', flags: 'g', byline: true) {
             fileset(dir: '.', includes: '**/*.gradle')
             fileset(dir: '.', includes: '**/pom.xml')
         }
 
         if (isRelease) {
             println 'Updating doc version: ' + lastRelease + ' --> ' + nextVersion
-            ant.replaceregexp(match: '(["\'>])' + lastRelease, replace: '\\1' + nextVersion, flags: 'g', byline: true) {
+            ant.replaceregexp(match: '(["\'>])' + lastRelease + '(["\'<])',
+                            replace: '\\1' + nextVersion + '\\2', flags: 'g', byline: true) {
                 fileset(dir: '.', includes: '**/*.md')
                 fileset(dir: '.', includes: 'build.gradle')
             }
         } else {
             // For non-release updates need to revert ext.lastRelease to a release version
-            ant.replaceregexp(match: "ext\\.lastRelease = '" + nextVersion, 
-                            replace: "ext\\.lastRelease = '" + lastRelease, flags: 'g', byline: true) {
+            ant.replaceregexp(match: "ext\\.lastRelease = '" + nextVersion + "'",
+                            replace: "ext\\.lastRelease = '" + lastRelease + "'", flags: 'g', byline: true) {
                 fileset(dir: '.', includes: 'build.gradle')
             }
         }
