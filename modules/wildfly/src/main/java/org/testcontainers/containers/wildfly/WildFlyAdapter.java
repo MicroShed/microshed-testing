@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 IBM Corporation and others
+ * Copyright (c) 2020 Philip Riecks
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
