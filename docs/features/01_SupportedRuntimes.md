@@ -11,7 +11,7 @@ Maven Dependency:
 <dependency>
     <groupId>org.microshed</groupId>
     <artifactId>microshed-testing-liberty</artifactId>
-    <version>0.6.1.1</version>
+    <version>0.6.2</version>
 </dependency>
 ```
 
@@ -31,7 +31,7 @@ Maven Dependency:
 <dependency>
     <groupId>org.microshed</groupId>
     <artifactId>microshed-testing-payara-micro</artifactId>
-    <version>0.6.1.1</version>
+    <version>0.6.2</version>
 </dependency>
 ```
 
@@ -51,7 +51,7 @@ Maven Dependency:
 <dependency>
     <groupId>org.microshed</groupId>
     <artifactId>microshed-testing-payara-server</artifactId>
-    <version>0.6.1.1</version>
+    <version>0.6.2</version>
 </dependency>
 ```
 
@@ -64,13 +64,13 @@ ADD target/myservice.war /opt/payara/deployments
 
 ## [Wildfly](https://wildfly.org/)
 
-Generic Maven Dependency:
+Maven Dependency:
 
 ```xml
 <dependency>
     <groupId>org.microshed</groupId>
-    <artifactId>microshed-testing-testcontainers</artifactId>
-    <version>0.6.1.1</version>
+    <artifactId>microshed-testing-wildfly</artifactId>
+    <version>0.6.2</version>
 </dependency>
 ```
 

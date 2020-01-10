@@ -18,11 +18,10 @@
  */
 package org.testcontainers.containers.wildfly;
 
+import java.io.File;
+
 import org.microshed.testing.testcontainers.spi.ServerAdapter;
 import org.testcontainers.images.builder.ImageFromDockerfile;
-
-import java.io.File;
-import java.util.Optional;
 
 public class WildFlyAdapter implements ServerAdapter {
 
