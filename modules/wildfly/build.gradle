@@ -1,0 +1,10 @@
+ext.title = "MicroShed Testing Framework :: WildFly extensions"
+description = "Extensions for using MicroShed Testing with WildFly servers"
+
+dependencies {
+  compile project(':microshed-testing-testcontainers')
+}
+
+apply from: publishScript
+
+publishToMavenLocal.dependsOn ':microshed-testing-testcontainers:publishToMavenLocal'
