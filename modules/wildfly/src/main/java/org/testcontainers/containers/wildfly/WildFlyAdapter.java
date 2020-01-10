@@ -55,9 +55,4 @@ public class WildFlyAdapter implements ServerAdapter {
         return image;
 
     }
-
-    @Override
-    public Optional<String> getReadinessPath() {
-        return Optional.of("/health");
-    }
 }
