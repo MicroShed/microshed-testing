@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 IBM Corporation and others
+ * Copyright (c) 2019,2020 IBM Corporation and others
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -21,6 +21,7 @@ package org.microshed.testing.jupiter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,15 +45,16 @@ import org.slf4j.LoggerFactory;
  */
 class MicroShedTestExtension implements BeforeAllCallback {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(MicroShedTestExtension.class);
+    static final Logger LOG = LoggerFactory.getLogger(MicroShedTestExtension.class);
 
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
         Class<?> testClass = context.getRequiredTestClass();
         ApplicationEnvironment config = ApplicationEnvironment.load();
-        LOGGER.info("Using ApplicationEnvironment class: " + config.getClass().getCanonicalName());
+        LOG.info("Using ApplicationEnvironment class: " + config.getClass().getCanonicalName());
         config.applyConfiguration(testClass);
         config.start();
+        configureRestAssured(config);
         injectRestClients(testClass);
     }
 
@@ -79,7 +81,7 @@ class MicroShedTestExtension implements BeforeAllCallback {
             Object restClient = rcBuilder.build(restClientField.getType());
             try {
                 restClientField.set(null, restClient);
-                LOGGER.debug("Injected rest client for " + restClientField);
+                LOG.debug("Injected rest client for " + restClientField);
             } catch (Exception e) {
                 throw new ExtensionConfigurationException("Unable to set field " + restClientField, e);
             }
@@ -99,14 +101,60 @@ class MicroShedTestExtension implements BeforeAllCallback {
         return null;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static void configureRestAssured(ApplicationEnvironment config) {
+        Class<?> RestAssured = tryLoad("io.restassured.RestAssured");
+        if (RestAssured == null)
+            return;
+
+        try {
+            URL appURL = new URL(config.getApplicationURL());
+            String baseURI = appURL.getProtocol() + "://" + appURL.getHost();
+            int port = appURL.getPort();
+            String basePath = appURL.getPath();
+            LOG.info("Configuring RestAssured with baseURI=" + baseURI + "  port=" + port + "  basePath=" + basePath);
+
+            RestAssured.getField("baseURI").set(null, baseURI);
+            RestAssured.getField("basePath").set(null, basePath);
+            RestAssured.getField("port").set(null, port);
+        } catch (Exception e) {
+            LOG.warn("Unable to configure REST Assured because of: " + e.getMessage(), e);
+        }
+
+        try {
+            // Configure JSONB as the JSON object mapper by invoking:
+            //   ObjectMapperType JSONB = ObjectMapperType.JSONB;
+            //   ObjectMapperConfig omConfig = ObjectMapperConfig.objectMapperConfig().defaultObjectMapperType(JSONB);
+            //   RestAssured.config = RestAssured.config.objectMapperConfig(omConfig);
+            ClassLoader cl = MicroShedTestExtension.class.getClassLoader();
+            Class<Enum> ObjectMapperType = (Class<Enum>) Class.forName("io.restassured.mapper.ObjectMapperType", false, cl);
+            Object JSONB = Enum.valueOf(ObjectMapperType, "JSONB");
+            Class<?> ObjectMapperConfig = Class.forName("io.restassured.config.ObjectMapperConfig", false, cl);
+            Object omConfig = ObjectMapperConfig.getMethod("objectMapperConfig").invoke(null);
+            omConfig = omConfig.getClass().getMethod("defaultObjectMapperType", ObjectMapperType).invoke(omConfig, JSONB);
+            Class<?> RestAssuredConfig = Class.forName("io.restassured.config.RestAssuredConfig", false, cl);
+            Object raConfig = RestAssured.getField("config").get(null);
+            raConfig = RestAssuredConfig.getMethod("objectMapperConfig", ObjectMapperConfig).invoke(raConfig, omConfig);
+            RestAssured.getField("config").set(null, raConfig);
+            LOG.debug("Regsitered JSONB ObjectMapper for REST Assured");
+        } catch (IllegalArgumentException e) {
+            // Prior to RestAssured 4.2.0 the ObjectMapperType.JSONB enum is not available
+            LOG.debug("Unable to configure JSON-B object mapper for REST Assured", e);
+        } catch (Exception e) {
+            LOG.warn("Unable to configure JSON-B object mapper for REST Assured", e);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private static Optional<Class<? extends Annotation>> getMpRestClient() {
+        return Optional.ofNullable((Class<? extends Annotation>) tryLoad("org.eclipse.microprofile.rest.client.inject.RestClient"));
+    }
+
+    private static Class<?> tryLoad(String clazz) {
         try {
-            return Optional.of((Class<? extends Annotation>) Class.forName("org.eclipse.microprofile.rest.client.inject.RestClient",
-                                                                           false,
-                                                                           MicroShedTestExtension.class.getClassLoader()));
+            return Class.forName(clazz, false, MicroShedTestExtension.class.getClassLoader());
         } catch (ClassNotFoundException | LinkageError e) {
-            return Optional.empty();
+            return null;
         }
     }
 }
