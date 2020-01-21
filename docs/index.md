@@ -128,7 +128,7 @@ To get started writing a test with MicroShed Testing, add `system-test` and `jun
 <dependency>
     <groupId>org.junit.jupiter</groupId>
     <artifactId>junit-jupiter</artifactId>
-    <version>5.4.2</version>
+    <version>5.6.0</version>
     <scope>test</scope>
 </dependency>
 ```
