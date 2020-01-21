@@ -2,7 +2,7 @@ ext.title = "MicroShed Testing Framework"
 description = "A test framework for black-box testing MicroProfile and JavaEE applications"
 
 dependencies {
-  compile 'org.junit.jupiter:junit-jupiter-api:5.5.2'
+  compile 'org.junit.jupiter:junit-jupiter-api:5.6.0'
   implementation group: 'cglib', name: 'cglib-nodep', version: '3.3.0'
   implementation group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version: '3.3.5'
   implementation group: 'org.apache.cxf', name: 'cxf-rt-rs-extension-providers', version: '3.3.5'
