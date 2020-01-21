@@ -11,7 +11,7 @@ dependencies {
   testCompile 'org.testcontainers:mockserver:1.12.3'
   testCompile 'org.mock-server:mockserver-client-java:5.5.4'
   testCompile 'io.rest-assured:rest-assured:4.2.0'
-  testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.6.0'
 }
 
 war.archiveName 'myservice.war'
