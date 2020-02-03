@@ -88,7 +88,7 @@ public class HollowTestcontainersConfigurationTest {
 
     @Test
     public void testApplicationURL() {
-        assertEquals("http://localhost:9080/", ApplicationEnvironment.load().getApplicationURL());
+        assertEquals("http://localhost:9080", ApplicationEnvironment.load().getApplicationURL());
     }
 
 }
