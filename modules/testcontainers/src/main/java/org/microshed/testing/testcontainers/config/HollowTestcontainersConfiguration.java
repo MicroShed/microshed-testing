@@ -97,7 +97,7 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
 
         // Apply configuration to a running server
         URL appURL;
-        String runtimeURL = ManuallyStartedConfiguration.getRuntimeURL();
+        String runtimeURL = getApplicationURL();
         try {
             appURL = new URL(runtimeURL);
         } catch (MalformedURLException e) {
@@ -107,6 +107,11 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
                         .filter(c -> c instanceof ApplicationContainer)
                         .map(c -> (ApplicationContainer) c)
                         .forEach(c -> c.setRunningURL(appURL));
+    }
+
+    @Override
+    public String getApplicationURL() {
+        return ManuallyStartedConfiguration.getRuntimeURL();
     }
 
     /**

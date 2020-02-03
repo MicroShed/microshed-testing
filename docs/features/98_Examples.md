@@ -20,3 +20,4 @@ Sometimes code is worth a thousand words. Here are some pointers to working exam
 - [Testing an application with OpenLiberty](https://github.com/MicroShed/microshed-testing/tree/master/sample-apps/liberty-app)
 - [Testing an application with Payara Micro](https://github.com/MicroShed/microshed-testing/tree/master/sample-apps/payara-app)
 - [Testing an application with Wildfly](https://github.com/MicroShed/microshed-testing/tree/master/sample-apps/wildfly-app)
+- [Testing an application with Quarkus](https://github.com/MicroShed/microshed-testing/tree/master/sample-apps/quarkus-app)

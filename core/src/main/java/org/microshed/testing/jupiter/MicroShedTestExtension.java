@@ -103,6 +103,9 @@ class MicroShedTestExtension implements BeforeAllCallback {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static void configureRestAssured(ApplicationEnvironment config) {
+        if (!config.configureRestAssured())
+            return;
+
         Class<?> RestAssured = tryLoad("io.restassured.RestAssured");
         if (RestAssured == null)
             return;
@@ -139,7 +142,7 @@ class MicroShedTestExtension implements BeforeAllCallback {
             LOG.debug("Regsitered JSONB ObjectMapper for REST Assured");
         } catch (IllegalArgumentException e) {
             // Prior to RestAssured 4.2.0 the ObjectMapperType.JSONB enum is not available
-            LOG.debug("Unable to configure JSON-B object mapper for REST Assured", e);
+            LOG.debug("Unable to configure JSON-B object mapper for REST Assured due to: " + e.getMessage());
         } catch (Exception e) {
             LOG.warn("Unable to configure JSON-B object mapper for REST Assured", e);
         }

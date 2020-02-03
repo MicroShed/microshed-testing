@@ -46,7 +46,6 @@ public class JwtBuilder {
     private JwtClaims claims = null;
     private JsonWebSignature jws = null;
     static RsaJsonWebKey rsajwk = null;
-    static JwtBuilder me = null;
 
     // init the single public:private key pair that we will re-use.
     private static void init() {
@@ -72,30 +71,30 @@ public class JwtBuilder {
     }
 
     public static String buildJwt(String subject, String issuer, String[] claims) throws JoseException, MalformedClaimException {
-        me = new JwtBuilder();
+        JwtBuilder builder = new JwtBuilder();
         init();
-        me.claims = new JwtClaims();
-        me.jws = new JsonWebSignature();
+        builder.claims = new JwtClaims();
+        builder.jws = new JsonWebSignature();
 
-        me.jws.setKeyIdHeaderValue(rsajwk.getKeyId());
-        me.jws.setAlgorithmHeaderValue(AlgorithmIdentifiers.RSA_USING_SHA256);
+        builder.jws.setKeyIdHeaderValue(rsajwk.getKeyId());
+        builder.jws.setAlgorithmHeaderValue(AlgorithmIdentifiers.RSA_USING_SHA256);
         // The JWT is signed using the private key, get the key we'll use every time.
-        me.jws.setKey(rsajwk.getPrivateKey());
+        builder.jws.setKey(rsajwk.getPrivateKey());
         if (subject != null) {
-            me.claims.setClaim("sub", subject);
-            me.claims.setClaim("upn", subject);
+            builder.claims.setClaim("sub", subject);
+            builder.claims.setClaim("upn", subject);
         }
-        me.claims.setIssuer(issuer == null ? JwtConfig.DEFAULT_ISSUER : issuer);
-        me.claims.setExpirationTimeMinutesInTheFuture(60);
-        setClaims(claims);
-        if (me.claims.getIssuedAt() == null) {
-            me.claims.setIssuedAtToNow();
+        builder.claims.setIssuer(issuer == null ? JwtConfig.DEFAULT_ISSUER : issuer);
+        builder.claims.setExpirationTimeMinutesInTheFuture(60);
+        setClaims(builder, claims);
+        if (builder.claims.getIssuedAt() == null) {
+            builder.claims.setIssuedAtToNow();
         }
-        me.jws.setPayload(me.claims.toJson());
-        return me.jws.getCompactSerialization();
+        builder.jws.setPayload(builder.claims.toJson());
+        return builder.jws.getCompactSerialization();
     }
 
-    private static void setClaims(String[] claims) throws MalformedClaimException {
+    private static void setClaims(JwtBuilder builder, String[] claims) throws MalformedClaimException {
         for (String claim : claims) {
             if (!claim.contains("="))
                 throw new MalformedClaimException("Claim did not contain an equals sign (=). Each claim must be of the form 'key=value'");
@@ -103,7 +102,7 @@ public class JwtBuilder {
             String claimName = claim.substring(0, loc);
             Object claimValue = claim.substring(loc + 1);
             claimValue = handleArrays((String) claimValue);
-            setClaim(claimName, claimValue);
+            builder.claims.setClaim(claimName, claimValue);
         }
     }
 
@@ -115,7 +114,4 @@ public class JwtBuilder {
         return elements;
     }
 
-    private static void setClaim(String name, Object value) {
-        me.claims.setClaim(name, value);
-    }
 }
