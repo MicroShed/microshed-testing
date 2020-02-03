@@ -3,9 +3,12 @@ jdk:
     - oraclejdk11
 services:
   - docker
+before_cache:
+  - rm -rf $HOME/.m2/repository/org/microshed/
+  - rm -rf $HOME/.gradle/caches/modules-2/files/2.1/org.microshed/
 cache:
   directories:
-  - $HOME/.m2
+  - $HOME/.m2/repository/
   - $HOME/.gradle/caches/modules-2/files/2.1/
   - $HOME/.gradle/wrapper/
 script:
