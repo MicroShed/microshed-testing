@@ -30,6 +30,8 @@ public class ManuallyStartedConfiguration implements ApplicationEnvironment {
 //    public static final String RUNTIME_URL_PROPERTY = "MICROSHED_TEST_RUNTIME_URL";
     public static final String MANUAL_ENALBED = "microshed_manual_env";
 
+    private static String runtimeURL;
+
     @Override
     public boolean isAvailable() {
         if (!Boolean.valueOf(resolveProperty(MANUAL_ENALBED)))
@@ -45,13 +47,21 @@ public class ManuallyStartedConfiguration implements ApplicationEnvironment {
         return ApplicationEnvironment.DEFAULT_PRIORITY - 10;
     }
 
+    public static void setRuntimeURL(String url) {
+        runtimeURL = url;
+    }
+
     public static String getRuntimeURL() {
+        if (runtimeURL != null)
+            return runtimeURL;
+
         String host = resolveProperty(MICROSHED_HOSTNAME);
         String httpPort = resolveProperty(MICROSHED_HTTP_PORT);
         String httpsPort = resolveProperty(MICROSHED_HTTPS_PORT);
-        if (host.isEmpty() && (httpPort.isEmpty() || httpsPort.isEmpty()))
+        if (host.isEmpty() && (httpPort.isEmpty() || httpsPort.isEmpty())) {
             throw new IllegalStateException("The properties '" + MICROSHED_HOSTNAME + "' and '" + MICROSHED_HTTP_PORT + "' or '" +
                                             MICROSHED_HTTPS_PORT + "' must be set in order to use this ApplicationEnvironment");
+        }
 
         // Prefer HTTPS if set
         if (!httpsPort.isEmpty()) {

@@ -54,6 +54,7 @@ public class RestClientBuilder {
      * @param appContextRoot The protocol, hostname, port, and application root path for the REST Client
      *            For example, <code>http://localhost:8080/myapp/</code>. If unspecified, the app context
      *            root will be automatically detected by {@link ApplicationEnvironment#getApplicationURL()}
+     * @return The same builder instance
      */
     public RestClientBuilder withAppContextRoot(String appContextRoot) {
         Objects.requireNonNull(appContextRoot, "Supplied 'appContextRoot' must not be null");
@@ -66,6 +67,7 @@ public class RestClientBuilder {
      *            endpoint is deployed at <code>http://localhost:8080/myapp/hello</code> and the app context root
      *            is <code>http://localhost:8080/myapp/</code>, then the jaxrsPath is <code>hello</code>. If
      *            unspecified, the JAX-RS path will be automatically detected by annotation scanning.
+     * @return The same builder instance
      */
     public RestClientBuilder withJaxrsPath(String jaxrsPath) {
         Objects.requireNonNull(jaxrsPath, "Supplied 'jaxrsPath' must not be null");
@@ -75,6 +77,7 @@ public class RestClientBuilder {
 
     /**
      * @param jwt The JWT (Json Web Token) to apply as an Authorization header
+     * @return The same builder instance
      */
     public RestClientBuilder withJwt(String jwt) {
         Objects.requireNonNull(jwt, "Supplied 'jwt' must not be null");
@@ -86,6 +89,7 @@ public class RestClientBuilder {
      * @param providers One or more providers to apply. Providers typically implement
      *            {@link MessageBodyReader} and/or {@link MessageBodyWriter}. If unspecified,
      *            the {@link JsonBProvider} will be applied.
+     * @return The same builder instance
      */
     public RestClientBuilder withProviders(Class<?>... providers) {
         this.providers = Arrays.asList(providers);
