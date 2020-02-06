@@ -31,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.microshed.testing.ApplicationEnvironment;
+import org.microshed.testing.SharedContainerConfig;
 import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jaxrs.RestClientBuilder;
 import org.microshed.testing.jwt.JwtBuilder;
@@ -50,6 +51,12 @@ class MicroShedTestExtension implements BeforeAllCallback {
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
         Class<?> testClass = context.getRequiredTestClass();
+
+        // Explicitly trigger static initialization of any SharedContainerConfig before we do further processing
+        if (testClass.isAnnotationPresent(SharedContainerConfig.class)) {
+            Class.forName(testClass.getAnnotation(SharedContainerConfig.class).value().getName());
+        }
+
         ApplicationEnvironment config = ApplicationEnvironment.Resolver.load();
         LOG.info("Using ApplicationEnvironment class: " + config.getClass().getCanonicalName());
         config.applyConfiguration(testClass);
