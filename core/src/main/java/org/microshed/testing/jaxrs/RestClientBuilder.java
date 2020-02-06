@@ -99,7 +99,7 @@ public class RestClientBuilder {
     public <T> T build(Class<T> clazz) {
         // Apply default values if unspecified
         if (appContextRoot == null)
-            appContextRoot = ApplicationEnvironment.load().getApplicationURL();
+            appContextRoot = ApplicationEnvironment.Resolver.load().getApplicationURL();
         if (jaxrsPath == null)
             jaxrsPath = locateApplicationPath(clazz);
         if (providers == null)

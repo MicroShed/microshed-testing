@@ -50,7 +50,7 @@ class MicroShedTestExtension implements BeforeAllCallback {
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
         Class<?> testClass = context.getRequiredTestClass();
-        ApplicationEnvironment config = ApplicationEnvironment.load();
+        ApplicationEnvironment config = ApplicationEnvironment.Resolver.load();
         LOG.info("Using ApplicationEnvironment class: " + config.getClass().getCanonicalName());
         config.applyConfiguration(testClass);
         config.start();

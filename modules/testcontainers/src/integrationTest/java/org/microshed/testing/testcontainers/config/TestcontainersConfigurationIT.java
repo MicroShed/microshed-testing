@@ -53,8 +53,8 @@ public class TestcontainersConfigurationIT {
 
     @Test
     public void testCorrectEnvironment() {
-        assertEquals(TestcontainersConfiguration.class, ApplicationEnvironment.load().getClass());
-        assertTrue(ApplicationEnvironment.isSelected(TestcontainersConfiguration.class),
+        assertEquals(TestcontainersConfiguration.class, ApplicationEnvironment.Resolver.load().getClass());
+        assertTrue(ApplicationEnvironment.Resolver.isSelected(TestcontainersConfiguration.class),
                    "Expected TestcontainersConfiguration to be selected but it was not");
     }
 
@@ -66,7 +66,7 @@ public class TestcontainersConfigurationIT {
 
     @Test
     public void testApplicationURL() {
-        String appUrl = ApplicationEnvironment.load().getApplicationURL();
+        String appUrl = ApplicationEnvironment.Resolver.load().getApplicationURL();
         assertNotNull(appUrl);
         assertEquals(appUrl, app.getApplicationURL());
         assertTrue(appUrl.startsWith("http://"), "Application URL did not start with 'http://' " + appUrl);
