@@ -54,8 +54,8 @@ public class HollowTestcontainersConfigurationTest {
 
     @Test
     public void testCorrectEnvironment() {
-        assertEquals(HollowTestcontainersConfiguration.class, ApplicationEnvironment.load().getClass());
-        assertTrue(ApplicationEnvironment.isSelected(HollowTestcontainersConfiguration.class),
+        assertEquals(HollowTestcontainersConfiguration.class, ApplicationEnvironment.Resolver.load().getClass());
+        assertTrue(ApplicationEnvironment.Resolver.isSelected(HollowTestcontainersConfiguration.class),
                    "Expected HollowTestcontainersConfiguration to be selected but it was not");
         assertTrue(HollowTestcontainersConfiguration.available(),
                    "Expected HollowTestcontainersConfiguration to be available but it was not");
@@ -88,7 +88,7 @@ public class HollowTestcontainersConfigurationTest {
 
     @Test
     public void testApplicationURL() {
-        assertEquals("http://localhost:9080", ApplicationEnvironment.load().getApplicationURL());
+        assertEquals("http://localhost:9080", ApplicationEnvironment.Resolver.load().getApplicationURL());
     }
 
 }

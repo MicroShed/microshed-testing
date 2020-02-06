@@ -118,7 +118,7 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
     }
 
     private static boolean isHollow() {
-        ApplicationEnvironment current = ApplicationEnvironment.load();
+        ApplicationEnvironment current = ApplicationEnvironment.Resolver.load();
         return !(current instanceof TestcontainersConfiguration) ||
                current instanceof HollowTestcontainersConfiguration;
     }
@@ -429,7 +429,7 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
     public ApplicationContainer withMpRestClient(String restClientClass, String hostUrl) {
         // If we will be running in Docker, sanitize environment variable name using Environment Variables Mapping Rules defined in MP Config:
         // https://github.com/eclipse/microprofile-config/blob/master/spec/src/main/asciidoc/configsources.asciidoc#environment-variables-mapping-rules
-        if (ApplicationEnvironment.isSelected(TestcontainersConfiguration.class)) {
+        if (ApplicationEnvironment.Resolver.isSelected(TestcontainersConfiguration.class)) {
             restClientClass = restClientClass.replaceAll("[^a-zA-Z0-9_]", "_") + "_mp_rest_url";
         } else {
             restClientClass += "/mp-rest/url";
