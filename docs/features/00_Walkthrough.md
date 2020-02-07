@@ -60,7 +60,7 @@ Given the above application code, we can start by adding maven dependencies:
     <dependency>
         <groupId>org.microshed</groupId>
         <artifactId>microshed-testing-testcontainers</artifactId>
-        <version>0.6.2</version>
+        <version>0.7</version>
         <scope>test</scope>
     </dependency>
     
