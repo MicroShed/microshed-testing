@@ -94,24 +94,6 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        // Apply configuration to a running server
-        URL appURL;
-        String runtimeURL = getApplicationURL();
-        try {
-            appURL = new URL(runtimeURL);
-        } catch (MalformedURLException e) {
-            throw new ExtensionConfigurationException("The application URL '" + runtimeURL + "' was not a valid URL.", e);
-        }
-        allContainers().stream()
-                        .filter(c -> c instanceof ApplicationContainer)
-                        .map(c -> (ApplicationContainer) c)
-                        .forEach(c -> c.setRunningURL(appURL));
-    }
-
-    @Override
-    public String getApplicationURL() {
-        return ManuallyStartedConfiguration.getRuntimeURL();
     }
 
     /**

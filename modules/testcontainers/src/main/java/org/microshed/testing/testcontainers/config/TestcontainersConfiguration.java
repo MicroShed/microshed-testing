@@ -46,10 +46,10 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
     private static final Logger LOG = LoggerFactory.getLogger(TestcontainersConfiguration.class);
 
     // Will need to rework this if we will ever support parallel test execution
-    private static Class<?> currentTestClass;
-    private static Class<? extends SharedContainerConfiguration> sharedConfigClass;
-    private static final Set<GenericContainer<?>> unsharedContainers = new HashSet<>();
-    private static final Set<GenericContainer<?>> sharedContainers = new HashSet<>();
+    private Class<?> currentTestClass;
+    private Class<? extends SharedContainerConfiguration> sharedConfigClass;
+    private final Set<GenericContainer<?>> unsharedContainers = new HashSet<>();
+    private final Set<GenericContainer<?>> sharedContainers = new HashSet<>();
 
     @Override
     public int getPriority() {
@@ -63,7 +63,7 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
 
     @Override
     public void applyConfiguration(Class<?> testClass) {
-        TestcontainersConfiguration.currentTestClass = testClass;
+        currentTestClass = testClass;
 
         if (testClass.isAnnotationPresent(SharedContainerConfig.class)) {
             sharedConfigClass = testClass.getAnnotation(SharedContainerConfig.class).value();
@@ -139,12 +139,6 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
     @Override
     public String getApplicationURL() {
         ApplicationContainer mpApp = autoDiscoverMPApp(currentTestClass, true);
-
-        // At this point we have found exactly one ApplicationContainer
-        if (!mpApp.isCreated() || !mpApp.isRunning())
-            throw new ExtensionConfigurationException("ApplicationContainer " + mpApp.getDockerImageName() + " is not running yet. " +
-                                                      "The contianer must be running in order to obtain its URL.");
-
         return mpApp.getApplicationURL();
     }
 
@@ -159,7 +153,7 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
         return AnnotationSupport.findAnnotatedFields(currentTestClass, JwtConfig.class).size() > 0;
     }
 
-    private ApplicationContainer autoDiscoverMPApp(Class<?> clazz, boolean errorIfNone) {
+    ApplicationContainer autoDiscoverMPApp(Class<?> clazz, boolean errorIfNone) {
         // First check for any MicroProfileApplicaiton directly present on the test class
         List<Field> mpApps = AnnotationSupport.findAnnotatedFields(clazz, Container.class,
                                                                    f -> Modifier.isStatic(f.getModifiers()) &&
