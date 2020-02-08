@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -29,10 +30,14 @@ import org.microshed.testing.ApplicationEnvironment;
 import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.containers.MockServerContainer;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.containers.wait.strategy.WaitStrategyTarget;
 import org.testcontainers.junit.jupiter.Container;
 
 @MicroShedTest
 public class HollowTestcontainersConfigurationTest {
+
+    private static boolean waitedForStartup = false;
 
     // This cointainer never actually gets started, since we are running in hollow mode
     @Container
@@ -45,7 +50,18 @@ public class HollowTestcontainersConfigurationTest {
                     .withEnv("SVC_URL4", "http://mockserver:1080/hello/world")
                     .withEnv("SVC_URL5", "http://mockserver:1080/hello/mockserver")
                     .withEnv("SVC_URL6", oldValue -> "http://mockserver:1080")
-                    .withMpRestClient("com.foo.ExampleClass", "http://mockserver:1080");
+                    .withMpRestClient("com.foo.ExampleClass", "http://mockserver:1080")
+                    .waitingFor(new WaitStrategy() {
+                        @Override
+                        public WaitStrategy withStartupTimeout(Duration startupTimeout) {
+                            return this;
+                        }
+
+                        @Override
+                        public void waitUntilReady(WaitStrategyTarget waitStrategyTarget) {
+                            waitedForStartup = true;
+                        }
+                    });
 
     @Container
     public static MockServerContainer mockServer = new MockServerContainer()
@@ -89,6 +105,11 @@ public class HollowTestcontainersConfigurationTest {
     @Test
     public void testApplicationURL() {
         assertEquals("http://localhost:9080/", ApplicationEnvironment.Resolver.load().getApplicationURL());
+    }
+
+    @Test
+    public void testWaitFor() {
+        assertTrue(waitedForStartup, "The ApplicationContainer did not wait for startup in hollow mode");
     }
 
 }
