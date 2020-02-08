@@ -18,6 +18,9 @@
  */
 package org.microshed.testing;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 /**
  * Configuration representing application and dependent services already
  * being started prior to running the tests.
@@ -27,10 +30,10 @@ public class ManuallyStartedConfiguration implements ApplicationEnvironment {
     public static final String MICROSHED_HOSTNAME = "microshed_hostname";
     public static final String MICROSHED_HTTP_PORT = "microshed_http_port";
     public static final String MICROSHED_HTTPS_PORT = "microshed_https_port";
-//    public static final String RUNTIME_URL_PROPERTY = "MICROSHED_TEST_RUNTIME_URL";
+    public static final String MICROSHED_APP_CONTEXT_ROOT = "microshed_app_context_root";
     public static final String MANUAL_ENALBED = "microshed_manual_env";
 
-    private static String runtimeURL;
+    private static URL runtimeURL;
 
     @Override
     public boolean isAvailable() {
@@ -48,28 +51,58 @@ public class ManuallyStartedConfiguration implements ApplicationEnvironment {
     }
 
     public static void setRuntimeURL(String url) {
-        runtimeURL = url;
+        try {
+            runtimeURL = new URL(url);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public static String getHostname() {
+        if (runtimeURL != null)
+            return runtimeURL.getHost();
+        return resolveProperty(MICROSHED_HOSTNAME);
+    }
+
+    public static int getHttpPort() {
+        if (runtimeURL != null && runtimeURL.toString().startsWith("http://"))
+            return runtimeURL.getPort() == -1 ? runtimeURL.getDefaultPort() : runtimeURL.getPort();
+        String port = resolveProperty(MICROSHED_HTTP_PORT);
+        return port.isEmpty() ? -1 : Integer.valueOf(port);
+    }
+
+    public static int getHttpsPort() {
+        if (runtimeURL != null && runtimeURL.toString().startsWith("https://"))
+            return runtimeURL.getPort() == -1 ? runtimeURL.getDefaultPort() : runtimeURL.getPort();
+        String port = resolveProperty(MICROSHED_HTTPS_PORT);
+        return port.isEmpty() ? -1 : Integer.valueOf(port);
+    }
+
+    public static String getBasePath() {
+        String basePath = runtimeURL != null ? runtimeURL.getPath() : resolveProperty(MICROSHED_APP_CONTEXT_ROOT);
+        if (!basePath.startsWith("/"))
+            basePath = "/" + basePath;
+        return basePath;
     }
 
     public static String getRuntimeURL() {
         if (runtimeURL != null)
-            return runtimeURL;
+            return runtimeURL.toString();
 
-        String host = resolveProperty(MICROSHED_HOSTNAME);
-        String httpPort = resolveProperty(MICROSHED_HTTP_PORT);
-        String httpsPort = resolveProperty(MICROSHED_HTTPS_PORT);
-        if (host.isEmpty() && (httpPort.isEmpty() || httpsPort.isEmpty())) {
+        String host = getHostname();
+        int httpPort = getHttpPort();
+        int httpsPort = getHttpsPort();
+        if (host.isEmpty() || (httpPort == -1 && httpsPort == -1)) {
             throw new IllegalStateException("The properties '" + MICROSHED_HOSTNAME + "' and '" + MICROSHED_HTTP_PORT + "' or '" +
                                             MICROSHED_HTTPS_PORT + "' must be set in order to use this ApplicationEnvironment");
         }
+        String basePath = getBasePath();
 
         // Prefer HTTPS if set
-        if (!httpsPort.isEmpty()) {
-            Integer.parseInt(httpsPort);
-            return "https://" + host + ':' + httpsPort;
+        if (httpsPort != -1) {
+            return "https://" + host + ':' + httpsPort + basePath;
         } else {
-            Integer.parseInt(httpPort);
-            return "http://" + host + ':' + httpPort;
+            return "http://" + host + ':' + httpPort + basePath;
         }
     }
 

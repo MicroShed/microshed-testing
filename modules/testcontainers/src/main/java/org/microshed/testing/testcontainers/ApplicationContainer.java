@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,6 +44,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.microshed.testing.ApplicationEnvironment;
+import org.microshed.testing.ManuallyStartedConfiguration;
 import org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration;
 import org.microshed.testing.testcontainers.config.TestcontainersConfiguration;
 import org.microshed.testing.testcontainers.internal.ImageFromDockerfile;
@@ -118,9 +118,8 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
     }
 
     private static boolean isHollow() {
-        ApplicationEnvironment current = ApplicationEnvironment.Resolver.load();
-        return !(current instanceof TestcontainersConfiguration) ||
-               current instanceof HollowTestcontainersConfiguration;
+        return ApplicationEnvironment.Resolver.isSelected(HollowTestcontainersConfiguration.class) ||
+               ApplicationEnvironment.Resolver.isSelected(ManuallyStartedConfiguration.class);
     }
 
     private static File findAppFile() {
@@ -222,6 +221,14 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         addExposedPorts(serverAdapter.getDefaultHttpPort());
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
         withAppContextRoot("/");
+        if (isHollow) {
+            setContainerIpAddress(ManuallyStartedConfiguration.getHostname());
+            if (ManuallyStartedConfiguration.getHttpsPort() != -1)
+                setFirstMappedPort(ManuallyStartedConfiguration.getHttpsPort());
+            else
+                setFirstMappedPort(ManuallyStartedConfiguration.getHttpPort());
+            withAppContextRoot(ManuallyStartedConfiguration.getBasePath());
+        }
     }
 
     @Override
@@ -239,17 +246,16 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         }
     }
 
-    /**
-     * Sets the URL where the current application is running at. This method is typically called
-     * for plugins that make use of {@link HollowTestcontainersConfiguration}. It is not necessary
-     * for test code to call this method if they are starting the application container in the
-     * normal way.
-     *
-     * @param url The URl where the current application is running
-     */
-    public void setRunningURL(URL url) {
-        lateBind_ipAddress = url.getHost();
-        lateBind_port = url.getPort() == -1 ? url.getDefaultPort() : url.getPort();
+    public void setContainerIpAddress(String ipAddress) {
+        if (!isHollow)
+            throw new IllegalStateException("Can only set contaienr IP address in hollow mode");
+        lateBind_ipAddress = ipAddress;
+    }
+
+    public void setFirstMappedPort(int port) {
+        if (!isHollow)
+            throw new IllegalStateException("Can only set first mapped port in hollow mode");
+        lateBind_port = port;
     }
 
     @Override
@@ -453,9 +459,9 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
      *         {@code http://<container-ip-address>:<mapped-port>}
      */
     public String getBaseURL() {
-        if (!this.isRunning())
+        if (!isHollow && !isRunning())
             throw new IllegalStateException("Container must be running to determine hostname and port");
-        return "http://" + this.getContainerIpAddress() + ':' + this.getFirstMappedPort();
+        return "http://" + getContainerIpAddress() + ':' + getFirstMappedPort();
     }
 
     /**
