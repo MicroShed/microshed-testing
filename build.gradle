@@ -2,8 +2,8 @@ plugins {
     // to check for updates run: ./gradlew dependencyUpdates -Drevision=release
     id 'com.github.ben-manes.versions' version '0.27.0'
 }
-ext.currentVersion = '0.7.1-SNAPSHOT'
-ext.lastRelease = '0.7'
+ext.currentVersion = '0.7.2-SNAPSHOT'
+ext.lastRelease = '0.7.1'
 
 subprojects {
     apply plugin: 'java'
