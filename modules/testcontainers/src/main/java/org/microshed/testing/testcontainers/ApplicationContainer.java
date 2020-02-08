@@ -47,6 +47,7 @@ import org.microshed.testing.ApplicationEnvironment;
 import org.microshed.testing.ManuallyStartedConfiguration;
 import org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration;
 import org.microshed.testing.testcontainers.config.TestcontainersConfiguration;
+import org.microshed.testing.testcontainers.internal.HollowContainerInspection;
 import org.microshed.testing.testcontainers.internal.ImageFromDockerfile;
 import org.microshed.testing.testcontainers.spi.ServerAdapter;
 import org.slf4j.Logger;
@@ -54,10 +55,12 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
+import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.Base58;
 
+import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.ExposedPort;
 
@@ -223,10 +226,12 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         withAppContextRoot("/");
         if (isHollow) {
             setContainerIpAddress(ManuallyStartedConfiguration.getHostname());
-            if (ManuallyStartedConfiguration.getHttpsPort() != -1)
-                setFirstMappedPort(ManuallyStartedConfiguration.getHttpsPort());
-            else
-                setFirstMappedPort(ManuallyStartedConfiguration.getHttpPort());
+            List<Integer> ports = new ArrayList<>(2);
+            ports.add(ManuallyStartedConfiguration.getHttpsPort());
+            ports.add(ManuallyStartedConfiguration.getHttpPort());
+            ports.removeIf(p -> p == -1);
+            setExposedPorts(ports);
+            setFirstMappedPort(ports.get(0));
             withAppContextRoot(ManuallyStartedConfiguration.getBasePath());
         }
     }
@@ -267,6 +272,8 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
             Map<String, String> env = getEnvMap();
             if (env.size() > 0)
                 getServerAdapter().setConfigProperties(env);
+            configure();
+            waitUntilContainerStarted();
             lateBind_started = true;
             return;
         }
@@ -317,6 +324,15 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         }
     }
 
+    @Override
+    public List<Integer> getExposedPorts() {
+        if (isHollow) {
+            return Collections.singletonList(lateBind_port);
+        } else {
+            return super.getExposedPorts();
+        }
+    }
+
     /**
      * @param appContextRoot the application context root. The protocol, hostname, and port do not need to be
      *            included in the <code>appContextRoot</code> parameter. For example, an application
@@ -357,8 +373,13 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
     public ApplicationContainer withReadinessPath(String readinessUrl, int timeoutSeconds) {
         Objects.requireNonNull(readinessUrl);
         readinessUrl = buildPath(readinessUrl);
-        waitingFor(Wait.forHttp(readinessUrl)
-                        .withStartupTimeout(Duration.ofSeconds(timeoutSeconds)));
+        HttpWaitStrategy strat = Wait.forHttp(readinessUrl);
+        strat.withStartupTimeout(Duration.ofSeconds(timeoutSeconds));
+        getExposedPorts()
+                        .stream()
+                        .findFirst()
+                        .ifPresent(p -> strat.forPort(p));
+        waitingFor(strat);
         return this;
     }
 
@@ -462,6 +483,22 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         if (!isHollow && !isRunning())
             throw new IllegalStateException("Container must be running to determine hostname and port");
         return "http://" + getContainerIpAddress() + ':' + getFirstMappedPort();
+    }
+
+    @Override
+    public InspectContainerResponse getContainerInfo() {
+        if (isHollow)
+            return new HollowContainerInspection(this);
+        else
+            return super.getContainerInfo();
+    }
+
+    @Override
+    public String getDockerImageName() {
+        if (isHollow)
+            return "HollowApplicationContainer";
+        else
+            return super.getDockerImageName();
     }
 
     /**

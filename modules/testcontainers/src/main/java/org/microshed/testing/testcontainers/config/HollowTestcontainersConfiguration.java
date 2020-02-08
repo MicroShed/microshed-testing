@@ -81,7 +81,7 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
             Map<Integer, String> fixedExposedPorts = new HashMap<>();
             for (GenericContainer<?> c : allContainers()) {
                 for (Integer p : c.getExposedPorts()) {
-                    if (fixedExposedPorts.containsKey(p)) {
+                    if (fixedExposedPorts.containsKey(p) && !(c instanceof ApplicationContainer)) {
                         throw new ExtensionConfigurationException("Cannot expose port " + p + " for " + c.getDockerImageName() +
                                                                   " because another container (" + fixedExposedPorts.get(p) +
                                                                   ") is already using it.");

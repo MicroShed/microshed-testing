@@ -22,11 +22,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
+import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 import org.microshed.testing.ApplicationEnvironment;
 import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.testcontainers.ApplicationContainer;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.containers.wait.strategy.WaitStrategyTarget;
 import org.testcontainers.junit.jupiter.Container;
 
 @MicroShedTest
@@ -35,8 +38,17 @@ public class HollowTestcontainersConfigurationTest2 {
     // This cointainer never actually gets started, since we are running in hollow mode
     @Container
     public static ApplicationContainer app = new ApplicationContainer(Paths.get("src", "test", "resources", "Dockerfile"))
-                    .withExposedPorts(9443)
-                    .withAppContextRoot("/myservice");
+                    .withAppContextRoot("/myservice")
+                    .waitingFor(new WaitStrategy() {
+                        @Override
+                        public WaitStrategy withStartupTimeout(Duration startupTimeout) {
+                            return this;
+                        }
+
+                        @Override
+                        public void waitUntilReady(WaitStrategyTarget waitStrategyTarget) {
+                        }
+                    });
 
     @Test
     public void testCorrectEnvironment() {
