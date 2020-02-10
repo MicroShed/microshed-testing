@@ -80,7 +80,7 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
 
     private String appContextRoot;
     private ServerAdapter serverAdapter;
-    private boolean readinessPathSet;
+    private boolean waitStrategySet;
 
     // variables for late-bound containers
     private String lateBind_ipAddress;
@@ -223,16 +223,17 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         LOGGER.info("Using ServerAdapter: " + serverAdapter.getClass().getCanonicalName());
         addExposedPorts(serverAdapter.getDefaultHttpPort());
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
-        withAppContextRoot("/");
         if (isHollow) {
             setContainerIpAddress(ManuallyStartedConfiguration.getHostname());
             List<Integer> ports = new ArrayList<>(2);
-            ports.add(ManuallyStartedConfiguration.getHttpsPort());
             ports.add(ManuallyStartedConfiguration.getHttpPort());
+            ports.add(ManuallyStartedConfiguration.getHttpsPort());
             ports.removeIf(p -> p == -1);
             setExposedPorts(ports);
             setFirstMappedPort(ports.get(0));
             withAppContextRoot(ManuallyStartedConfiguration.getBasePath());
+        } else {
+            withAppContextRoot("/");
         }
     }
 
@@ -242,7 +243,7 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         // If the readiness path was not set explicitly, default it to:
         // A) The value defined by ServerAdapter.getReadinessPath(), if any
         // B) the app context root
-        if (!readinessPathSet) {
+        if (!waitStrategySet) {
             if (serverAdapter != null && serverAdapter.getReadinessPath().isPresent()) {
                 withReadinessPath(serverAdapter.getReadinessPath().get());
             } else {
@@ -309,28 +310,17 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
     }
 
     @Override
-    public Integer getFirstMappedPort() {
-        if (isHollow)
-            return lateBind_port;
-        return super.getFirstMappedPort();
-    }
-
-    @Override
     public Integer getMappedPort(int originalPort) {
-        if (isHollow) {
+        if (isHollow)
             return originalPort;
-        } else {
-            return super.getMappedPort(originalPort);
-        }
+        return super.getMappedPort(originalPort);
     }
 
     @Override
     public List<Integer> getExposedPorts() {
-        if (isHollow) {
+        if (isHollow)
             return Collections.singletonList(lateBind_port);
-        } else {
-            return super.getExposedPorts();
-        }
+        return super.getExposedPorts();
     }
 
     /**
@@ -375,23 +365,19 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         readinessUrl = buildPath(readinessUrl);
         HttpWaitStrategy strat = Wait.forHttp(readinessUrl);
         strat.withStartupTimeout(Duration.ofSeconds(timeoutSeconds));
-        getExposedPorts()
-                        .stream()
-                        .findFirst()
-                        .ifPresent(p -> strat.forPort(p));
         waitingFor(strat);
         return this;
     }
 
     @Override
     public ApplicationContainer waitingFor(WaitStrategy waitStrategy) {
-        readinessPathSet = true;
+        waitStrategySet = true;
         return super.waitingFor(waitStrategy);
     }
 
     @Override
     public void setWaitStrategy(WaitStrategy waitStrategy) {
-        readinessPathSet = true;
+        waitStrategySet = true;
         super.setWaitStrategy(waitStrategy);
     }
 
