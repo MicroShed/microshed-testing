@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "ApplicationEnvironment options"
+order: 13
 ---
 MicroShed Testing core provides the `org.microshed.testing.ApplicationEnvironment` interface, which allows different options for
 determining how application runtimes are discovered, configured, and started.

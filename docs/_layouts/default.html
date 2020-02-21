@@ -24,7 +24,8 @@
 		<div class="sidebar">
 
 				<div id="featuresPanel" class="sidebarSection">
-					{% for page in site.pages %}
+				  {% assign sorted_pages = site.pages | sort: "order" %}
+					{% for page in sorted_pages %}
 						{% assign split_array = page.path | split: "/" %}
 						{% if split_array.first == "features" %}
 							<div class="sidebarPage">

@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Examples"
+order: 98
 ---
 
 Sometimes code is worth a thousand words. Here are some pointers to working examples that demonstrate various features of MicroShed Testing.

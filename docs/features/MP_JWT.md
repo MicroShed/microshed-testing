@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "MicroProfile JWT"
+order: 20
 ---
 
 MicroShed Testing provides integration with [MicroProfile JWT](https://github.com/eclipse/microprofile-jwt-auth) applications. MicroProfile JWT
