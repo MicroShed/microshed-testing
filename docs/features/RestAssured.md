@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "REST Assured"
+order: 14
 ---
 
 MicroShed Testing provides auto-configuration for when [REST Assured](https://github.com/rest-assured/rest-assured) is available on the test classpath. REST Assured is a Java DSL library for easy testing of REST services. It is more verbose than using a REST client, but offers more direct control over the request and response.f
