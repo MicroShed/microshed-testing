@@ -78,7 +78,8 @@ public interface ServerAdapter {
      * @param properties A map of key/value pairs that should be set on the runtime
      */
     default void setConfigProperties(Map<String, String> properties) {
-        throw new UnsupportedOperationException("Dynamically setting config properties is not supported for the default ServerAdapter.");
+        throw new UnsupportedOperationException("Dynamically setting config properties is not supported for the default (generic) ServerAdapter. " +
+                                                "Try enabling the appropriate runtime-specific module documented here: https://microshed.org/microshed-testing/features/SupportedRuntimes.html");
     }
 
     /**
@@ -90,7 +91,8 @@ public interface ServerAdapter {
      * @return The default docker image including the supplied appFile
      */
     default ImageFromDockerfile getDefaultImage(File appFile) {
-        throw new UnsupportedOperationException("Dynamically building image is not supported for the default ServerAdapter.");
+        throw new UnsupportedOperationException("Dynamically building image is not supported for the default (generic) ServerAdapter. " +
+                                                "Try enabling the appropriate runtime-specific module documented here: https://microshed.org/microshed-testing/features/SupportedRuntimes.html");
     }
 
     /**
