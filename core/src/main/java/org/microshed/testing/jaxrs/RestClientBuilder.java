@@ -18,7 +18,9 @@
  */
 package org.microshed.testing.jaxrs;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +50,9 @@ public class RestClientBuilder {
     private String appContextRoot;
     private String jaxrsPath;
     private String jwt;
+    private String basicAuth;
     private List<Class<?>> providers;
+    private final Map<String, String> headers = new HashMap<>();
 
     /**
      * @param appContextRoot The protocol, hostname, port, and application root path for the REST Client
@@ -81,7 +85,41 @@ public class RestClientBuilder {
      */
     public RestClientBuilder withJwt(String jwt) {
         Objects.requireNonNull(jwt, "Supplied 'jwt' must not be null");
+        if (basicAuth != null)
+            throw new IllegalArgumentException("Cannot configure JWT and Basic Auth on the same REST client");
         this.jwt = jwt;
+        headers.put("Authorization", "Bearer " + jwt);
+        LOGGER.debug("Using provided JWT auth header: " + jwt);
+        return this;
+    }
+
+    /**
+     * @param user The username portion of the Basic auth header
+     * @param password The password portion of the Basic auth header
+     * @return The same builder instance
+     */
+    public RestClientBuilder withBasicAuth(String user, String password) {
+        Objects.requireNonNull(user, "Supplied 'user' must not be null");
+        Objects.requireNonNull(password, "Supplied 'password' must not be null");
+        if (jwt != null)
+            throw new IllegalArgumentException("Cannot configure JWT and Basic Auth on the same REST client");
+        String unEncoded = user + ":" + password;
+        this.basicAuth = Base64.getEncoder().encodeToString(unEncoded.getBytes(StandardCharsets.UTF_8));
+        headers.put("Authorization", "Basic " + basicAuth);
+        LOGGER.debug("Using provided Basic auth header: " + unEncoded + " --> " + basicAuth);
+        return this;
+    }
+
+    /**
+     * @return The same builder instance
+     */
+    public RestClientBuilder withHeader(String key, String value) {
+        Objects.requireNonNull(key, "Supplied header 'key' must not be null");
+        Objects.requireNonNull(value, "Supplied header 'value' must not be null");
+        if (jwt != null)
+            throw new IllegalArgumentException("Cannot configure JWT and Basic Auth on the same REST client");
+        headers.put(key, value);
+        LOGGER.debug("Using provided header " + key + "=" + value);
         return this;
     }
 
@@ -111,12 +149,7 @@ public class RestClientBuilder {
         bean.setResourceClass(clazz);
         bean.setProviders(providers);
         bean.setAddress(basePath);
-        if (jwt != null && jwt.length() > 0) {
-            Map<String, String> headers = new HashMap<>();
-            headers.put("Authorization", "Bearer " + jwt);
-            bean.setHeaders(headers);
-            LOGGER.debug("Using provided JWT auth header: " + jwt);
-        }
+        bean.setHeaders(headers);
         return bean.create(clazz);
     }
 
