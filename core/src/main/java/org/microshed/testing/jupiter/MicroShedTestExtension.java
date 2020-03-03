@@ -32,6 +32,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.microshed.testing.ApplicationEnvironment;
 import org.microshed.testing.SharedContainerConfig;
+import org.microshed.testing.jaxrs.BasicAuthConfig;
 import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jaxrs.RestClientBuilder;
 import org.microshed.testing.jwt.JwtBuilder;
@@ -82,9 +83,23 @@ class MicroShedTestExtension implements BeforeAllCallback {
                 throw new ExtensionConfigurationException("REST client field must be public, static, and non-final: " + restClientField);
             }
             RestClientBuilder rcBuilder = new RestClientBuilder();
-            String jwt = createJwtIfNeeded(restClientField);
-            if (jwt != null)
-                rcBuilder.withJwt(jwt);
+            JwtConfig jwtAnno = restClientField.getDeclaredAnnotation(JwtConfig.class);
+            BasicAuthConfig basicAnno = restClientField.getDeclaredAnnotation(BasicAuthConfig.class);
+            if (jwtAnno != null && basicAnno != null)
+                throw new ExtensionConfigurationException("Can only use one of @JwtConfig or @BasicAuthConfig on REST client field: " + restClientField);
+
+            if (jwtAnno != null) {
+                try {
+                    String jwt = JwtBuilder.buildJwt(jwtAnno.subject(), jwtAnno.issuer(), jwtAnno.claims());
+                    rcBuilder.withJwt(jwt);
+                } catch (Exception e) {
+                    throw new ExtensionConfigurationException("Error while building JWT for field " + restClientField + " with JwtConfig: " + jwtAnno, e);
+                }
+            }
+            if (basicAnno != null) {
+                rcBuilder.withBasicAuth(basicAnno.user(), basicAnno.password());
+            }
+
             Object restClient = rcBuilder.build(restClientField.getType());
             try {
                 restClientField.set(null, restClient);
@@ -93,19 +108,6 @@ class MicroShedTestExtension implements BeforeAllCallback {
                 throw new ExtensionConfigurationException("Unable to set field " + restClientField, e);
             }
         }
-    }
-
-    private static String createJwtIfNeeded(Field restClientField) {
-        Field f = restClientField;
-        JwtConfig anno = f.getDeclaredAnnotation(JwtConfig.class);
-        if (anno != null) {
-            try {
-                return JwtBuilder.buildJwt(anno.subject(), anno.issuer(), anno.claims());
-            } catch (Exception e) {
-                throw new ExtensionConfigurationException("Error while building JWT for field " + f + " with JwtConfig: " + anno, e);
-            }
-        }
-        return null;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

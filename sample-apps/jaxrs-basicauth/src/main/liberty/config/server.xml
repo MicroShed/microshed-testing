@@ -1,0 +1,27 @@
+<server>
+
+    <featureManager>
+        <feature>jaxrs-2.1</feature>
+        <feature>jsonb-1.0</feature>
+        <feature>mpHealth-1.0</feature>
+        <feature>mpConfig-1.3</feature>
+        <feature>mpRestClient-1.1</feature>
+        <feature>cdi-2.0</feature>
+        <feature>appSecurity-3.0</feature>
+    </featureManager>
+    
+    <basicRegistry id="basic">
+		    <user name="alice" password="alicepwd"/>
+		    <user name="bob" password="bobpwd"/>
+		</basicRegistry>
+
+		<webApplication location="myservice.war">
+		    <application-bnd>
+		        <!-- this can also be defined in web.xml instead -->
+		        <security-role name="admin">
+		            <user name="bob"/>
+		        </security-role>
+		    </application-bnd>
+		</webApplication>
+            
+</server>

@@ -1,0 +1,19 @@
+plugins {
+  id 'war'
+}
+
+dependencies {
+  providedCompile 'javax:javaee-api:8.0.1'
+  providedCompile 'org.eclipse.microprofile:microprofile:2.1'
+  testCompile project(':microshed-testing-testcontainers')
+  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.15.0'
+  testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.6.0'
+}
+
+war.archiveName 'myservice.war'
+test.dependsOn 'war'
+
+// Always re-run tests on every build for the sake of this sample
+// In a real project, this setting would not be desirable
+test.outputs.upToDateWhen { false } 

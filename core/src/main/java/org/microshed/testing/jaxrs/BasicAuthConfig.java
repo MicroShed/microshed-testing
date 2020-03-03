@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 IBM Corporation and others
+ * Copyright (c) 2020 IBM Corporation and others
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -16,41 +16,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.microshed.testing.jwt;
+package org.microshed.testing.jaxrs;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.microshed.testing.jaxrs.RESTClient;
-
 /**
- * Used to annotate a REST Client to configure MicroProfile JWT settings
+ * Used to annotate a REST Client to configure Basic Authorization
  * that will be applied to all of its HTTP invocations.
  * In order for this annotation to have any effect, the field must also
  * be annotated with {@link RESTClient}.
  */
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JwtConfig {
+public @interface BasicAuthConfig {
 
-    public static final String DEFAULT_ISSUER = "http://testissuer.com";
-    public static final String DEFAULT_SUBJECT = "testSubject";
+    String user();
 
-    public String issuer() default DEFAULT_ISSUER;
+    String password();
 
-    public String subject() default DEFAULT_SUBJECT;
-
-    /**
-     * array of claims in the following format:
-     * key=value
-     * example: {"sub=fred", "upn=fred", "kid=123"}
-     *
-     * For arrays, separate values with a comma.
-     * example: {"groups=red,green,admin", "sub=fred"}
-     *
-     * @return The configured JWT claims
-     */
-    public String[] claims() default {};
 }
