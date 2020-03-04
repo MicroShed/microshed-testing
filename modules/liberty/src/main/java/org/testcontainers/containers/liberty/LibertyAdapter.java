@@ -26,11 +26,23 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.microshed.testing.ApplicationEnvironment;
+import org.microshed.testing.testcontainers.ApplicationContainer;
+import org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration;
+import org.microshed.testing.testcontainers.config.TestcontainersConfiguration;
 import org.microshed.testing.testcontainers.spi.ServerAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
 public class LibertyAdapter implements ServerAdapter {
+
+    static final Logger LOG = LoggerFactory.getLogger(LibertyAdapter.class);
 
     private static String BASE_DOCKER_IMAGE = "openliberty/open-liberty:full-java8-openj9-ubi";
     private static final String CONFIG_FILE_PROP = "MICROSHED_TEST_LIBERTY_CONFIG_FILE";
@@ -124,6 +136,54 @@ public class LibertyAdapter implements ServerAdapter {
         if (configDirExists)
             image.withFileFromFile("/config", configDir);
         return image;
+    }
+
+    @Override
+    public void configure(Set<GenericContainer<?>> containers) {
+        configureKafka(containers);
+    }
+
+    private void configureKafka(Set<GenericContainer<?>> containers) {
+        Class<?> KafkaContainer = tryLoad("org.testcontainers.containers.KafkaContainer");
+        if (KafkaContainer == null)
+            return;
+        Set<GenericContainer<?>> kafkaContainers = containers.stream()
+                        .filter(c -> KafkaContainer.isAssignableFrom(c.getClass()))
+                        .collect(Collectors.toSet());
+        if (kafkaContainers.size() != 1)
+            return;
+
+        // At this point we have found exactly 1 kafka container
+        GenericContainer<?> kafka = kafkaContainers.iterator().next();
+
+        // Configure app container with bootstrap server
+        String bootstrapProperty = "MP_MESSAGING_CONNECTOR_LIBERTY_KAFKA_BOOTSTRAP_SERVERS";
+        String bootstrapServer = null;
+        if (ApplicationEnvironment.Resolver.isSelected(TestcontainersConfiguration.class)) {
+            if (kafka.getNetworkAliases().size() == 0)
+                throw new ExtensionConfigurationException("Unable to configure kafka bootstrap server because no network alias is defined");
+            bootstrapServer = kafka.getNetworkAliases().get(kafka.getNetworkAliases().size() - 1) + ":9092";
+        } else if (ApplicationEnvironment.Resolver.isSelected(HollowTestcontainersConfiguration.class)) {
+            bootstrapServer = "localhost:9093";
+        } else {
+            return;
+        }
+        String finalBootstrapServers = bootstrapServer;
+        LOG.info("Auto-configuring ApplicationContainer instances with " + bootstrapProperty + "=" + finalBootstrapServers);
+        containers.stream()
+                        .filter(c -> ApplicationContainer.class.isAssignableFrom(c.getClass()))
+                        .filter(c -> c.getNetwork().equals(kafka.getNetwork()))
+                        .filter(c -> !c.getEnvMap().containsKey(bootstrapProperty))
+                        .filter(c -> !c.getEnvMap().containsKey(bootstrapProperty.toLowerCase()))
+                        .forEach(c -> c.withEnv(bootstrapProperty, finalBootstrapServers));
+    }
+
+    private static Class<?> tryLoad(String clazz) {
+        try {
+            return Class.forName(clazz, false, LibertyAdapter.class.getClassLoader());
+        } catch (ClassNotFoundException | LinkageError e) {
+            return null;
+        }
     }
 
 }

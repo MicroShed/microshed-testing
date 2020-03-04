@@ -21,6 +21,7 @@ package org.microshed.testing.testcontainers.config;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -90,6 +91,14 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
             LOG.debug("No networks explicitly defined. Using shared network for all containers in " + testClass);
             unsharedContainers.forEach(c -> c.setNetwork(Network.SHARED));
         }
+
+        // Give ServerAdapters a chance to do some auto-wiring between containers
+        allContainers().stream()
+                        .filter(c -> ApplicationContainer.class.isAssignableFrom(c.getClass()))
+                        .findFirst()
+                        .ifPresent(c -> {
+                            ((ApplicationContainer) c).getServerAdapter().configure(allContainers());
+                        });
 
         if (isJwtNeeded()) {
             allContainers().stream()
@@ -238,7 +247,7 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
     protected Set<GenericContainer<?>> allContainers() {
         Set<GenericContainer<?>> all = new HashSet<>(unsharedContainers);
         all.addAll(sharedContainers);
-        return all;
+        return Collections.unmodifiableSet(all);
     }
 
     private static Class<?> tryLoad(String clazz) {

@@ -21,7 +21,10 @@ package org.microshed.testing.testcontainers.spi;
 import java.io.File;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
+import org.microshed.testing.testcontainers.ApplicationContainer;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
 /**
@@ -102,5 +105,18 @@ public interface ServerAdapter {
      */
     default Optional<String> getReadinessPath() {
         return Optional.empty();
+    }
+
+    /**
+     * An optional hook that may be implemented for the purposes of auto-wiring multiple
+     * containers the the test environment together.
+     * <p>
+     * For example, the <code>LibertyAdapter</code> detects the presence of a KafkaContainer
+     * and will automatically configure the ApplicationContainer to communicate with it by
+     * calling {@link ApplicationContainer#withEnv(String, String)}
+     *
+     * @param allContainers An unmodifiable set of the containers discovered in the test environment
+     */
+    default void configure(Set<GenericContainer<?>> allContainers) {
     }
 }
