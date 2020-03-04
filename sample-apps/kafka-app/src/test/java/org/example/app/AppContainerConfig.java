@@ -18,10 +18,8 @@
  */
 package org.example.app;
 
-import org.microshed.testing.ApplicationEnvironment;
 import org.microshed.testing.SharedContainerConfiguration;
 import org.microshed.testing.testcontainers.ApplicationContainer;
-import org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Container;
@@ -32,31 +30,15 @@ public class AppContainerConfig implements SharedContainerConfiguration {
 
     @Container
     public static KafkaContainer kafka = new KafkaContainer()
+        .withNetworkAliases("kafka")
         .withNetwork(network);
 
     @Container
     public static ApplicationContainer app = new ApplicationContainer()
-                    .withAppContextRoot("/")
                     .withReadinessPath("/health/ready")
-                    .withNetwork(network);
-    
-    @Override
-    public void startContainers() {
-        if (ApplicationEnvironment.Resolver.isSelected(HollowTestcontainersConfiguration.class)) {
-            // Run in dev mode. 
-            // The application talks to KafkaContainer from outside of the Docker network,
-            // and it can talk to kafka directly on 9093. 
-            // The MicroProfile configure should define as following:
-            // mp.messaging.connector.liberty-kafka.bootstrap.servers=localhost:9093
-        } else {
-            // Run by maven verify goal.
-            // The application talks to KafkaContainer within Docker network, 
-            // and it need to talk to the broker on port 9092
-            kafka.withNetworkAliases("kafka");
-            app.withEnv("MP_MESSAGING_CONNECTOR_LIBERTY_KAFKA_BOOTSTRAP_SERVERS", "kafka:9092");
-        }
-        kafka.start();
-        app.start();
-    }
+                    // When running in the same docker network as Kafka, we need to use port 9092 instead of 9093
+                    .withEnv("MP_MESSAGING_CONNECTOR_LIBERTY_KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
+                    .withNetwork(network)
+                    .dependsOn(kafka);
     
 }

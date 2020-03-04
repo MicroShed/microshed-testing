@@ -23,8 +23,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
@@ -36,6 +39,8 @@ import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jaxrs.RestClientBuilder;
 import org.microshed.testing.jwt.JwtBuilder;
 import org.microshed.testing.jwt.JwtConfig;
+import org.microshed.testing.kafka.KafkaConsumerConfig;
+import org.microshed.testing.kafka.KafkaProducerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +68,7 @@ class MicroShedTestExtension implements BeforeAllCallback {
         config.start();
         configureRestAssured(config);
         injectRestClients(testClass);
+        injectKafkaClients(testClass);
     }
 
     private static void injectRestClients(Class<?> clazz) {
@@ -90,7 +96,96 @@ class MicroShedTestExtension implements BeforeAllCallback {
                 restClientField.set(null, restClient);
                 LOG.debug("Injected rest client for " + restClientField);
             } catch (Exception e) {
-                throw new ExtensionConfigurationException("Unable to set field " + restClientField, e);
+                throw new ExtensionConfigurationException("Unable to inject field " + restClientField, e);
+            }
+        }
+    }
+
+    private void injectKafkaClients(Class<?> clazz) {
+        // Verify kafka-client and testcontainers-kafka is on classpath
+        Class<?> KafkaProducer = tryLoad("org.apache.kafka.clients.producer.KafkaProducer");
+        Class<?> KafkaConsumer = tryLoad("org.apache.kafka.clients.consumer.KafkaConsumer");
+        if (KafkaProducer == null || KafkaConsumer == null)
+            return;
+        String globalBootstrapServers = System.getProperty("org.microshed.kafka.bootstrap.servers");
+
+        List<Field> kafkaProducerFields = AnnotationSupport.findAnnotatedFields(clazz, KafkaProducerConfig.class);
+        for (Field producerField : kafkaProducerFields) {
+            if (!KafkaProducer.isAssignableFrom(producerField.getType())) {
+                throw new ExtensionConfigurationException("Fields annotated with @KafkaProducerConfig must be of the type " + KafkaProducer.getName());
+            }
+            if (!Modifier.isPublic(producerField.getModifiers()) ||
+                !Modifier.isStatic(producerField.getModifiers()) ||
+                Modifier.isFinal(producerField.getModifiers())) {
+                throw new ExtensionConfigurationException("The KafkaProducer field annotated with @KafkaProducerConfig " +
+                                                          "must be public, static, and non-final: " + producerField);
+            }
+
+            KafkaProducerConfig producerConfig = producerField.getAnnotation(KafkaProducerConfig.class);
+            Properties properties = new Properties();
+            String bootstrapServers = producerConfig.bootstrapServers().isEmpty() ? globalBootstrapServers : producerConfig.bootstrapServers();
+            if (bootstrapServers.isEmpty())
+                throw new ExtensionConfigurationException("To use @KafkaProducerConfig on a KafkaProducer a bootstrap server must be " +
+                                                          "defined in the @KafkaProducerConfig annotation or using the " +
+                                                          "'org.microshed.kafka.bootstrap.servers' system property");
+            properties.put("bootstrap.servers", bootstrapServers);
+            properties.put("key.serializer", producerConfig.keySerializer().getName());
+            properties.put("value.serializer", producerConfig.valueSerializer().getName());
+            for (String prop : producerConfig.properties()) {
+                int split = prop.indexOf("=");
+                if (split < 2)
+                    throw new ExtensionConfigurationException("The property '" + prop + "' for field " + producerField + " must be in the format 'key=value'");
+                properties.put(prop.substring(0, split), prop.substring(split + 1));
+            }
+            try {
+                Object producer = KafkaProducer.getConstructor(Properties.class).newInstance(properties);
+                producerField.set(null, producer);
+                LOG.debug("Injected kafka producer for " + producerField + " with config " + producerConfig);
+            } catch (Exception e) {
+                throw new ExtensionConfigurationException("Unable to inject field " + producerField, e);
+            }
+        }
+
+        List<Field> kafkaConsumerFields = AnnotationSupport.findAnnotatedFields(clazz, KafkaConsumerConfig.class);
+        for (Field consumerField : kafkaConsumerFields) {
+            if (!KafkaConsumer.isAssignableFrom(consumerField.getType())) {
+                throw new ExtensionConfigurationException("Fields annotated with @KafkaConsumerConfig must be of the type " + KafkaConsumer.getName());
+            }
+            if (!Modifier.isPublic(consumerField.getModifiers()) ||
+                !Modifier.isStatic(consumerField.getModifiers()) ||
+                Modifier.isFinal(consumerField.getModifiers())) {
+                throw new ExtensionConfigurationException("The KafkaProducer field annotated with @KafkaConsumerConfig " +
+                                                          "must be public, static, and non-final: " + consumerField);
+            }
+
+            KafkaConsumerConfig consumerConfig = consumerField.getAnnotation(KafkaConsumerConfig.class);
+            Properties properties = new Properties();
+            String bootstrapServers = consumerConfig.bootstrapServers().isEmpty() ? globalBootstrapServers : consumerConfig.bootstrapServers();
+            if (bootstrapServers.isEmpty())
+                throw new ExtensionConfigurationException("To use @KafkaConsumerConfig on a KafkaConsumer a bootstrap server must be " +
+                                                          "defined in the @KafkaConsumerConfig annotation or using the " +
+                                                          "'org.microshed.kafka.bootstrap.servers' system property");
+            properties.put("bootstrap.servers", bootstrapServers);
+            properties.put("group.id", consumerConfig.groupId());
+            properties.put("key.deserializer", consumerConfig.keyDeserializer().getName());
+            properties.put("value.deserializer", consumerConfig.valueDeserializer().getName());
+            for (String prop : consumerConfig.properties()) {
+                int split = prop.indexOf("=");
+                if (split < 2)
+                    throw new ExtensionConfigurationException("The property '" + prop + "' for field " + consumerField + " must be in the format 'key=value'");
+                properties.put(prop.substring(0, split), prop.substring(split + 1));
+            }
+            try {
+                Object consumer = KafkaConsumer.getConstructor(Properties.class).newInstance(properties);
+                consumerField.set(null, consumer);
+                LOG.debug("Injected kafka consumer for " + consumerField + " with config " + consumerConfig);
+                if (consumerConfig.topics().length > 0) {
+                    Collection<String> topics = Arrays.asList(consumerConfig.topics());
+                    KafkaConsumer.getMethod("subscribe", Collection.class).invoke(consumer, topics);
+                    LOG.debug("Subscribed kafka consumer for " + consumerField + " to topics " + topics);
+                }
+            } catch (Exception e) {
+                throw new ExtensionConfigurationException("Unable to inject field " + consumerField, e);
             }
         }
     }

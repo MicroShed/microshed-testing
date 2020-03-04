@@ -1,9 +1,7 @@
 <server description="Kitchen Service">
 
   <featureManager>
-    <feature>jaxrs-2.1</feature>
     <feature>cdi-2.0</feature>
-    <feature>concurrent-1.0</feature>
     <feature>jsonb-1.0</feature>
     <feature>mpHealth-2.1</feature>
     <feature>mpConfig-1.3</feature>
