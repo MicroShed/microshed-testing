@@ -1,0 +1,22 @@
+plugins {
+  id 'war'
+}
+
+dependencies {
+  providedCompile 'javax:javaee-api:8.0.1'
+  providedCompile 'org.eclipse.microprofile:microprofile:3.3'
+  providedCompile 'org.eclipse.microprofile.reactive.messaging:microprofile-reactive-messaging-api:1.0'
+  compile 'org.apache.kafka:kafka-clients:2.4.0'
+  testCompile project(':microshed-testing-testcontainers')
+  testCompile 'org.awaitility:awaitility:4.0.2'
+  testCompile 'org.testcontainers:kafka:1.12.5'
+  testCompile 'org.slf4j:slf4j-log4j12:1.7.29'
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.6.0'
+}
+
+war.archiveName 'myservice.war'
+test.dependsOn 'war'
+
+// Always re-run tests on every build for the sake of this sample
+// In a real project, this setting would not be desirable
+test.outputs.upToDateWhen { false } 

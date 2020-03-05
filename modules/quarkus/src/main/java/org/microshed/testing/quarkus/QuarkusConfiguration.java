@@ -94,8 +94,7 @@ public class QuarkusConfiguration extends TestcontainersConfiguration {
         // TODO: JWT auto configuration
 //        autoConfigureJwt();
         autoConfigureDatabases();
-        // TODO: Kafka auto configuration (fix classpath conflicts)
-//        autoConfigureKafka();
+        autoConfigureKafka();
         autoConfigureMongoDB();
     }
 
@@ -150,7 +149,9 @@ public class QuarkusConfiguration extends TestcontainersConfiguration {
     }
 
     private void autoConfigureKafka() {
-        if (System.getProperty("quarkus.kafka.bootstrap-servers") != null)
+        final String KAFKA_PROP = "kafka.bootstrap.servers";
+        //kafka.bootstrap.servers
+        if (System.getProperty(KAFKA_PROP) != null)
             return; // Do not override explicit configuration
         try {
             Class<?> KafkaContainerClass = Class.forName("org.testcontainers.containers.KafkaContainer");
@@ -160,12 +161,12 @@ public class QuarkusConfiguration extends TestcontainersConfiguration {
             if (kafkaContainers.size() == 1) {
                 GenericContainer<?> kafka = kafkaContainers.get(0);
                 String bootstrapServers = (String) KafkaContainerClass.getMethod("getBootstrapServers").invoke(kafka);
-                System.setProperty("quarkus.kafka.bootstrap-servers", bootstrapServers);
+                System.setProperty(KAFKA_PROP, bootstrapServers);
                 if (LOG.isInfoEnabled())
-                    LOG.info("Set quarkus.kafka.bootstrap-servers=" + bootstrapServers);
+                    LOG.info("Set " + KAFKA_PROP + "=" + bootstrapServers);
             } else if (kafkaContainers.size() > 1) {
                 if (LOG.isInfoEnabled())
-                    LOG.info("Located multiple KafkaContainer instances. Unable to auto configure 'quarkus.kafka.bootstrap-servers' property");
+                    LOG.info("Located multiple KafkaContainer instances. Unable to auto configure '" + KAFKA_PROP + "' property");
             } else {
                 if (LOG.isDebugEnabled())
                     LOG.debug("No KafkaContainer instances found in configuration");

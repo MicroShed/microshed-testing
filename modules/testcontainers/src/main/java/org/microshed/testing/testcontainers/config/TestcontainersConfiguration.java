@@ -21,10 +21,11 @@ package org.microshed.testing.testcontainers.config;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.platform.commons.support.AnnotationSupport;
@@ -40,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.lifecycle.Startables;
 
 public class TestcontainersConfiguration implements ApplicationEnvironment {
 
@@ -90,8 +92,16 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
             unsharedContainers.forEach(c -> c.setNetwork(Network.SHARED));
         }
 
+        // Give ServerAdapters a chance to do some auto-wiring between containers
+        allContainers().stream()
+                        .filter(c -> ApplicationContainer.class.isAssignableFrom(c.getClass()))
+                        .findFirst()
+                        .ifPresent(c -> {
+                            ((ApplicationContainer) c).getServerAdapter().configure(allContainers());
+                        });
+
         if (isJwtNeeded()) {
-            Stream.concat(unsharedContainers.stream(), sharedContainers.stream())
+            allContainers().stream()
                             .filter(c -> ApplicationContainer.class.isAssignableFrom(c.getClass()))
                             .filter(c -> !c.isRunning())
                             .filter(c -> !c.getEnvMap().containsKey(JwtBuilder.MP_JWT_PUBLIC_KEY))
@@ -108,6 +118,7 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
     public void start() {
         List<GenericContainer<?>> containersToStart = new ArrayList<>();
 
+        long start = System.currentTimeMillis();
         // Start shared containers first
         if (sharedConfigClass != null) {
             try {
@@ -125,15 +136,43 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
         containersToStart.addAll(unsharedContainers);
         containersToStart.removeIf(c -> c.isRunning());
 
-        if (containersToStart.size() == 0)
+        if (containersToStart.size() > 0) {
+            LOG.info("Starting containers " + containersToStart + " in parallel for " + currentTestClass);
+            for (GenericContainer<?> c : containersToStart)
+                LOG.info("  " + c.getImage());
+            Startables.deepStart(containersToStart).join();
+        }
+        LOG.info("All containers started in " + (System.currentTimeMillis() - start) + "ms");
+
+        configureKafka();
+    }
+
+    void configureKafka() {
+        // If a KafkaContainer is defined, store the bootstrap location
+        Class<?> KafkaContainer = tryLoad("org.testcontainers.containers.KafkaContainer");
+        if (KafkaContainer == null)
             return;
 
-        LOG.info("Starting containers in parallel for " + currentTestClass);
-        for (GenericContainer<?> c : containersToStart)
-            LOG.info("  " + c.getImage());
-        long start = System.currentTimeMillis();
-        containersToStart.parallelStream().forEach(GenericContainer::start);
-        LOG.info("All containers started in " + (System.currentTimeMillis() - start) + "ms");
+        Set<GenericContainer<?>> kafkaContainers = allContainers().stream()
+                        .filter(c -> KafkaContainer.isAssignableFrom(c.getClass()))
+                        .collect(Collectors.toSet());
+
+        if (kafkaContainers.size() == 1) {
+            try {
+                GenericContainer<?> kafka = kafkaContainers.iterator().next();
+                String bootstrapServers = (String) KafkaContainer.getMethod("getBootstrapServers").invoke(kafka);
+                System.setProperty("org.microshed.kafka.bootstrap.servers", bootstrapServers);
+                LOG.debug("Discovered KafkaContainer with bootstrap.servers=" + bootstrapServers);
+            } catch (Exception e) {
+                LOG.warn("Unable to set kafka boostrap server", e);
+            }
+        } else if (kafkaContainers.size() > 1) {
+            if (LOG.isInfoEnabled())
+                LOG.info("Located multiple KafkaContainer instances. Unable to auto configure kafka clients");
+        } else {
+            if (LOG.isDebugEnabled())
+                LOG.debug("No KafkaContainer instances found in configuration");
+        }
     }
 
     @Override
@@ -208,7 +247,15 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
     protected Set<GenericContainer<?>> allContainers() {
         Set<GenericContainer<?>> all = new HashSet<>(unsharedContainers);
         all.addAll(sharedContainers);
-        return all;
+        return Collections.unmodifiableSet(all);
+    }
+
+    private static Class<?> tryLoad(String clazz) {
+        try {
+            return Class.forName(clazz, false, TestcontainersConfiguration.class.getClassLoader());
+        } catch (ClassNotFoundException | LinkageError e) {
+            return null;
+        }
     }
 
 }

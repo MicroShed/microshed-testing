@@ -15,6 +15,7 @@ Sometimes code is worth a thousand words. Here are some pointers to working exam
 - [JAX-RS application secured with Basic Auth](https://github.com/MicroShed/microshed-testing/tree/master/sample-apps/jaxrs-basicauth) 
 - [JAX-RS application secured with MP JWT](https://github.com/MicroShed/microshed-testing/tree/master/sample-apps/jaxrs-mpjwt)
 - [JAX-RS and MongoDB application that depends on an external REST service](https://github.com/MicroShed/microshed-testing/tree/master/sample-apps/everything-app)
+- [Application using Apache Kafka messaging](https://github.com/MicroShed/microshed-testing/tree/master/sample-apps/kafka-app)
 - [Application with no Dockerfile using OpenLiberty adapter](https://github.com/MicroShed/microshed-testing/tree/master/sample-apps/liberty-app)
 
 ## Runtime examples:
