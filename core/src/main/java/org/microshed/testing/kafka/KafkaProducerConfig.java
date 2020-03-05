@@ -45,13 +45,17 @@ public @interface KafkaProducerConfig {
 
     /**
      * @return Sets the <code>key.serializer</code> property for the injected <code>KafkaProducer</code>.
+     *         If unset, an an attempt will be made to select an appropriate class from the built-in serializers
+     *         in the <code>org.apache.kafka.common.serialization</code> package.
      */
-    Class<?> keySerializer();
+    Class<?> keySerializer() default Object.class;
 
     /**
      * @return Sets the <code>value.serializer</code> property for the injected <code>KafkaProducer</code>.
+     *         If unset, an an attempt will be made to select an appropriate class from the built-in serializers
+     *         in the <code>org.apache.kafka.common.serialization</code> package.
      */
-    Class<?> valueSerializer();
+    Class<?> valueSerializer() default Object.class;
 
     /**
      * @return An optional array of <code>key=value</code> strings, which will be used as configuration options
