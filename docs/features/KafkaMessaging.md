@@ -36,8 +36,9 @@ public class AppContainerConfig implements SharedContainerConfiguration {
 }
 ```
 
-Runtimes such as OpenLiberty and Quarkus will be automatically configured if a `KafkaContainer` is present
-in the test environment. For other runtimes, you can link the containers together by using `kafka.withNetworkAlias("kafka")` 
+Runtimes such as OpenLiberty and Quarkus will be auto-configured together if a `KafkaContainer` is present
+in the test environment. For Quarkus, no `ApplicationContainer` or `Network` is needed either. 
+For other runtimes, you can link the containers together by using `kafka.withNetworkAlias("kafka")` 
 and `app.withEnv("<runtime-specific kafka bootstrap servers property>", "kafka:9092")`.
 
 
