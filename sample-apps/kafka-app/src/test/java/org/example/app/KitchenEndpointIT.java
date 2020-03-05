@@ -28,8 +28,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.example.app.KitchenOrder.JsonbSerializer;
 import org.example.app.KitchenOrder.KitchenOrderDeserializer;
 import org.junit.jupiter.api.Test;
@@ -42,10 +40,10 @@ import org.microshed.testing.kafka.KafkaProducerConfig;
 @SharedContainerConfig(AppContainerConfig.class)
 public class KitchenEndpointIT {
 
-  @KafkaProducerConfig(keySerializer = StringSerializer.class, valueSerializer = JsonbSerializer.class)
+  @KafkaProducerConfig(valueSerializer = JsonbSerializer.class)
   public static KafkaProducer<String, KitchenOrder> producer;
 
-  @KafkaConsumerConfig(keyDeserializer = StringDeserializer.class, valueDeserializer = KitchenOrderDeserializer.class, 
+  @KafkaConsumerConfig(valueDeserializer = KitchenOrderDeserializer.class, 
       groupId = "update-status", topics = "statusTopic", 
       properties = ConsumerConfig.AUTO_OFFSET_RESET_CONFIG + "=earliest")
   public static KafkaConsumer<String, KitchenOrder> consumer;

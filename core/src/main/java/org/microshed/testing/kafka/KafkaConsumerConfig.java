@@ -45,13 +45,17 @@ public @interface KafkaConsumerConfig {
 
     /**
      * @return Sets the <code>key.deserializer</code> property for the injected <code>KafkaConsumer</code>.
+     *         If unset, an an attempt will be made to select an appropriate class from the built-in deserializers
+     *         in the <code>org.apache.kafka.common.serialization</code> package.
      */
-    Class<?> keyDeserializer();
+    Class<?> keyDeserializer() default Object.class;
 
     /**
      * @return Sets the <code>value.deserializer</code> property for the injected <code>KafkaConsumer</code>.
+     *         If unset, an an attempt will be made to select an appropriate class from the built-in deserializers
+     *         in the <code>org.apache.kafka.common.serialization</code> package.
      */
-    Class<?> valueDeserializer();
+    Class<?> valueDeserializer() default Object.class;
 
     /**
      * @return Sets the <code>group.id</code> property for the injected <code>KafkaConsumer</code>.

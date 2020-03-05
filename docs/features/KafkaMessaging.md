@@ -57,14 +57,11 @@ import org.microshed.testing.kafka.KafkaProducerConfig;
 @SharedContainerConfig(AppContainerConfig.class)
 public class KitchenEndpointIT {
 
-  @KafkaProducerConfig(keySerializer = StringSerializer.class,      // (1)
-                       valueSerializer = StringSerializer.class)
+  @KafkaProducerConfig                                   // (1)
   public static KafkaProducer<String, String> producer;
 
-  @KafkaConsumerConfig(keyDeserializer = StringDeserializer.class, 
-                       valueDeserializer = StringDeserializer.class, 
-                       groupId = "update-status", 
-                       topics = "statusTopic")                      // (2)
+  @KafkaConsumerConfig(groupId = "update-status",
+                       topics = "statusTopic")           // (2)
   public static KafkaConsumer<String, String> consumer;
   
   @Test
@@ -79,8 +76,9 @@ public class KitchenEndpointIT {
 }
 ```
 
-1. Each `@KafkaProducerConfig` and `@KafkaConsumerConfig` must define a set of key/value [de]serializers
-that correspond to the key/value types defined in the `KafkaProducer` and `KafkaConsumer`.
+1. Each `@KafkaProducerConfig` and `@KafkaConsumerConfig` may optionally define a set of key/value [de]serializers
+that correspond to the key/value types defined in the `KafkaProducer` and `KafkaConsumer`. If none are specified,
+then an attempt will be made to auto-detect a fitting built-in [de]serializer.
 2. For `@KafkaConsumerConfig` zero or more `topics` may be specified to automatically subscribe the 
 injected `consumer` to the specified `topics`.
 

@@ -122,7 +122,8 @@ class MicroShedTestExtension implements BeforeAllCallback {
         Class<?> KafkaConsumer = tryLoad("org.apache.kafka.clients.consumer.KafkaConsumer");
         if (KafkaProducer == null || KafkaConsumer == null)
             return;
-        String globalBootstrapServers = System.getProperty("org.microshed.kafka.bootstrap.servers");
+
+        KafkaConfigAnnotationProcessor kafkaProcessor = new KafkaConfigAnnotationProcessor();
 
         List<Field> kafkaProducerFields = AnnotationSupport.findAnnotatedFields(clazz, KafkaProducerConfig.class);
         for (Field producerField : kafkaProducerFields) {
@@ -136,26 +137,11 @@ class MicroShedTestExtension implements BeforeAllCallback {
                                                           "must be public, static, and non-final: " + producerField);
             }
 
-            KafkaProducerConfig producerConfig = producerField.getAnnotation(KafkaProducerConfig.class);
-            Properties properties = new Properties();
-            String bootstrapServers = producerConfig.bootstrapServers().isEmpty() ? globalBootstrapServers : producerConfig.bootstrapServers();
-            if (bootstrapServers.isEmpty())
-                throw new ExtensionConfigurationException("To use @KafkaProducerConfig on a KafkaProducer a bootstrap server must be " +
-                                                          "defined in the @KafkaProducerConfig annotation or using the " +
-                                                          "'org.microshed.kafka.bootstrap.servers' system property");
-            properties.put("bootstrap.servers", bootstrapServers);
-            properties.put("key.serializer", producerConfig.keySerializer().getName());
-            properties.put("value.serializer", producerConfig.valueSerializer().getName());
-            for (String prop : producerConfig.properties()) {
-                int split = prop.indexOf("=");
-                if (split < 2)
-                    throw new ExtensionConfigurationException("The property '" + prop + "' for field " + producerField + " must be in the format 'key=value'");
-                properties.put(prop.substring(0, split), prop.substring(split + 1));
-            }
+            Properties properties = kafkaProcessor.getProducerProperties(producerField);
             try {
                 Object producer = KafkaProducer.getConstructor(Properties.class).newInstance(properties);
                 producerField.set(null, producer);
-                LOG.debug("Injected kafka producer for " + producerField + " with config " + producerConfig);
+                LOG.debug("Injected kafka producer for " + producerField + " with config " + producerField.getAnnotation(KafkaProducerConfig.class));
             } catch (Exception e) {
                 throw new ExtensionConfigurationException("Unable to inject field " + producerField, e);
             }
@@ -173,23 +159,8 @@ class MicroShedTestExtension implements BeforeAllCallback {
                                                           "must be public, static, and non-final: " + consumerField);
             }
 
+            Properties properties = kafkaProcessor.getConsumerProperties(consumerField);
             KafkaConsumerConfig consumerConfig = consumerField.getAnnotation(KafkaConsumerConfig.class);
-            Properties properties = new Properties();
-            String bootstrapServers = consumerConfig.bootstrapServers().isEmpty() ? globalBootstrapServers : consumerConfig.bootstrapServers();
-            if (bootstrapServers.isEmpty())
-                throw new ExtensionConfigurationException("To use @KafkaConsumerConfig on a KafkaConsumer a bootstrap server must be " +
-                                                          "defined in the @KafkaConsumerConfig annotation or using the " +
-                                                          "'org.microshed.kafka.bootstrap.servers' system property");
-            properties.put("bootstrap.servers", bootstrapServers);
-            properties.put("group.id", consumerConfig.groupId());
-            properties.put("key.deserializer", consumerConfig.keyDeserializer().getName());
-            properties.put("value.deserializer", consumerConfig.valueDeserializer().getName());
-            for (String prop : consumerConfig.properties()) {
-                int split = prop.indexOf("=");
-                if (split < 2)
-                    throw new ExtensionConfigurationException("The property '" + prop + "' for field " + consumerField + " must be in the format 'key=value'");
-                properties.put(prop.substring(0, split), prop.substring(split + 1));
-            }
             try {
                 Object consumer = KafkaConsumer.getConstructor(Properties.class).newInstance(properties);
                 consumerField.set(null, consumer);
