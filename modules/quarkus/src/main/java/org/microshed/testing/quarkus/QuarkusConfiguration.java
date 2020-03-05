@@ -20,6 +20,7 @@ package org.microshed.testing.quarkus;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
@@ -60,9 +61,30 @@ public class QuarkusConfiguration extends TestcontainersConfiguration {
     @Override
     public String getApplicationURL() {
         try {
-            Class<?> TestHTTPResourceManager = Class.forName("io.quarkus.test.common.http.TestHTTPResourceManager");
-            String testUrl = (String) TestHTTPResourceManager.getMethod("getUri").invoke(null);
-            return testUrl;
+            // First check for 'test.url' set directly
+            String testUrl = System.getProperty("test.url", "");
+            if (!testUrl.isEmpty())
+                return testUrl;
+
+            // Next, check application.properties
+            Properties props = new Properties();
+            props.load(getClass().getClassLoader().getResourceAsStream("application.properties"));
+            String testPort = props.getProperty("quarkus.http.test-port", "");
+            if (!testPort.isEmpty())
+                return "http://localhost:" + testPort;
+            testPort = props.getProperty("%test.quarkus.http.port", "");
+            if (!testPort.isEmpty())
+                return "http://localhost:" + testPort;
+
+            // Otherwise, assume we are running on the default test url
+            return "http://localhost:8081/";
+
+            // TODO: Need to handle running tests during dev mode somehow, which can result
+            // in the default HTTP port being 8080 instead of 8081. Below is the previous approach
+            // but it doesn't always work because REST clients get injected before quarkus is started
+//            Class<?> TestHTTPResourceManager = Class.forName("io.quarkus.test.common.http.TestHTTPResourceManager");
+//            String testUrl = (String) TestHTTPResourceManager.getMethod("getUri").invoke(null);
+//            return testUrl;
         } catch (Throwable e) {
             if (LOG.isDebugEnabled())
                 LOG.debug("Unable to determine Quarkus application URL", e);
@@ -84,7 +106,10 @@ public class QuarkusConfiguration extends TestcontainersConfiguration {
             }
         }
 
-        ManuallyStartedConfiguration.setRuntimeURL(getApplicationURL());
+        String appUrl = getApplicationURL();
+        LOG.info("Using Quarkus application URL: " + appUrl);
+
+        ManuallyStartedConfiguration.setRuntimeURL(appUrl);
         super.applyConfiguration(testClass);
     }
 
