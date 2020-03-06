@@ -5,7 +5,7 @@ order: 22
 ---
 
 MicroShed Testing provides integration with applications using [Apache Kafka](https://kafka.apache.org/) for messaging. Apache Kafka is
-a messaging engine that is commonly used with Java microservice applications, and also is commonly used with [MicroProfile Reactive Messaging(https://github.com/eclipse/microprofile-reactive-messaging).
+a messaging engine that is commonly used with Java microservice applications, and also is commonly used with [MicroProfile Reactive Messaging](https://github.com/eclipse/microprofile-reactive-messaging).
 
 ## Sending and receiving messages from tests
 
