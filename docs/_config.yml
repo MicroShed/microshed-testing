@@ -1,9 +1,5 @@
 title: MicroShed Testing
-description: >- # this means to ignore newlines until "baseurl:"
-  MicroShed Testing offers a fast and simple way of writing and running true-to-production 
-  integration tests for Java microservice applications. MicroShed Testing exercises your 
-  containerized application from outside the container so you are testing the exact same 
-  image that runs in production.
+description: Get going on true-to-production tests without the hassle
 baseurl: "/microshed-testing"
 url: "" 
 
