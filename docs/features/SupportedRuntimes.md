@@ -12,7 +12,7 @@ Maven Dependency:
 <dependency>
     <groupId>org.microshed</groupId>
     <artifactId>microshed-testing-liberty</artifactId>
-    <version>0.7.1</version>
+    <version>0.8</version>
 </dependency>
 ```
 
@@ -32,7 +32,7 @@ Maven Dependency:
 <dependency>
     <groupId>org.microshed</groupId>
     <artifactId>microshed-testing-payara-micro</artifactId>
-    <version>0.7.1</version>
+    <version>0.8</version>
 </dependency>
 ```
 
@@ -52,7 +52,7 @@ Maven Dependency:
 <dependency>
     <groupId>org.microshed</groupId>
     <artifactId>microshed-testing-payara-server</artifactId>
-    <version>0.7.1</version>
+    <version>0.8</version>
 </dependency>
 ```
 
@@ -71,7 +71,7 @@ Maven Dependency:
 <dependency>
     <groupId>org.microshed</groupId>
     <artifactId>microshed-testing-wildfly</artifactId>
-    <version>0.7.1</version>
+    <version>0.8</version>
 </dependency>
 ```
 
@@ -93,7 +93,7 @@ Maven Dependency:
 <dependency>
     <groupId>org.microshed</groupId>
     <artifactId>microshed-testing-quarkus</artifactId>
-    <version>0.7.1</version>
+    <version>0.8</version>
 </dependency>
 ```
 
