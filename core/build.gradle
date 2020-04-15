@@ -9,7 +9,7 @@ dependencies {
   implementation group: 'org.bitbucket.b_c', name: 'jose4j', version: '0.7.0'
   implementation group: 'org.eclipse', name: 'yasson', version: '1.0.7'
   implementation group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
-  testImplementation 'org.junit.jupiter:junit-jupiter:5.6.1'
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.6.2'
 }
 
 apply from: publishScript
