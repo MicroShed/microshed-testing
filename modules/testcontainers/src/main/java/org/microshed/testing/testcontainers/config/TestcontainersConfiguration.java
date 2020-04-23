@@ -63,6 +63,18 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
         return true;
     }
 
+    void configureContainerNetworks(Set<GenericContainer<?>> containers, Class<?> clazz) {
+        // Put all containers in the same network if no networks are explicitly defined
+        boolean networksDefined = false;
+        for (GenericContainer<?> c : containers) {
+            networksDefined |= c.getNetwork() != null;
+        }
+        if (!networksDefined) {
+            LOG.debug("No networks explicitly defined. Using shared network for all containers in " + clazz);
+            containers.forEach(c -> c.setNetwork(Network.SHARED));
+        }
+    }
+
     @Override
     public void applyConfiguration(Class<?> testClass) {
         currentTestClass = testClass;
@@ -74,23 +86,10 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
         unsharedContainers.addAll(discoverContainers(testClass));
 
         // Put all containers in the same network if no networks are explicitly defined
-        boolean networksDefined = false;
         if (sharedConfigClass != null) {
-            for (GenericContainer<?> c : sharedContainers)
-                networksDefined |= c.getNetwork() != null;
-            if (!networksDefined) {
-                LOG.debug("No networks explicitly defined. Using shared network for all containers in " + sharedConfigClass);
-                sharedContainers.forEach(c -> c.setNetwork(Network.SHARED));
-            }
+            configureContainerNetworks(sharedContainers, sharedConfigClass);
         }
-
-        networksDefined = false;
-        for (GenericContainer<?> c : unsharedContainers)
-            networksDefined |= c.getNetwork() != null;
-        if (!networksDefined) {
-            LOG.debug("No networks explicitly defined. Using shared network for all containers in " + testClass);
-            unsharedContainers.forEach(c -> c.setNetwork(Network.SHARED));
-        }
+        configureContainerNetworks(unsharedContainers, testClass);
 
         // Give ServerAdapters a chance to do some auto-wiring between containers
         allContainers().stream()

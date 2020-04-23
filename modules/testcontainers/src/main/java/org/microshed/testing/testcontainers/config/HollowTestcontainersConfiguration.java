@@ -18,10 +18,14 @@
  */
 package org.microshed.testing.testcontainers.config;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.DatagramSocket;
 import java.net.MalformedURLException;
+import java.net.ServerSocket;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -61,6 +65,22 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
     }
 
     @Override
+    void configureContainerNetworks(Set<GenericContainer<?>> containers, Class<?> clazz) {
+        // Heuristic optimization: If only 2 containers are present (1 ApplicationContainer
+        // and 1 other container) do not put either container in the SHARED network so that
+        // container reuse can be supported for the other container
+        Set<GenericContainer<?>> copy = new HashSet<>(containers);
+        copy.removeIf(c -> c instanceof ApplicationContainer);
+        if (copy.size() <= 1) {
+            LOG.debug("NOT putting contaienrs in shared network for class " + clazz);
+            return;
+        } else {
+            super.configureContainerNetworks(containers, clazz);
+        }
+
+    }
+
+    @Override
     public void applyConfiguration(Class<?> testClass) {
         super.applyConfiguration(testClass);
 
@@ -85,6 +105,12 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
                         throw new ExtensionConfigurationException("Cannot expose port " + p + " for " + c.getDockerImageName() +
                                                                   " because another container (" + fixedExposedPorts.get(p) +
                                                                   ") is already using it.");
+                    }
+                    if (c.isShouldBeReused() && !isPortAvailable(p)) {
+                        // Do not expose the fixed exposed port if a reusable container is already
+                        // running on this port
+                        LOG.debug("Not exposing fixed port " + p + " for container " + c.getDockerImageName());
+                        continue;
                     }
                     LOG.info("Exposing fixed port " + p + " for container " + c.getDockerImageName());
                     fixedExposedPorts.put(p, c.getDockerImageName());
@@ -122,5 +148,32 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
                 }
             }
         });
+    }
+
+    private static boolean isPortAvailable(int port) {
+        ServerSocket ss = null;
+        DatagramSocket ds = null;
+        try {
+            ss = new ServerSocket(port);
+            ss.setReuseAddress(true);
+            ds = new DatagramSocket(port);
+            ds.setReuseAddress(true);
+            return true;
+        } catch (IOException e) {
+        } finally {
+            if (ds != null) {
+                ds.close();
+            }
+
+            if (ss != null) {
+                try {
+                    ss.close();
+                } catch (IOException e) {
+                    /* should not be thrown */
+                }
+            }
+        }
+
+        return false;
     }
 }
