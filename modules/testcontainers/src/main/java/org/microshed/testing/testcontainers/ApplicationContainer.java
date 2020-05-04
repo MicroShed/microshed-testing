@@ -265,6 +265,17 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
     }
 
     @Override
+    protected void containerIsStarting(InspectContainerResponse containerInfo) {
+        List<Integer> exposedPorts = getExposedPorts();
+        if (exposedPorts.size() == 0) {
+            LOGGER.info(toStringSimple() + " has no exposed ports.");
+        } else {
+            LOGGER.info(toStringSimple() + " has exposed ports:");
+            exposedPorts.forEach(p -> LOGGER.info("  " + p + " --> " + getMappedPort(p)));
+        }
+    }
+
+    @Override
     protected void doStart() {
         if (isHollow) {
             if (isRunning())
@@ -560,6 +571,10 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         public Optional<String> getReadinessPath() {
             return Optional.empty();
         }
+    }
+
+    String toStringSimple() {
+        return getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
     }
 
 }

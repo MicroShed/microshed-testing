@@ -136,9 +136,9 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
         containersToStart.removeIf(c -> c.isRunning());
 
         if (containersToStart.size() > 0) {
-            LOG.info("Starting containers " + containersToStart + " in parallel for " + currentTestClass);
+            LOG.info("Starting " + containersToStart.size() + " container(s) in parallel for " + currentTestClass);
             for (GenericContainer<?> c : containersToStart)
-                LOG.info("  " + c.getImage());
+                LOG.info("  " + c.getDockerImageName());
             Startables.deepStart(containersToStart).join();
         }
         LOG.info("All containers started in " + (System.currentTimeMillis() - start) + "ms");
