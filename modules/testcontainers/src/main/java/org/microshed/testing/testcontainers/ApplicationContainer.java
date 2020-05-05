@@ -45,6 +45,7 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.microshed.testing.ApplicationEnvironment;
 import org.microshed.testing.ManuallyStartedConfiguration;
+import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration;
 import org.microshed.testing.testcontainers.config.TestcontainersConfiguration;
 import org.microshed.testing.testcontainers.internal.HollowContainerInspection;
@@ -81,10 +82,11 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
     private String appContextRoot;
     private ServerAdapter serverAdapter;
     private boolean waitStrategySet;
+    private boolean readinessPathSet;
+    private Integer primaryPort;
 
     // variables for late-bound containers
     private String lateBind_ipAddress;
-    private int lateBind_port;
     private boolean lateBind_started;
 
     private static final Path dockerfile_root = Paths.get(".", "Dockerfile");
@@ -221,16 +223,9 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
     private void commonInit() {
         serverAdapter = resolveAdatper().orElseGet(() -> new DefaultServerAdapter());
         LOGGER.info("Using ServerAdapter: " + serverAdapter.getClass().getCanonicalName());
-        addExposedPorts(serverAdapter.getDefaultHttpPort());
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
         if (isHollow) {
             setContainerIpAddress(ManuallyStartedConfiguration.getHostname());
-            List<Integer> ports = new ArrayList<>(2);
-            ports.add(ManuallyStartedConfiguration.getHttpPort());
-            ports.add(ManuallyStartedConfiguration.getHttpsPort());
-            ports.removeIf(p -> p == -1);
-            setExposedPorts(ports);
-            setFirstMappedPort(ports.get(0));
             withAppContextRoot(ManuallyStartedConfiguration.getBasePath());
         } else {
             withAppContextRoot("/");
@@ -240,6 +235,9 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
     @Override
     protected void configure() {
         super.configure();
+        if (getExposedPorts().size() == 0) {
+            addExposedPort(serverAdapter.getDefaultHttpPort());
+        }
         // If the readiness path was not set explicitly, default it to:
         // A) The value defined by ServerAdapter.getReadinessPath(), if any
         // B) the app context root
@@ -249,6 +247,12 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
             } else {
                 withReadinessPath(appContextRoot);
             }
+        }
+        if (readinessPathSet &&
+            primaryPort != null &&
+            waitStrategy instanceof HttpWaitStrategy) {
+            HttpWaitStrategy wait = (HttpWaitStrategy) waitStrategy;
+            wait.forPort(primaryPort);
         }
     }
 
@@ -261,7 +265,18 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
     public void setFirstMappedPort(int port) {
         if (!isHollow)
             throw new IllegalStateException("Can only set first mapped port in hollow mode");
-        lateBind_port = port;
+        primaryPort = port;
+    }
+
+    @Override
+    protected void containerIsStarting(InspectContainerResponse containerInfo) {
+        List<Integer> exposedPorts = getExposedPorts();
+        if (exposedPorts.size() == 0) {
+            LOGGER.info(toStringSimple() + " has no exposed ports.");
+        } else {
+            LOGGER.info(toStringSimple() + " has exposed ports:");
+            exposedPorts.forEach(p -> LOGGER.info("  " + p + " --> " + getMappedPort(p)));
+        }
     }
 
     @Override
@@ -317,10 +332,30 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
     }
 
     @Override
-    public List<Integer> getExposedPorts() {
-        if (isHollow)
-            return Collections.singletonList(lateBind_port);
-        return super.getExposedPorts();
+    public void setExposedPorts(List<Integer> exposedPorts) {
+        // Ensure the primary port is always exposed as the first port (if set)
+        List<Integer> copy = new ArrayList<Integer>(exposedPorts);
+        if (primaryPort != null) {
+            copy.removeIf(p -> p.equals(primaryPort));
+            copy.add(0, primaryPort);
+        }
+        super.setExposedPorts(copy);
+    }
+
+    /**
+     * @param httpPort The HTTP port used for the ApplicationContainer. This will set the port used
+     *            to construct the base application URL for all injected {@link RESTClient}s as well
+     *            as the port used to determine container readiness (unless specified otherwise in
+     *            {@link #withReadinessPath(String, int, Integer)}
+     * @return the current instance
+     */
+    public ApplicationContainer withHttpPort(int httpPort) {
+        primaryPort = httpPort;
+        List<Integer> ports = new ArrayList<>(getExposedPorts());
+        // ensure the HTTP port stays as the first exposed port
+        ports.add(0, primaryPort);
+        setExposedPorts(ports);
+        return this;
     }
 
     /**
@@ -328,6 +363,8 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
      *            included in the <code>appContextRoot</code> parameter. For example, an application
      *            "foo.war" is available at <code>http://localhost:8080/foo/</code> the context root can
      *            be set using <code>withAppContextRoot("/foo")</code>
+     *            Setting the app context root effects {@link #getApplicationURL()} which in turn effects
+     *            the base URL of all injected {@link RESTClient}s.
      * @return the current instance
      */
     public ApplicationContainer withAppContextRoot(String appContextRoot) {
@@ -361,9 +398,31 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
      * @return the current instance
      */
     public ApplicationContainer withReadinessPath(String readinessUrl, int timeoutSeconds) {
+        withReadinessPath(readinessUrl, timeoutSeconds, primaryPort);
+        return this;
+    }
+
+    /**
+     * Sets the path to be used to determine container readiness. The readiness check will
+     * timeout after a sensible amount of time has elapsed.
+     * If unspecified, the readiness path with defailt to the application context root
+     *
+     * @param readinessUrl The HTTP endpoint to be polled for readiness. Once the endpoint
+     *            returns HTTP 200 (OK), the container is considered to be ready.
+     * @param timeoutSeconds The amount of time (in seconds) to wait for the container to be ready.
+     * @param port The port that should be used for the readiness check.
+     * @return the current instance
+     */
+    public ApplicationContainer withReadinessPath(String readinessUrl,
+                                                  int timeoutSeconds,
+                                                  Integer port) {
+        readinessPathSet = true;
         Objects.requireNonNull(readinessUrl);
         readinessUrl = buildPath(readinessUrl);
         HttpWaitStrategy strat = Wait.forHttp(readinessUrl);
+        if (port != null) {
+            strat.forPort(port);
+        }
         strat.withStartupTimeout(Duration.ofSeconds(timeoutSeconds));
         waitingFor(strat);
         return this;
@@ -454,6 +513,7 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
      * @return The URL where the application is currently running at. The application URL is comprised
      *         of the baseURL (as defined by {@link #getBaseURL()}) concatenated with the appContextRoot (as defined
      *         by {@link #withAppContextRoot(String)}.
+     *         This will be the base URL for all injected {@link RESTClient}s
      */
     public String getApplicationURL() {
         return getBaseURL() + appContextRoot;
@@ -560,6 +620,10 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         public Optional<String> getReadinessPath() {
             return Optional.empty();
         }
+    }
+
+    String toStringSimple() {
+        return getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
     }
 
 }

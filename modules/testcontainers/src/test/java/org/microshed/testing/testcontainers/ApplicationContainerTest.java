@@ -20,6 +20,7 @@ package org.microshed.testing.testcontainers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
@@ -48,7 +49,7 @@ public class ApplicationContainerTest {
         final String clientUrl = "http://example.com";
 
         @SuppressWarnings("resource")
-        ApplicationContainer app = new ApplicationContainer("alpine:3.5")
+        ApplicationContainer app = dummyApp()
                         .withMpRestClient("com.example.StringRestClient", clientUrl)
                         .withMpRestClient(SampleRestClient1.class, clientUrl)
                         .withMpRestClient(SampleRestClient2.class, clientUrl)
@@ -64,8 +65,38 @@ public class ApplicationContainerTest {
     @Test
     public void testCorrectServerAdapter() {
         @SuppressWarnings("resource")
-        ApplicationContainer app = new ApplicationContainer("alpine:3.5");
+        ApplicationContainer app = dummyApp();
         assertEquals(TestServerAdapter.class, app.getServerAdapter().getClass());
+    }
+
+    /**
+     * Test that the primary port is always retained if explicitly set
+     */
+    @Test
+    public void testPrimaryPort() {
+        ApplicationContainer app = dummyApp()
+                        .withHttpPort(8888)
+                        .withExposedPorts(7777, 9999);
+        assertEquals(Arrays.asList(8888, 7777, 9999), app.getExposedPorts());
+
+        app = dummyApp()
+                        .withExposedPorts(1234, 1235)
+                        .withHttpPort(4444);
+        assertEquals(Arrays.asList(4444, 1234, 1235), app.getExposedPorts());
+
+        app = dummyApp();
+        app.withHttpPort(5555);
+        app.setExposedPorts(Arrays.asList(1238, 1239));
+        assertEquals(Arrays.asList(5555, 1238, 1239), app.getExposedPorts());
+
+        app = dummyApp()
+                        .withHttpPort(9081)
+                        .withExposedPorts(9081, 9444);
+        assertEquals(Arrays.asList(9081, 9444), app.getExposedPorts());
+    }
+
+    private static ApplicationContainer dummyApp() {
+        return new ApplicationContainer("alpine:3.5");
     }
 
 }
