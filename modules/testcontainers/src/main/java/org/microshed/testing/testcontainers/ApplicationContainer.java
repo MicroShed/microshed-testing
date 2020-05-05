@@ -23,8 +23,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -460,11 +459,7 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         if (!restClientClass.isInterface()) {
             throw new IllegalArgumentException("Provided restClientClass " + restClientClass.getCanonicalName() + " must be an interface");
         }
-        try {
-            new URL(hostUrl);
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException(e);
-        }
+        URI.create(hostUrl);
         String configToken = readMpRestClientConfigKey(restClientClass);
         if (configToken == null || configToken.isEmpty())
             configToken = restClientClass.getCanonicalName();
@@ -524,12 +519,18 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         } else {
             restClientClass += "/mp-rest/url";
         }
-        try {
-            new URL(hostUrl);
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException(e);
-        }
+        URI.create(hostUrl);
         return withEnv(restClientClass, hostUrl);
+    }
+
+    @Override
+    public ApplicationContainer withReuse(boolean reusable) {
+        if (reusable) {
+            throw new UnsupportedOperationException("Container reuse is not supported for ApplicationContainer. " +
+                                                    "Instead, see HollowTestContainersConfiguration documentation: " +
+                                                    "https://microshed.org/microshed-testing/features/ApplicationEnvironment.html");
+        }
+        return super.withReuse(reusable);
     }
 
     /**
