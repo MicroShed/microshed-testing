@@ -48,7 +48,6 @@ public class ApplicationContainerTest {
     public void testMpRestClient() {
         final String clientUrl = "http://example.com";
 
-        @SuppressWarnings("resource")
         ApplicationContainer app = dummyApp()
                         .withMpRestClient("com.example.StringRestClient", clientUrl)
                         .withMpRestClient(SampleRestClient1.class, clientUrl)
@@ -64,7 +63,6 @@ public class ApplicationContainerTest {
 
     @Test
     public void testCorrectServerAdapter() {
-        @SuppressWarnings("resource")
         ApplicationContainer app = dummyApp();
         assertEquals(TestServerAdapter.class, app.getServerAdapter().getClass());
     }
@@ -95,7 +93,7 @@ public class ApplicationContainerTest {
         assertEquals(Arrays.asList(9081, 9444), app.getExposedPorts());
     }
 
-    private static ApplicationContainer dummyApp() {
+    public static ApplicationContainer dummyApp() {
         return new ApplicationContainer("alpine:3.5");
     }
 

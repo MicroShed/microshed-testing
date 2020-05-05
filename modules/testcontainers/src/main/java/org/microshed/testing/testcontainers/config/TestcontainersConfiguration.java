@@ -18,40 +18,33 @@
  */
 package org.microshed.testing.testcontainers.config;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.platform.commons.support.AnnotationSupport;
-import org.junit.platform.commons.support.HierarchyTraversalMode;
 import org.microshed.testing.ApplicationEnvironment;
-import org.microshed.testing.SharedContainerConfig;
 import org.microshed.testing.SharedContainerConfiguration;
 import org.microshed.testing.jwt.JwtBuilder;
 import org.microshed.testing.jwt.JwtConfig;
 import org.microshed.testing.testcontainers.ApplicationContainer;
+import org.microshed.testing.testcontainers.internal.ContainerGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.lifecycle.Startables;
 
 public class TestcontainersConfiguration implements ApplicationEnvironment {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestcontainersConfiguration.class);
 
-    // Will need to rework this if we will ever support parallel test execution
-    private Class<?> currentTestClass;
-    private Class<? extends SharedContainerConfiguration> sharedConfigClass;
-    private final Set<GenericContainer<?>> unsharedContainers = new HashSet<>();
-    private final Set<GenericContainer<?>> sharedContainers = new HashSet<>();
+    protected final Map<Class<?>, ContainerGroup> discoveredContainers = new HashMap<>();
+    protected ContainerGroup containers;
 
     @Override
     public int getPriority() {
@@ -77,39 +70,26 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
 
     @Override
     public void applyConfiguration(Class<?> testClass) {
-        currentTestClass = testClass;
-
-        if (testClass.isAnnotationPresent(SharedContainerConfig.class)) {
-            sharedConfigClass = testClass.getAnnotation(SharedContainerConfig.class).value();
-            sharedContainers.addAll(discoverContainers(sharedConfigClass));
-        }
-        unsharedContainers.addAll(discoverContainers(testClass));
+        containers = discoveredContainers.computeIfAbsent(testClass, clazz -> new ContainerGroup(clazz));
 
         // Put all containers in the same network if no networks are explicitly defined
-        if (sharedConfigClass != null) {
-            configureContainerNetworks(sharedContainers, sharedConfigClass);
+        if (containers.hasSharedConfig()) {
+            configureContainerNetworks(containers.sharedContainers, containers.sharedConfigClass);
         }
-        configureContainerNetworks(unsharedContainers, testClass);
+        configureContainerNetworks(containers.unsharedContainers, testClass);
 
         // Give ServerAdapters a chance to do some auto-wiring between containers
-        allContainers().stream()
-                        .filter(c -> ApplicationContainer.class.isAssignableFrom(c.getClass()))
-                        .findFirst()
-                        .ifPresent(c -> {
-                            ((ApplicationContainer) c).getServerAdapter().configure(allContainers());
-                        });
-
-        if (isJwtNeeded()) {
-            allContainers().stream()
-                            .filter(c -> ApplicationContainer.class.isAssignableFrom(c.getClass()))
-                            .filter(c -> !c.isRunning())
-                            .filter(c -> !c.getEnvMap().containsKey(JwtBuilder.MP_JWT_PUBLIC_KEY))
-                            .filter(c -> !c.getEnvMap().containsKey(JwtBuilder.MP_JWT_ISSUER))
-                            .forEach(c -> {
-                                c.withEnv(JwtBuilder.MP_JWT_PUBLIC_KEY, JwtBuilder.getPublicKey());
-                                c.withEnv(JwtBuilder.MP_JWT_ISSUER, JwtConfig.DEFAULT_ISSUER);
-                                LOG.debug("Using default generated JWT settings for " + c);
-                            });
+        ApplicationContainer app = containers.app;
+        if (app != null) {
+            app.getServerAdapter().configure(containers.allContainers);
+            if (isJwtNeeded() &&
+                !app.isRunning() &&
+                !app.getEnvMap().containsKey(JwtBuilder.MP_JWT_PUBLIC_KEY) &&
+                !app.getEnvMap().containsKey(JwtBuilder.MP_JWT_ISSUER)) {
+                app.withEnv(JwtBuilder.MP_JWT_PUBLIC_KEY, JwtBuilder.getPublicKey());
+                app.withEnv(JwtBuilder.MP_JWT_ISSUER, JwtConfig.DEFAULT_ISSUER);
+                LOG.debug("Using default generated JWT settings for " + app);
+            }
         }
     }
 
@@ -119,24 +99,24 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
 
         long start = System.currentTimeMillis();
         // Start shared containers first
-        if (sharedConfigClass != null) {
+        if (containers.hasSharedConfig()) {
             try {
-                SharedContainerConfiguration config = sharedConfigClass.newInstance();
+                SharedContainerConfiguration config = containers.sharedConfigClass.newInstance();
                 config.startContainers();
-                LOG.debug("Shared contianer config for " + sharedConfigClass + " implemented a manual start procedure.");
+                LOG.debug("Shared contianer config for " + containers.sharedConfigClass + " implemented a manual start procedure.");
             } catch (InstantiationException | IllegalAccessException e) {
-                throw new ExtensionConfigurationException("Unable to instantiate " + sharedConfigClass, e);
+                throw new ExtensionConfigurationException("Unable to instantiate " + containers.sharedConfigClass, e);
             } catch (UnsupportedOperationException ignore) {
                 // This just means manual container start is not being used
-                containersToStart.addAll(sharedContainers);
+                containersToStart.addAll(containers.sharedContainers);
             }
         }
 
-        containersToStart.addAll(unsharedContainers);
+        containersToStart.addAll(containers.unsharedContainers);
         containersToStart.removeIf(c -> c.isRunning());
 
         if (containersToStart.size() > 0) {
-            LOG.info("Starting " + containersToStart.size() + " container(s) in parallel for " + currentTestClass);
+            LOG.info("Starting " + containersToStart.size() + " container(s) in parallel for " + containers.testClass);
             for (GenericContainer<?> c : containersToStart)
                 LOG.info("  " + c.getDockerImageName());
             Startables.deepStart(containersToStart).join();
@@ -152,7 +132,7 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
         if (KafkaContainer == null)
             return;
 
-        Set<GenericContainer<?>> kafkaContainers = allContainers().stream()
+        Set<GenericContainer<?>> kafkaContainers = containers.allContainers.stream()
                         .filter(c -> KafkaContainer.isAssignableFrom(c.getClass()))
                         .collect(Collectors.toSet());
 
@@ -176,7 +156,12 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
 
     @Override
     public String getApplicationURL() {
-        ApplicationContainer mpApp = autoDiscoverMPApp(currentTestClass, true);
+        ApplicationContainer mpApp = containers.app;
+        if (mpApp == null) {
+            String sharedConfigMsg = containers.hasSharedConfig() ? " or " + containers.sharedConfigClass : "";
+            throw new ExtensionConfigurationException("No public static ApplicationContainer fields annotated with @Container were located " +
+                                                      "on " + containers.testClass + sharedConfigMsg + ".");
+        }
         return mpApp.getApplicationURL();
     }
 
@@ -186,67 +171,9 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
      *         B) Test class contains REST clients with @JwtConfig
      */
     private boolean isJwtNeeded() {
-        if (sharedConfigClass != null)
+        if (containers.hasSharedConfig())
             return true;
-        return AnnotationSupport.findAnnotatedFields(currentTestClass, JwtConfig.class).size() > 0;
-    }
-
-    ApplicationContainer autoDiscoverMPApp(Class<?> clazz, boolean errorIfNone) {
-        // First check for any MicroProfileApplication directly present on the test class
-        List<Field> mpApps = AnnotationSupport.findAnnotatedFields(clazz, Container.class,
-                                                                   f -> Modifier.isStatic(f.getModifiers()) &&
-                                                                        Modifier.isPublic(f.getModifiers()) &&
-                                                                        ApplicationContainer.class.isAssignableFrom(f.getType()),
-                                                                   HierarchyTraversalMode.TOP_DOWN);
-        if (mpApps.size() == 1)
-            try {
-                return (ApplicationContainer) mpApps.get(0).get(null);
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                // This should never happen because we only look for fields that are public+static
-                e.printStackTrace();
-            }
-        if (mpApps.size() > 1)
-            throw new ExtensionConfigurationException("Should be no more than 1 public static ApplicationContainer field on " + clazz);
-
-        // If none found, check any SharedContainerConfig
-        String sharedConfigMsg = "";
-        if (sharedConfigClass != null) {
-            ApplicationContainer mpApp = autoDiscoverMPApp(sharedConfigClass, false);
-            if (mpApp != null)
-                return mpApp;
-            sharedConfigMsg = " or " + sharedConfigClass;
-        }
-
-        if (errorIfNone)
-            throw new ExtensionConfigurationException("No public static ApplicationContainer fields annotated with @Container were located " +
-                                                      "on " + clazz + sharedConfigMsg + " to auto-connect with REST-client fields.");
-        return null;
-    }
-
-    protected Set<GenericContainer<?>> discoverContainers(Class<?> clazz) {
-        Set<GenericContainer<?>> discoveredContainers = new HashSet<>();
-        for (Field containerField : AnnotationSupport.findAnnotatedFields(clazz, Container.class)) {
-            if (!Modifier.isPublic(containerField.getModifiers()))
-                throw new ExtensionConfigurationException("@Container annotated fields must be public visibility");
-            if (!Modifier.isStatic(containerField.getModifiers()))
-                throw new ExtensionConfigurationException("@Container annotated fields must be static");
-            boolean isStartable = GenericContainer.class.isAssignableFrom(containerField.getType());
-            if (!isStartable)
-                throw new ExtensionConfigurationException("@Container annotated fields must be a subclass of " + GenericContainer.class);
-            try {
-                GenericContainer<?> startableContainer = (GenericContainer<?>) containerField.get(null);
-                discoveredContainers.add(startableContainer);
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                LOG.warn("Unable to access field " + containerField, e);
-            }
-        }
-        return discoveredContainers;
-    }
-
-    protected Set<GenericContainer<?>> allContainers() {
-        Set<GenericContainer<?>> all = new HashSet<>(unsharedContainers);
-        all.addAll(sharedContainers);
-        return Collections.unmodifiableSet(all);
+        return AnnotationSupport.findAnnotatedFields(containers.testClass, JwtConfig.class).size() > 0;
     }
 
     private static Class<?> tryLoad(String clazz) {
