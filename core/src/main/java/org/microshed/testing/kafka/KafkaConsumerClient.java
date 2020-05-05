@@ -24,18 +24,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Identifies an injection point for a <code>org.apache.kafka.clients.producer.KafkaProducer</code>
+ * Identifies an injection point for a <code>org.apache.kafka.clients.consumer.KafkaConsumer</code>
  * The annotated field MUST be <code>public static</code> and non-final.
  *
- * The injected <code>KafkaProducer</code> will be auto-configured according the values
+ * The injected <code>KafkaConsumer</code> will be auto-configured according the values
  * in this annotation.
  */
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface KafkaProducerConfig {
+public @interface KafkaConsumerClient {
 
     /**
-     * @return Sets the <code>bootstrap.servers</code> property for the injected <code>KafkaProducer</code>.
+     * @return Sets the <code>bootstrap.servers</code> property for the injected <code>KafkaConsumer</code>.
      *         Otherwise, the <code>org.microshed.kafka.bootstrap.servers</code> system property is used if set.
      *         Otherwise, any <code>org.testcontainers.containers.KafkaContainer</code> discovered in the test
      *         will be used.
@@ -44,22 +44,32 @@ public @interface KafkaProducerConfig {
     String bootstrapServers() default "";
 
     /**
-     * @return Sets the <code>key.serializer</code> property for the injected <code>KafkaProducer</code>.
-     *         If unset, an an attempt will be made to select an appropriate class from the built-in serializers
+     * @return Sets the <code>key.deserializer</code> property for the injected <code>KafkaConsumer</code>.
+     *         If unset, an an attempt will be made to select an appropriate class from the built-in deserializers
      *         in the <code>org.apache.kafka.common.serialization</code> package.
      */
-    Class<?> keySerializer() default Object.class;
+    Class<?> keyDeserializer() default Object.class;
 
     /**
-     * @return Sets the <code>value.serializer</code> property for the injected <code>KafkaProducer</code>.
-     *         If unset, an an attempt will be made to select an appropriate class from the built-in serializers
+     * @return Sets the <code>value.deserializer</code> property for the injected <code>KafkaConsumer</code>.
+     *         If unset, an an attempt will be made to select an appropriate class from the built-in deserializers
      *         in the <code>org.apache.kafka.common.serialization</code> package.
      */
-    Class<?> valueSerializer() default Object.class;
+    Class<?> valueDeserializer() default Object.class;
+
+    /**
+     * @return Sets the <code>group.id</code> property for the injected <code>KafkaConsumer</code>.
+     */
+    String groupId();
+
+    /**
+     * @return The topics that the injected <code>KafkaConsumer</code> will be automatically subscribed to.
+     */
+    String[] topics() default {};
 
     /**
      * @return An optional array of <code>key=value</code> strings, which will be used as configuration options
-     *         in the injected <code>KafkaProducer</code>.
+     *         in the injected <code>KafkaConsumer</code>.
      */
     String[] properties() default {};
 

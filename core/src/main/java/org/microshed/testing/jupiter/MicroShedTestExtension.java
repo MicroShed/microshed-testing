@@ -40,8 +40,8 @@ import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jaxrs.RestClientBuilder;
 import org.microshed.testing.jwt.JwtBuilder;
 import org.microshed.testing.jwt.JwtConfig;
-import org.microshed.testing.kafka.KafkaConsumerConfig;
-import org.microshed.testing.kafka.KafkaProducerConfig;
+import org.microshed.testing.kafka.KafkaConsumerClient;
+import org.microshed.testing.kafka.KafkaProducerClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,15 +125,15 @@ class MicroShedTestExtension implements BeforeAllCallback {
 
         KafkaConfigAnnotationProcessor kafkaProcessor = new KafkaConfigAnnotationProcessor();
 
-        List<Field> kafkaProducerFields = AnnotationSupport.findAnnotatedFields(clazz, KafkaProducerConfig.class);
+        List<Field> kafkaProducerFields = AnnotationSupport.findAnnotatedFields(clazz, KafkaProducerClient.class);
         for (Field producerField : kafkaProducerFields) {
             if (!KafkaProducer.isAssignableFrom(producerField.getType())) {
-                throw new ExtensionConfigurationException("Fields annotated with @KafkaProducerConfig must be of the type " + KafkaProducer.getName());
+                throw new ExtensionConfigurationException("Fields annotated with @KafkaProducerClient must be of the type " + KafkaProducer.getName());
             }
             if (!Modifier.isPublic(producerField.getModifiers()) ||
                 !Modifier.isStatic(producerField.getModifiers()) ||
                 Modifier.isFinal(producerField.getModifiers())) {
-                throw new ExtensionConfigurationException("The KafkaProducer field annotated with @KafkaProducerConfig " +
+                throw new ExtensionConfigurationException("The KafkaProducer field annotated with @KafkaProducerClient " +
                                                           "must be public, static, and non-final: " + producerField);
             }
 
@@ -141,26 +141,26 @@ class MicroShedTestExtension implements BeforeAllCallback {
             try {
                 Object producer = KafkaProducer.getConstructor(Properties.class).newInstance(properties);
                 producerField.set(null, producer);
-                LOG.debug("Injected kafka producer for " + producerField + " with config " + producerField.getAnnotation(KafkaProducerConfig.class));
+                LOG.debug("Injected kafka producer for " + producerField + " with config " + producerField.getAnnotation(KafkaProducerClient.class));
             } catch (Exception e) {
                 throw new ExtensionConfigurationException("Unable to inject field " + producerField, e);
             }
         }
 
-        List<Field> kafkaConsumerFields = AnnotationSupport.findAnnotatedFields(clazz, KafkaConsumerConfig.class);
+        List<Field> kafkaConsumerFields = AnnotationSupport.findAnnotatedFields(clazz, KafkaConsumerClient.class);
         for (Field consumerField : kafkaConsumerFields) {
             if (!KafkaConsumer.isAssignableFrom(consumerField.getType())) {
-                throw new ExtensionConfigurationException("Fields annotated with @KafkaConsumerConfig must be of the type " + KafkaConsumer.getName());
+                throw new ExtensionConfigurationException("Fields annotated with @KafkaConsumerClient must be of the type " + KafkaConsumer.getName());
             }
             if (!Modifier.isPublic(consumerField.getModifiers()) ||
                 !Modifier.isStatic(consumerField.getModifiers()) ||
                 Modifier.isFinal(consumerField.getModifiers())) {
-                throw new ExtensionConfigurationException("The KafkaProducer field annotated with @KafkaConsumerConfig " +
+                throw new ExtensionConfigurationException("The KafkaProducer field annotated with @KafkaConsumerClient " +
                                                           "must be public, static, and non-final: " + consumerField);
             }
 
             Properties properties = kafkaProcessor.getConsumerProperties(consumerField);
-            KafkaConsumerConfig consumerConfig = consumerField.getAnnotation(KafkaConsumerConfig.class);
+            KafkaConsumerClient consumerConfig = consumerField.getAnnotation(KafkaConsumerClient.class);
             try {
                 Object consumer = KafkaConsumer.getConstructor(Properties.class).newInstance(properties);
                 consumerField.set(null, consumer);

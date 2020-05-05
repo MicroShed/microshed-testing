@@ -33,17 +33,17 @@ import org.example.app.KitchenOrder.KitchenOrderDeserializer;
 import org.junit.jupiter.api.Test;
 import org.microshed.testing.SharedContainerConfig;
 import org.microshed.testing.jupiter.MicroShedTest;
-import org.microshed.testing.kafka.KafkaConsumerConfig;
-import org.microshed.testing.kafka.KafkaProducerConfig;
+import org.microshed.testing.kafka.KafkaConsumerClient;
+import org.microshed.testing.kafka.KafkaProducerClient;
 
 @MicroShedTest
 @SharedContainerConfig(AppContainerConfig.class)
 public class KitchenEndpointIT {
 
-  @KafkaProducerConfig(valueSerializer = JsonbSerializer.class)
+  @KafkaProducerClient(valueSerializer = JsonbSerializer.class)
   public static KafkaProducer<String, KitchenOrder> producer;
 
-  @KafkaConsumerConfig(valueDeserializer = KitchenOrderDeserializer.class, 
+  @KafkaConsumerClient(valueDeserializer = KitchenOrderDeserializer.class, 
       groupId = "update-status", topics = "statusTopic", 
       properties = ConsumerConfig.AUTO_OFFSET_RESET_CONFIG + "=earliest")
   public static KafkaConsumer<String, KitchenOrder> consumer;
