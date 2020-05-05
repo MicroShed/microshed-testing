@@ -46,14 +46,13 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.microshed.testing.ApplicationEnvironment;
 import org.microshed.testing.ManuallyStartedConfiguration;
+import org.microshed.testing.internal.InternalLogger;
 import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration;
 import org.microshed.testing.testcontainers.config.TestcontainersConfiguration;
 import org.microshed.testing.testcontainers.internal.HollowContainerInspection;
 import org.microshed.testing.testcontainers.internal.ImageFromDockerfile;
 import org.microshed.testing.testcontainers.spi.ServerAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
@@ -77,7 +76,7 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
      */
     public static final String MP_HEALTH_READINESS_PATH = "/health/ready";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContainer.class);
+    private static final InternalLogger LOG = InternalLogger.get(ApplicationContainer.class);
     private static final boolean isHollow = isHollow();
 
     private String appContextRoot;
@@ -139,7 +138,7 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
             throw new IllegalStateException("Found multiple application files in build/ or target output folders: " + matches +
                                             " Expecting exactly 1 application file to be found.");
         File appFile = matches.iterator().next();
-        LOGGER.info("Found application file at: " + appFile.getAbsolutePath());
+        LOG.info("Found application file at: " + appFile.getAbsolutePath());
         return appFile;
     }
 
@@ -162,7 +161,7 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         List<ServerAdapter> adapters = new ArrayList<>(1);
         for (ServerAdapter adapter : ServiceLoader.load(ServerAdapter.class)) {
             adapters.add(adapter);
-            LOGGER.debug("Discovered ServerAdapter: " + adapter.getClass());
+            LOG.debug("Discovered ServerAdapter: " + adapter.getClass());
         }
         return adapters.stream()
                         .sorted((a1, a2) -> Integer.compare(a2.getPriority(), a1.getPriority()))
@@ -203,7 +202,7 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
      */
     public ApplicationContainer(Path dockerfilePath) {
         this(Optional.of(dockerfilePath));
-        LOGGER.info("Using Dockerfile at: " + dockerfilePath);
+        LOG.info("Using Dockerfile at: " + dockerfilePath);
     }
 
     public ApplicationContainer(Future<String> dockerImageName) {
@@ -223,8 +222,12 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
 
     private void commonInit() {
         serverAdapter = resolveAdatper().orElseGet(() -> new DefaultServerAdapter());
-        LOGGER.info("Using ServerAdapter: " + serverAdapter.getClass().getCanonicalName());
-        withLogConsumer(new Slf4jLogConsumer(LOGGER));
+        LOG.info("Using ServerAdapter: " + serverAdapter.getClass().getCanonicalName());
+        if (LOG.LOG_ENABLED) {
+            withLogConsumer(new Slf4jLogConsumer(LOG.log));
+        } else {
+            withLogConsumer(new SystemOutLogConsumer("[ApplicationContainer]"));
+        }
         if (isHollow) {
             setContainerIpAddress(ManuallyStartedConfiguration.getHostname());
             withAppContextRoot(ManuallyStartedConfiguration.getBasePath());
@@ -273,10 +276,10 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
     protected void containerIsStarting(InspectContainerResponse containerInfo) {
         List<Integer> exposedPorts = getExposedPorts();
         if (exposedPorts.size() == 0) {
-            LOGGER.info(toStringSimple() + " has no exposed ports.");
+            LOG.info(toStringSimple() + " has no exposed ports.");
         } else {
-            LOGGER.info(toStringSimple() + " has exposed ports:");
-            exposedPorts.forEach(p -> LOGGER.info("  " + p + " --> " + getMappedPort(p)));
+            LOG.info(toStringSimple() + " has exposed ports:");
+            exposedPorts.forEach(p -> LOG.info("  " + p + " --> " + getMappedPort(p)));
         }
     }
 
@@ -307,7 +310,7 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
     @Override
     public boolean isHealthy() {
         if (isHollow)
-            return true; // TODO may want to invoke MP health endpoint here?
+            return true;
         return super.isHealthy();
     }
 
@@ -447,23 +450,23 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
      *
      * @param restClientClass The MicroProfile REST Client interface, which must be annotated with
      *            <code>@RegisterRestClient</code>
-     * @param hostUrl The URL that the {@code restClientClass} will act as a REST client for
+     * @param hostUri The URL that the {@code restClientClass} will act as a REST client for
      * @throws IllegalArgumentException If the provided restClientClass is not an interface or not
      *             annotated with <code>@RegisterRestClient</code>
-     * @throws IllegalArgumentException If hostUrl is not a valid URL
+     * @throws IllegalArgumentException If hostUri is not a valid URI
      * @return the current instance
      */
-    public ApplicationContainer withMpRestClient(Class<?> restClientClass, String hostUrl) {
+    public ApplicationContainer withMpRestClient(Class<?> restClientClass, String hostUri) {
         Objects.requireNonNull(restClientClass, "restClientClass must be non-null");
-        Objects.requireNonNull(hostUrl, "hostUrl must be non-null");
+        Objects.requireNonNull(hostUri, "hostUri must be non-null");
         if (!restClientClass.isInterface()) {
             throw new IllegalArgumentException("Provided restClientClass " + restClientClass.getCanonicalName() + " must be an interface");
         }
-        URI.create(hostUrl);
+        URI.create(hostUri);
         String configToken = readMpRestClientConfigKey(restClientClass);
         if (configToken == null || configToken.isEmpty())
             configToken = restClientClass.getCanonicalName();
-        return withMpRestClient(configToken, hostUrl);
+        return withMpRestClient(configToken, hostUri);
     }
 
     /**
@@ -507,11 +510,11 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
      * will reference the supplied {@code hostUrl}
      *
      * @param restClientClass The MicroProfile REST Client class
-     * @param hostUrl The URL that the {@code restClientClass} will act as a REST client for
-     * @throws IllegalArgumentException If hostUrl is not a valid URL
+     * @param hostUri The URL that the {@code restClientClass} will act as a REST client for
+     * @throws IllegalArgumentException If hostUri is not a valid URI
      * @return the current instance
      */
-    public ApplicationContainer withMpRestClient(String restClientClass, String hostUrl) {
+    public ApplicationContainer withMpRestClient(String restClientClass, String hostUri) {
         // If we will be running in Docker, sanitize environment variable name using Environment Variables Mapping Rules defined in MP Config:
         // https://github.com/eclipse/microprofile-config/blob/master/spec/src/main/asciidoc/configsources.asciidoc#environment-variables-mapping-rules
         if (ApplicationEnvironment.Resolver.isSelected(TestcontainersConfiguration.class)) {
@@ -519,8 +522,8 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         } else {
             restClientClass += "/mp-rest/url";
         }
-        URI.create(hostUrl);
-        return withEnv(restClientClass, hostUrl);
+        URI.create(hostUri);
+        return withEnv(restClientClass, hostUri);
     }
 
     @Override
@@ -530,7 +533,8 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
                                                     "Instead, see HollowTestContainersConfiguration documentation: " +
                                                     "https://microshed.org/microshed-testing/features/ApplicationEnvironment.html");
         }
-        return super.withReuse(reusable);
+        super.withReuse(reusable);
+        return this;
     }
 
     /**
@@ -607,7 +611,7 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
                 defaultHttpPort = -1;
             } else {
                 InspectImageResponse imageData = DockerClientFactory.instance().client().inspectImageCmd(getDockerImageName()).exec();
-                LOGGER.info("Found exposed ports: " + Arrays.toString(imageData.getContainerConfig().getExposedPorts()));
+                LOG.info("Found exposed ports: " + Arrays.toString(imageData.getContainerConfig().getExposedPorts()));
                 int bestChoice = -1;
                 for (ExposedPort exposedPort : imageData.getContainerConfig().getExposedPorts()) {
                     int port = exposedPort.getPort();
@@ -621,7 +625,7 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
                     }
                 }
                 defaultHttpPort = bestChoice;
-                LOGGER.info("Automatically selecting default HTTP port: " + defaultHttpPort);
+                LOG.info("Automatically selecting default HTTP port: " + defaultHttpPort);
             }
         }
 
@@ -646,8 +650,8 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         }
     }
 
-    String toStringSimple() {
-        return getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
+    public String toStringSimple() {
+        return getClass().getSimpleName() + "[" + getDockerImageName() + "]";
     }
 
 }

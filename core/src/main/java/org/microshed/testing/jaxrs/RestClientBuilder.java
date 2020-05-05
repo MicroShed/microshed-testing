@@ -36,8 +36,7 @@ import org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.ReflectionSupport;
 import org.microshed.testing.ApplicationEnvironment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.microshed.testing.internal.InternalLogger;
 
 /**
  * A builder class for creating REST Client instances based on JAX-RS interfaces
@@ -45,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RestClientBuilder {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(RestClientBuilder.class);
+    private static final InternalLogger LOG = InternalLogger.get(RestClientBuilder.class);
 
     private String appContextRoot;
     private String jaxrsPath;
@@ -89,7 +88,7 @@ public class RestClientBuilder {
             throw new IllegalArgumentException("Cannot configure JWT and Basic Auth on the same REST client");
         this.jwt = jwt;
         headers.put("Authorization", "Bearer " + jwt);
-        LOGGER.debug("Using provided JWT auth header: " + jwt);
+        LOG.debug("Using provided JWT auth header: " + jwt);
         return this;
     }
 
@@ -106,7 +105,7 @@ public class RestClientBuilder {
         String unEncoded = user + ":" + password;
         this.basicAuth = Base64.getEncoder().encodeToString(unEncoded.getBytes(StandardCharsets.UTF_8));
         headers.put("Authorization", "Basic " + basicAuth);
-        LOGGER.debug("Using provided Basic auth header: " + unEncoded + " --> " + basicAuth);
+        LOG.debug("Using provided Basic auth header: " + unEncoded + " --> " + basicAuth);
         return this;
     }
 
@@ -119,7 +118,7 @@ public class RestClientBuilder {
         if (jwt != null)
             throw new IllegalArgumentException("Cannot configure JWT and Basic Auth on the same REST client");
         headers.put(key, value);
-        LOGGER.debug("Using provided header " + key + "=" + value);
+        LOG.debug("Using provided header " + key + "=" + value);
         return this;
     }
 
@@ -145,7 +144,7 @@ public class RestClientBuilder {
 
         JAXRSClientFactoryBean bean = new org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean();
         String basePath = join(appContextRoot, jaxrsPath);
-        LOGGER.info("Building rest client for " + clazz + " with base path: " + basePath + " and providers: " + providers);
+        LOG.info("Building rest client for " + clazz + " with base path: " + basePath + " and providers: " + providers);
         bean.setResourceClass(clazz);
         bean.setProviders(providers);
         bean.setAddress(basePath);
@@ -166,14 +165,14 @@ public class RestClientBuilder {
                                                                                    AnnotationSupport.isAnnotated(c, ApplicationPath.class),
                                                                               n -> true);
         if (appClasses.size() == 0) {
-            LOGGER.debug("no classes implementing Application found in pkg: " + resourcePackage);
+            LOG.debug("no classes implementing Application found in pkg: " + resourcePackage);
             // If not found, check under the 3rd package, so com.foo.bar.*
             // Classpath scanning can be expensive, so we jump straight to the 3rd package from root instead
             // of recursing up one package at a time and scanning the entire CP for each step
             String[] pkgs = resourcePackage.split("\\.");
             if (pkgs.length > 3) {
                 String checkPkg = pkgs[0] + '.' + pkgs[1] + '.' + pkgs[2];
-                LOGGER.debug("checking in pkg: " + checkPkg);
+                LOG.debug("checking in pkg: " + checkPkg);
                 appClasses = ReflectionSupport.findAllClassesInPackage(checkPkg,
                                                                        c -> Application.class.isAssignableFrom(c) &&
                                                                             AnnotationSupport.isAnnotated(c, ApplicationPath.class),
@@ -182,8 +181,8 @@ public class RestClientBuilder {
         }
 
         if (appClasses.size() == 0) {
-            LOGGER.info("No classes implementing 'javax.ws.rs.core.Application' found on classpath to set as context root for " + clazz +
-                        ". Defaulting context root to '/'");
+            LOG.info("No classes implementing 'javax.ws.rs.core.Application' found on classpath to set as context root for " + clazz +
+                     ". Defaulting context root to '/'");
             return "";
         }
 
@@ -193,11 +192,11 @@ public class RestClientBuilder {
                         .get();
         ApplicationPath appPath = AnnotationSupport.findAnnotation(selectedClass, ApplicationPath.class).get();
         if (appClasses.size() > 1) {
-            LOGGER.warn("Found multiple classes implementing 'javax.ws.rs.core.Application' on classpath: " + appClasses +
-                        ". Setting context root to the first class discovered (" + selectedClass.getCanonicalName() + ") with path: " +
-                        appPath.value());
+            LOG.warn("Found multiple classes implementing 'javax.ws.rs.core.Application' on classpath: " + appClasses +
+                     ". Setting context root to the first class discovered (" + selectedClass.getCanonicalName() + ") with path: " +
+                     appPath.value());
         }
-        LOGGER.debug("Using ApplicationPath of '" + appPath.value() + "'");
+        LOG.debug("Using ApplicationPath of '" + appPath.value() + "'");
         return appPath.value();
     }
 

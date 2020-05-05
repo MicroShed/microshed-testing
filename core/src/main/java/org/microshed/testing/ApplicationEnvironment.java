@@ -23,8 +23,7 @@ import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.microshed.testing.internal.InternalLogger;
 
 /**
  * Defines an approach for configuring and starting the test enviornment. Examples of a test environment might be:
@@ -81,15 +80,14 @@ public interface ApplicationEnvironment {
                 }
             }
 
-            Logger LOG = LoggerFactory.getLogger(ApplicationEnvironment.class);
+            InternalLogger LOG = InternalLogger.get(ApplicationEnvironment.class);
 
             // If nothing explicitly defined in sysprops or env, check ServiceLoader
             Set<ApplicationEnvironment> envs = new HashSet<>();
             ServiceLoader.load(ApplicationEnvironment.class).forEach(envs::add);
             Optional<ApplicationEnvironment> selectedEnv = envs.stream()
                             .map(env -> {
-                                if (LOG.isDebugEnabled())
-                                    LOG.debug("Found ApplicationEnvironment " + env.getClass() + " with priority=" + env.getPriority() + ", available=" + env.isAvailable());
+                                LOG.debug("Found ApplicationEnvironment " + env.getClass() + " with priority=" + env.getPriority() + ", available=" + env.isAvailable());
                                 return env;
                             })
                             .filter(env -> env.isAvailable())

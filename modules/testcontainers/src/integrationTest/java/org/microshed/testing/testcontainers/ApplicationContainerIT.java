@@ -30,17 +30,17 @@ public class ApplicationContainerIT {
 
     // Base uri configured with: com_example_StringRestClient_mp_rest_url
     @RegisterRestClient
-    public static class SampleRestClient1 {
+    public static interface SampleRestClient1 {
     }
 
     // Base uri configured with: rc_config_key_mp_rest_url
     @RegisterRestClient(configKey = "rc-config-key")
-    public static class SampleRestClient2 {
+    public static interface SampleRestClient2 {
     }
 
     // Base uri configured with: CLIENT_CONFIG_KEY_mp_rest_url
     @RegisterRestClient(configKey = "CLIENT_CONFIG_KEY")
-    public static class SampleRestClient3 {
+    public static interface SampleRestClient3 {
     }
 
     @Test

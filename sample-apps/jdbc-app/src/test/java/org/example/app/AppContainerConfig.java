@@ -28,20 +28,14 @@ public class AppContainerConfig implements SharedContainerConfiguration {
 	@Container
 	public static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>()
 					.withNetworkAliases("testpostgres")
-					.withDatabaseName("testdb");
+					.withDatabaseName("testdb")
+					.withReuse(true);
 	
     @Container
     public static ApplicationContainer app = new ApplicationContainer()
+                    .withAppContextRoot("/myservice")
                     .withEnv("POSTGRES_HOSTNAME", "testpostgres")
                     .withEnv("POSTGRES_PORT", "5432")
-                    .withAppContextRoot("/myservice")
-                    .withReuse(true);
-                    //.dependsOn(postgres); intermittent bugs, see: https://github.com/testcontainers/testcontainers-java/issues/1722
+                    .dependsOn(postgres);
     
-    @Override
-    public void startContainers() {
-        postgres.start();
-        app.start();
-    }
-
 }
