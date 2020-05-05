@@ -19,6 +19,7 @@
 package org.microshed.testing.testcontainers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -31,17 +32,24 @@ public class ApplicationContainerTest {
 
     // Base uri configured with: com_example_StringRestClient_mp_rest_url
     @RegisterRestClient
-    public static class SampleRestClient1 {
+    public static interface SampleRestClient1 {
     }
 
     // Base uri configured with: rc_config_key_mp_rest_url
     @RegisterRestClient(configKey = "rc-config-key")
-    public static class SampleRestClient2 {
+    public static interface SampleRestClient2 {
     }
 
     // Base uri configured with: CLIENT_CONFIG_KEY_mp_rest_url
     @RegisterRestClient(configKey = "CLIENT_CONFIG_KEY")
-    public static class SampleRestClient3 {
+    public static interface SampleRestClient3 {
+    }
+
+    public static interface NoAnnotationClient {
+    }
+
+    @RegisterRestClient
+    public static class ConcreteClassClient {
     }
 
     @Test
@@ -59,6 +67,19 @@ public class ApplicationContainerTest {
         assertEquals(clientUrl, appEnv.get("org.microshed.testing.testcontainers.ApplicationContainerTest.SampleRestClient1/mp-rest/url"), appEnv.toString());
         assertEquals(clientUrl, appEnv.get("rc-config-key/mp-rest/url"), appEnv.toString());
         assertEquals(clientUrl, appEnv.get("CLIENT_CONFIG_KEY/mp-rest/url"), appEnv.toString());
+    }
+
+    @Test
+    public void testMpRestClientValidation() {
+        final String clientUrl = "http://example.com";
+
+        assertThrows(IllegalArgumentException.class, () -> dummyApp().withMpRestClient(NoAnnotationClient.class, clientUrl));
+        assertThrows(IllegalArgumentException.class, () -> dummyApp().withMpRestClient(ConcreteClassClient.class, clientUrl));
+        assertThrows(NullPointerException.class, () -> dummyApp().withMpRestClient(SampleRestClient1.class, null));
+        Class<?> nullClass = null;
+        assertThrows(NullPointerException.class, () -> dummyApp().withMpRestClient(nullClass, clientUrl));
+        assertThrows(IllegalArgumentException.class, () -> dummyApp().withMpRestClient(SampleRestClient1.class, "bogus"));
+        assertThrows(IllegalArgumentException.class, () -> dummyApp().withMpRestClient("com.example.StringRestClient/mp-rest/url", "bogus"));
     }
 
     @Test
