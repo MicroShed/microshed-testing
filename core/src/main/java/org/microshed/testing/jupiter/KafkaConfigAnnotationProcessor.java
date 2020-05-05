@@ -28,8 +28,8 @@ import java.util.Properties;
 import java.util.UUID;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
-import org.microshed.testing.kafka.KafkaConsumerConfig;
-import org.microshed.testing.kafka.KafkaProducerConfig;
+import org.microshed.testing.kafka.KafkaConsumerClient;
+import org.microshed.testing.kafka.KafkaProducerClient;
 
 class KafkaConfigAnnotationProcessor {
 
@@ -60,12 +60,12 @@ class KafkaConfigAnnotationProcessor {
     }
 
     Properties getProducerProperties(Field producerField) {
-        KafkaProducerConfig producerConfig = producerField.getAnnotation(KafkaProducerConfig.class);
+        KafkaProducerClient producerConfig = producerField.getAnnotation(KafkaProducerClient.class);
         Properties properties = new Properties();
         String bootstrapServers = producerConfig.bootstrapServers().isEmpty() ? globalBootstrapServers : producerConfig.bootstrapServers();
         if (bootstrapServers.isEmpty())
-            throw new ExtensionConfigurationException("To use @KafkaProducerConfig on a KafkaProducer a bootstrap server must be " +
-                                                      "defined in the @KafkaProducerConfig annotation or using the " +
+            throw new ExtensionConfigurationException("To use @KafkaProducerClient on a KafkaProducer a bootstrap server must be " +
+                                                      "defined in the @KafkaProducerClient annotation or using the " +
                                                       "'org.microshed.kafka.bootstrap.servers' system property");
         properties.put("bootstrap.servers", bootstrapServers);
         if (isClassPropertySet(producerConfig.keySerializer().getName()))
@@ -97,12 +97,12 @@ class KafkaConfigAnnotationProcessor {
     }
 
     Properties getConsumerProperties(Field consumerField) {
-        KafkaConsumerConfig consumerConfig = consumerField.getAnnotation(KafkaConsumerConfig.class);
+        KafkaConsumerClient consumerConfig = consumerField.getAnnotation(KafkaConsumerClient.class);
         Properties properties = new Properties();
         String bootstrapServers = consumerConfig.bootstrapServers().isEmpty() ? globalBootstrapServers : consumerConfig.bootstrapServers();
         if (bootstrapServers.isEmpty())
-            throw new ExtensionConfigurationException("To use @KafkaConsumerConfig on a KafkaConsumer a bootstrap server must be " +
-                                                      "defined in the @KafkaConsumerConfig annotation or using the " +
+            throw new ExtensionConfigurationException("To use @KafkaConsumerClient on a KafkaConsumer a bootstrap server must be " +
+                                                      "defined in the @KafkaConsumerClient annotation or using the " +
                                                       "'org.microshed.kafka.bootstrap.servers' system property");
         properties.put("bootstrap.servers", bootstrapServers);
         properties.put("group.id", consumerConfig.groupId());

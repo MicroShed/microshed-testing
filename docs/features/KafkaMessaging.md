@@ -10,7 +10,7 @@ a messaging engine that is commonly used with Java microservice applications, an
 ## Sending and receiving messages from tests
 
 If an application purely uses Kafka Messaging for communication, a true-to-production way of testing is to also have the test client driving requests
-on the application via message passing. To do this, MicroShed Testing offers two annotations: `@KafkaConsumerConfig` and `@KafkaProducerConfig`
+on the application via message passing. To do this, MicroShed Testing offers two annotations: `@KafkaConsumerClient` and `@KafkaProducerClient`
 
 ### Example setup
 
@@ -49,18 +49,18 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.microshed.testing.kafka.KafkaConsumerConfig;
-import org.microshed.testing.kafka.KafkaProducerConfig;
+import org.microshed.testing.kafka.KafkaConsumerClient;
+import org.microshed.testing.kafka.KafkaProducerClient;
 // other imports ...
 
 @MicroShedTest
 @SharedContainerConfig(AppContainerConfig.class)
 public class KitchenEndpointIT {
 
-  @KafkaProducerConfig                                   // (1)
+  @KafkaProducerClient                                   // (1)
   public static KafkaProducer<String, String> producer;
 
-  @KafkaConsumerConfig(groupId = "update-status",
+  @KafkaConsumerClient(groupId = "update-status",
                        topics = "statusTopic")           // (2)
   public static KafkaConsumer<String, String> consumer;
   
@@ -76,10 +76,10 @@ public class KitchenEndpointIT {
 }
 ```
 
-1. Each `@KafkaProducerConfig` and `@KafkaConsumerConfig` may optionally define a set of key/value [de]serializers
+1. Each `@KafkaProducerClient` and `@KafkaConsumerClient` may optionally define a set of key/value [de]serializers
 that correspond to the key/value types defined in the `KafkaProducer` and `KafkaConsumer`. If none are specified,
 then an attempt will be made to auto-detect a fitting built-in [de]serializer.
-2. For `@KafkaConsumerConfig` zero or more `topics` may be specified to automatically subscribe the 
+2. For `@KafkaConsumerClient` zero or more `topics` may be specified to automatically subscribe the 
 injected `consumer` to the specified `topics`.
 
 
