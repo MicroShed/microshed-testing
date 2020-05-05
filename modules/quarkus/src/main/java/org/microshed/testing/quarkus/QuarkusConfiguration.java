@@ -30,6 +30,7 @@ import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.jwt.JwtBuilder;
 import org.microshed.testing.jwt.JwtConfig;
 import org.microshed.testing.testcontainers.config.TestcontainersConfiguration;
+import org.microshed.testing.testcontainers.internal.ContainerGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
@@ -94,8 +95,10 @@ public class QuarkusConfiguration extends TestcontainersConfiguration {
 
     @Override
     public void applyConfiguration(Class<?> testClass) {
+        containers = discoveredContainers.computeIfAbsent(testClass, clazz -> new ContainerGroup(clazz));
+
         // Verify that @MicroShedTest comes before @QuarkusTest
-        if (allContainers().size() > 0) {
+        if (containers.allContainers.size() > 0) {
             boolean foundQuarkusTest = false;
             for (Annotation anno : testClass.getAnnotations()) {
                 if (anno.annotationType().getCanonicalName().equals("io.quarkus.test.junit.QuarkusTest"))
@@ -148,7 +151,7 @@ public class QuarkusConfiguration extends TestcontainersConfiguration {
             return; // Do not override explicit configuration
         try {
             Class<?> JdbcContainerClass = Class.forName("org.testcontainers.containers.JdbcDatabaseContainer");
-            List<GenericContainer<?>> jdbcContainers = allContainers().stream()
+            List<GenericContainer<?>> jdbcContainers = containers.allContainers.stream()
                             .filter(c -> JdbcContainerClass.isAssignableFrom(c.getClass()))
                             .collect(Collectors.toList());
             if (jdbcContainers.size() == 1) {
@@ -180,7 +183,7 @@ public class QuarkusConfiguration extends TestcontainersConfiguration {
             return; // Do not override explicit configuration
         try {
             Class<?> KafkaContainerClass = Class.forName("org.testcontainers.containers.KafkaContainer");
-            List<GenericContainer<?>> kafkaContainers = allContainers().stream()
+            List<GenericContainer<?>> kafkaContainers = containers.allContainers.stream()
                             .filter(c -> KafkaContainerClass.isAssignableFrom(c.getClass()))
                             .collect(Collectors.toList());
             if (kafkaContainers.size() == 1) {
@@ -208,7 +211,7 @@ public class QuarkusConfiguration extends TestcontainersConfiguration {
             System.getProperty("quarkus.mongodb.hosts") != null)
             return; // Do not override explicit configuration
         try {
-            List<GenericContainer<?>> mongoContainers = allContainers().stream()
+            List<GenericContainer<?>> mongoContainers = containers.allContainers.stream()
                             .filter(c -> c.getClass().equals(GenericContainer.class))
                             .filter(c -> c.getDockerImageName().startsWith("mongo:"))
                             .collect(Collectors.toList());

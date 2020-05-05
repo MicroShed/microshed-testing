@@ -161,7 +161,7 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         List<ServerAdapter> adapters = new ArrayList<>(1);
         for (ServerAdapter adapter : ServiceLoader.load(ServerAdapter.class)) {
             adapters.add(adapter);
-            LOGGER.info("Discovered ServerAdapter: " + adapter.getClass());
+            LOGGER.debug("Discovered ServerAdapter: " + adapter.getClass());
         }
         return adapters.stream()
                         .sorted((a1, a2) -> Integer.compare(a2.getPriority(), a1.getPriority()))

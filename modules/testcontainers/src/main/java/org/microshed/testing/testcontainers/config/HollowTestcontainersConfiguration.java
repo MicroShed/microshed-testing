@@ -85,21 +85,18 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
         super.applyConfiguration(testClass);
 
         // Translate any Docker network hosts that may have been configured in environment variables
-        Set<String> networkAliases = allContainers().stream()
+        Set<String> networkAliases = containers.allContainers.stream()
                         .filter(c -> !(c instanceof ApplicationContainer))
                         .flatMap(c -> c.getNetworkAliases().stream())
                         .collect(Collectors.toSet());
-        allContainers().stream()
-                        .filter(c -> c instanceof ApplicationContainer)
-                        .map(c -> (ApplicationContainer) c)
-                        .forEach(mpApp -> sanitizeEnvVar(mpApp, networkAliases));
+        sanitizeEnvVar(containers.app, networkAliases);
 
         // Expose any external resources (such as DBs) on fixed exposed ports
         try {
             Method addFixedPort = GenericContainer.class.getDeclaredMethod("addFixedExposedPort", int.class, int.class);
             addFixedPort.setAccessible(true);
             Map<Integer, String> fixedExposedPorts = new HashMap<>();
-            for (GenericContainer<?> c : allContainers()) {
+            for (GenericContainer<?> c : containers.allContainers) {
                 for (Integer p : c.getExposedPorts()) {
                     if (fixedExposedPorts.containsKey(p) && !(c instanceof ApplicationContainer)) {
                         throw new ExtensionConfigurationException("Cannot expose port " + p + " for " + c.getDockerImageName() +
