@@ -88,7 +88,7 @@ public class MyTest {
 }
 ```
 
-Before we can run the test, we need to define the application container. First we need to know what context root our applicaiton is available under. You may know this already, otherwise you can check the logs of your application runtime. They may look like this:
+Before we can run the test, we need to define the application container. First we need to know what context root our application is available under. You may know this already, otherwise you can check the logs of your application runtime. They may look like this:
 
 ```
 Launching defaultServer (Open Liberty 19.0.0.8/wlp-1.0.31.cl190820190813-1136) on IBM J9 VM, version 8.0.5.40 - pxa6480sr5fp40-20190807_01(SR5 FP40) (en_US)

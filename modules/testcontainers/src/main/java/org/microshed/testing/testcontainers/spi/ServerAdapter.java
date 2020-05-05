@@ -90,7 +90,7 @@ public interface ServerAdapter {
      * later and the provided appFile in addition to any other vendor-speicific items
      * layerd on top.
      *
-     * @param appFile The applicaiton file to include in the resulting Docker image
+     * @param appFile The application file to include in the resulting Docker image
      * @return The default docker image including the supplied appFile
      */
     default ImageFromDockerfile getDefaultImage(File appFile) {

@@ -192,7 +192,7 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
     }
 
     ApplicationContainer autoDiscoverMPApp(Class<?> clazz, boolean errorIfNone) {
-        // First check for any MicroProfileApplicaiton directly present on the test class
+        // First check for any MicroProfileApplication directly present on the test class
         List<Field> mpApps = AnnotationSupport.findAnnotatedFields(clazz, Container.class,
                                                                    f -> Modifier.isStatic(f.getModifiers()) &&
                                                                         Modifier.isPublic(f.getModifiers()) &&

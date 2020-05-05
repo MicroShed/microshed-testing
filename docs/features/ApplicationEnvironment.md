@@ -32,9 +32,9 @@ This environment is ideal for CI (continuous integration) situations. Thanks to 
 
 ### HollowTestcontainersConfiguration (Priority: -20)
 
-For local development it is convenient to leave the application started, and simply point the tests at an already running applicaiton instance. This
+For local development it is convenient to leave the application started, and simply point the tests at an already running application instance. This
 is especially useful if your application runtime supports hot-updates (your IDE automatically recompiles your changes and updates the application without
-needing to restart the applicaiton runtime). Even if your application only takes 10 seconds to start, this time can quickly add up if you are doing local
+needing to restart the application runtime). Even if your application only takes 10 seconds to start, this time can quickly add up if you are doing local
 development and going through the inner development loop (code->build->test cycle) locally. For this scenario, the `HollowTestcontainersConfiguration` is ideal. 
 
 The envionment is called "hollow" because everything _except_ your application will be started for each test invocation using Testcontainers. For example, suppose you have the following test class:
