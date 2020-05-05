@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -444,11 +446,25 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
      * Configures the application container with the supplied MicroProfile REST Client class that
      * will reference the supplied {@code hostUrl}
      *
-     * @param restClientClass The MicroProfile REST Client class
+     * @param restClientClass The MicroProfile REST Client interface, which must be annotated with
+     *            <code>@RegisterRestClient</code>
      * @param hostUrl The URL that the {@code restClientClass} will act as a REST client for
+     * @throws IllegalArgumentException If the provided restClientClass is not an interface or not
+     *             annotated with <code>@RegisterRestClient</code>
+     * @throws IllegalArgumentException If hostUrl is not a valid URL
      * @return the current instance
      */
     public ApplicationContainer withMpRestClient(Class<?> restClientClass, String hostUrl) {
+        Objects.requireNonNull(restClientClass, "restClientClass must be non-null");
+        Objects.requireNonNull(hostUrl, "hostUrl must be non-null");
+        if (!restClientClass.isInterface()) {
+            throw new IllegalArgumentException("Provided restClientClass " + restClientClass.getCanonicalName() + " must be an interface");
+        }
+        try {
+            new URL(hostUrl);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException(e);
+        }
         String configToken = readMpRestClientConfigKey(restClientClass);
         if (configToken == null || configToken.isEmpty())
             configToken = restClientClass.getCanonicalName();
@@ -467,9 +483,8 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
                                                                              false,
                                                                              getClass().getClassLoader());
         } catch (ClassNotFoundException | LinkageError notFound) {
-            return null;
+            throw new ExtensionConfigurationException("Unable to load @RegisterRestClient", notFound);
         }
-
         Method getConfigKey = null;
         try {
             getConfigKey = RegisterRestClient.getMethod("configKey");
@@ -479,14 +494,16 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         }
 
         Optional<Annotation> foundAnno = (Optional<Annotation>) AnnotationSupport.findAnnotation(restClientClass, RegisterRestClient);
-        if (!foundAnno.isPresent())
-            return null;
+        if (!foundAnno.isPresent()) {
+            throw new IllegalArgumentException("Provided restClientClass " + restClientClass + " must be annotated with "
+                                               + RegisterRestClient.getSimpleName());
+        }
 
         Annotation anno = foundAnno.get();
         try {
             return (String) getConfigKey.invoke(anno);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            return null;
+            throw new IllegalArgumentException("Unable to obtain configKey from " + anno + " found on " + restClientClass.getCanonicalName());
         }
     }
 
@@ -496,6 +513,7 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
      *
      * @param restClientClass The MicroProfile REST Client class
      * @param hostUrl The URL that the {@code restClientClass} will act as a REST client for
+     * @throws IllegalArgumentException If hostUrl is not a valid URL
      * @return the current instance
      */
     public ApplicationContainer withMpRestClient(String restClientClass, String hostUrl) {
@@ -505,6 +523,11 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
             restClientClass = restClientClass.replaceAll("[^a-zA-Z0-9_]", "_") + "_mp_rest_url";
         } else {
             restClientClass += "/mp-rest/url";
+        }
+        try {
+            new URL(hostUrl);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException(e);
         }
         return withEnv(restClientClass, hostUrl);
     }
