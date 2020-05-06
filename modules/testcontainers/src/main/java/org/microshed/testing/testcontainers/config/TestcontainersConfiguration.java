@@ -29,19 +29,18 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.microshed.testing.ApplicationEnvironment;
 import org.microshed.testing.SharedContainerConfiguration;
+import org.microshed.testing.internal.InternalLogger;
 import org.microshed.testing.jwt.JwtBuilder;
 import org.microshed.testing.jwt.JwtConfig;
 import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.microshed.testing.testcontainers.internal.ContainerGroup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.lifecycle.Startables;
 
 public class TestcontainersConfiguration implements ApplicationEnvironment {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TestcontainersConfiguration.class);
+    private static final InternalLogger LOG = InternalLogger.get(TestcontainersConfiguration.class);
 
     protected final Map<Class<?>, ContainerGroup> discoveredContainers = new HashMap<>();
     protected ContainerGroup containers;
@@ -146,11 +145,9 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
                 LOG.warn("Unable to set kafka boostrap server", e);
             }
         } else if (kafkaContainers.size() > 1) {
-            if (LOG.isInfoEnabled())
-                LOG.info("Located multiple KafkaContainer instances. Unable to auto configure kafka clients");
+            LOG.info("Located multiple KafkaContainer instances. Unable to auto configure kafka clients");
         } else {
-            if (LOG.isDebugEnabled())
-                LOG.debug("No KafkaContainer instances found in configuration");
+            LOG.debug("No KafkaContainer instances found in configuration");
         }
     }
 

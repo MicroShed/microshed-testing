@@ -31,18 +31,17 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.microshed.testing.ApplicationEnvironment;
+import org.microshed.testing.internal.InternalLogger;
 import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.microshed.testing.testcontainers.config.HollowTestcontainersConfiguration;
 import org.microshed.testing.testcontainers.config.TestcontainersConfiguration;
 import org.microshed.testing.testcontainers.spi.ServerAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
 public class LibertyAdapter implements ServerAdapter {
 
-    static final Logger LOG = LoggerFactory.getLogger(LibertyAdapter.class);
+    static final InternalLogger LOG = InternalLogger.get(LibertyAdapter.class);
 
     private static String BASE_DOCKER_IMAGE = "openliberty/open-liberty:full-java8-openj9-ubi";
     private static final String CONFIG_FILE_PROP = "MICROSHED_TEST_LIBERTY_CONFIG_FILE";

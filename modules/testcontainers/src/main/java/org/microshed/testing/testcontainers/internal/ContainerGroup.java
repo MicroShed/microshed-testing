@@ -14,15 +14,14 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.microshed.testing.SharedContainerConfig;
 import org.microshed.testing.SharedContainerConfiguration;
+import org.microshed.testing.internal.InternalLogger;
 import org.microshed.testing.testcontainers.ApplicationContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 
 public class ContainerGroup {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ContainerGroup.class);
+    private static final InternalLogger LOG = InternalLogger.get(ContainerGroup.class);
 
     public final Class<?> testClass;
     public final Class<? extends SharedContainerConfiguration> sharedConfigClass;
@@ -55,7 +54,7 @@ public class ContainerGroup {
             app = null;
             // Error: Multiple ApplicationContainers were found
             String appString = apps.stream()
-                            .map(app -> app.getClass().getSimpleName() + "@" + Integer.toHexString(app.hashCode()))
+                            .map(app -> app.toStringSimple())
                             .collect(Collectors.joining(", "));
             throw new ExtensionConfigurationException("Only 1 ApplicationContainer may be used, but multiple were defined: " +
                                                       appString);

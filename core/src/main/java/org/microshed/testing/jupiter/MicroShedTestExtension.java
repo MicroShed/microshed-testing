@@ -35,6 +35,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.microshed.testing.ApplicationEnvironment;
 import org.microshed.testing.SharedContainerConfig;
+import org.microshed.testing.internal.InternalLogger;
 import org.microshed.testing.jaxrs.BasicAuthConfig;
 import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jaxrs.RestClientBuilder;
@@ -42,8 +43,6 @@ import org.microshed.testing.jwt.JwtBuilder;
 import org.microshed.testing.jwt.JwtConfig;
 import org.microshed.testing.kafka.KafkaConsumerClient;
 import org.microshed.testing.kafka.KafkaProducerClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * JUnit Jupiter extension that is applied whenever the <code>@MicroProfileTest</code> is used on a test class.
@@ -52,7 +51,7 @@ import org.slf4j.LoggerFactory;
  */
 class MicroShedTestExtension implements BeforeAllCallback {
 
-    static final Logger LOG = LoggerFactory.getLogger(MicroShedTestExtension.class);
+    private static final InternalLogger LOG = InternalLogger.get(MicroShedTestExtension.class);
 
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {

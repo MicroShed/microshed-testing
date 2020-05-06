@@ -26,18 +26,17 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.microshed.testing.ApplicationEnvironment;
 import org.microshed.testing.ManuallyStartedConfiguration;
+import org.microshed.testing.internal.InternalLogger;
 import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.jwt.JwtBuilder;
 import org.microshed.testing.jwt.JwtConfig;
 import org.microshed.testing.testcontainers.config.TestcontainersConfiguration;
 import org.microshed.testing.testcontainers.internal.ContainerGroup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 
 public class QuarkusConfiguration extends TestcontainersConfiguration {
 
-    private static final Logger LOG = LoggerFactory.getLogger(QuarkusConfiguration.class);
+    private static final InternalLogger LOG = InternalLogger.get(QuarkusConfiguration.class);
 
     @Override
     public boolean isAvailable() {
@@ -87,8 +86,7 @@ public class QuarkusConfiguration extends TestcontainersConfiguration {
 //            String testUrl = (String) TestHTTPResourceManager.getMethod("getUri").invoke(null);
 //            return testUrl;
         } catch (Throwable e) {
-            if (LOG.isDebugEnabled())
-                LOG.debug("Unable to determine Quarkus application URL", e);
+            LOG.debug("Unable to determine Quarkus application URL", e);
             return "";
         }
     }
@@ -140,8 +138,7 @@ public class QuarkusConfiguration extends TestcontainersConfiguration {
         System.setProperty("mp.jwt.verify.publickey", JwtBuilder.getPublicKey());
         System.setProperty("mp.jwt.verify.issuer", JwtConfig.DEFAULT_ISSUER);
         System.setProperty("quarkus.smallrye-jwt.enabled", "true");
-        if (LOG.isDebugEnabled())
-            LOG.debug("Configuring mp.jwt.verify.publickey=" + JwtBuilder.getPublicKey());
+        LOG.debug("Configuring mp.jwt.verify.publickey=" + JwtBuilder.getPublicKey());
     }
 
     private void autoConfigureDatabases() {
@@ -160,14 +157,11 @@ public class QuarkusConfiguration extends TestcontainersConfiguration {
                 System.setProperty("quarkus.datasource.url", jdbcUrl);
                 System.setProperty("quarkus.datasource.username", (String) JdbcContainerClass.getMethod("getUsername").invoke(db));
                 System.setProperty("quarkus.datasource.password", (String) JdbcContainerClass.getMethod("getPassword").invoke(db));
-                if (LOG.isInfoEnabled())
-                    LOG.info("Set quarkus.datasource.url to: " + jdbcUrl);
+                LOG.info("Set quarkus.datasource.url to: " + jdbcUrl);
             } else if (jdbcContainers.size() > 1) {
-                if (LOG.isInfoEnabled())
-                    LOG.info("Located multiple JdbcDatabaseContainer instances. Unable to auto configure quarkus.datasource.* properties");
+                LOG.info("Located multiple JdbcDatabaseContainer instances. Unable to auto configure quarkus.datasource.* properties");
             } else {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("No JdbcDatabaseContainer instances found in configuration");
+                LOG.debug("No JdbcDatabaseContainer instances found in configuration");
             }
         } catch (ClassNotFoundException | LinkageError ignore) {
             // Testcontainers JDBC not on the classpath
@@ -190,14 +184,11 @@ public class QuarkusConfiguration extends TestcontainersConfiguration {
                 GenericContainer<?> kafka = kafkaContainers.get(0);
                 String bootstrapServers = (String) KafkaContainerClass.getMethod("getBootstrapServers").invoke(kafka);
                 System.setProperty(KAFKA_PROP, bootstrapServers);
-                if (LOG.isInfoEnabled())
-                    LOG.info("Set " + KAFKA_PROP + "=" + bootstrapServers);
+                LOG.info("Set " + KAFKA_PROP + "=" + bootstrapServers);
             } else if (kafkaContainers.size() > 1) {
-                if (LOG.isInfoEnabled())
-                    LOG.info("Located multiple KafkaContainer instances. Unable to auto configure '" + KAFKA_PROP + "' property");
+                LOG.info("Located multiple KafkaContainer instances. Unable to auto configure '" + KAFKA_PROP + "' property");
             } else {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("No KafkaContainer instances found in configuration");
+                LOG.debug("No KafkaContainer instances found in configuration");
             }
         } catch (ClassNotFoundException | LinkageError ignore) {
             // Testcontainers Kafka not on the classpath
@@ -219,14 +210,11 @@ public class QuarkusConfiguration extends TestcontainersConfiguration {
                 GenericContainer<?> mongo = mongoContainers.get(0);
                 String mongoHost = mongo.getContainerIpAddress() + ':' + mongo.getFirstMappedPort();
                 System.setProperty("quarkus.mongodb.hosts", mongoHost);
-                if (LOG.isInfoEnabled())
-                    LOG.info("Set quarkus.mongodb.hosts=" + mongoHost);
+                LOG.info("Set quarkus.mongodb.hosts=" + mongoHost);
             } else if (mongoContainers.size() > 1) {
-                if (LOG.isInfoEnabled())
-                    LOG.info("Located multiple MongoDB instances. Unable to auto configure 'quarkus.mongodb.hosts' property");
+                LOG.info("Located multiple MongoDB instances. Unable to auto configure 'quarkus.mongodb.hosts' property");
             } else {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("No KafkaContainer instances found in configuration");
+                LOG.debug("No KafkaContainer instances found in configuration");
             }
         } catch (Exception e) {
             LOG.debug("Unable to configure Quarkus with MongoDB container", e);

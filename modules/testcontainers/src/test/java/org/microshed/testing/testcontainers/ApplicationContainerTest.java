@@ -78,8 +78,7 @@ public class ApplicationContainerTest {
         assertThrows(NullPointerException.class, () -> dummyApp().withMpRestClient(SampleRestClient1.class, null));
         Class<?> nullClass = null;
         assertThrows(NullPointerException.class, () -> dummyApp().withMpRestClient(nullClass, clientUrl));
-        assertThrows(IllegalArgumentException.class, () -> dummyApp().withMpRestClient(SampleRestClient1.class, "bogus"));
-        assertThrows(IllegalArgumentException.class, () -> dummyApp().withMpRestClient("com.example.StringRestClient/mp-rest/url", "bogus"));
+        assertThrows(NullPointerException.class, () -> dummyApp().withMpRestClient("com.example.StringRestClient/mp-rest/url", null));
     }
 
     @Test

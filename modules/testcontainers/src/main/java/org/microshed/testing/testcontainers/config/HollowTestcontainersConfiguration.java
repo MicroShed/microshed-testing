@@ -33,14 +33,13 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.microshed.testing.ApplicationEnvironment;
 import org.microshed.testing.ManuallyStartedConfiguration;
+import org.microshed.testing.internal.InternalLogger;
 import org.microshed.testing.testcontainers.ApplicationContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 
 public class HollowTestcontainersConfiguration extends TestcontainersConfiguration {
 
-    private static final Logger LOG = LoggerFactory.getLogger(HollowTestcontainersConfiguration.class);
+    private static final InternalLogger LOG = InternalLogger.get(HollowTestcontainersConfiguration.class);
 
     public static boolean available() {
         String host = resolveProperty(ManuallyStartedConfiguration.MICROSHED_HOSTNAME);
