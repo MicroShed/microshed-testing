@@ -14,6 +14,11 @@ public class InternalLogger {
     private static boolean isLog4jEnabled() {
         if (!checkedEnabled) {
             checkedEnabled = true;
+            try {
+                Class.forName("org.slf4j.impl.StaticMDCBinder");
+            } catch (Throwable t) {
+                return loggingEnabled = false;
+            }
             ClassLoader tccl = Thread.currentThread().getContextClassLoader();
             loggingEnabled = tccl.getResource("log4j.properties") != null ||
                              tccl.getResource("log4j.xml") != null ||

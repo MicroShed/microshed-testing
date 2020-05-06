@@ -18,34 +18,28 @@
  */
 package org.example.app;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
-import javax.ws.rs.ProcessingException;
 
 import org.junit.jupiter.api.Test;
+import org.microshed.testing.SharedContainerConfig;
 import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jupiter.MicroShedTest;
-import org.microshed.testing.testcontainers.ApplicationContainer;
-import org.testcontainers.junit.jupiter.Container;
 
 @MicroShedTest
-public class JaxrsJsonTest {
-    
-    @Container
-    public static ApplicationContainer app = new ApplicationContainer()
-                    .withAppContextRoot("/myservice")
-                    .withReadinessPath("/myservice/app/people");
-    
+@SharedContainerConfig(AppContainerConfig.class)
+public class BasicJAXRSServiceIT {
+
     @RESTClient
     public static PersonService personSvc;
-    
+
     @Test
     public void testCreatePerson() {
         Long createId = personSvc.createPerson("Hank", 42);
@@ -84,12 +78,12 @@ public class JaxrsJsonTest {
         Person expected2 = new Person("Person2", 2, person2Id);
 
         Collection<Person> allPeople = personSvc.getAllPeople();
-        assertTrue(allPeople.size() >= 2,
-                "Expected at least 2 people to be registered, but there were only: " + allPeople);
-        assertTrue(allPeople.contains(expected1),
-                "Did not find person " + expected1 + " in all people: " + allPeople);
-        assertTrue(allPeople.contains(expected2),
-                "Did not find person " + expected2 + " in all people: " + allPeople);
+        assertTrue("Expected at least 2 people to be registered, but there were only: " + allPeople,
+                   allPeople.size() >= 2);
+        assertTrue("Did not find person " + expected1 + " in all people: " + allPeople,
+                   allPeople.contains(expected1));
+        assertTrue("Did not find person " + expected2 + " in all people: " + allPeople,
+                   allPeople.contains(expected2));
     }
 
     @Test
@@ -126,11 +120,6 @@ public class JaxrsJsonTest {
     @Test
     public void testCreateBadPersonNameTooLong() {
         assertThrows(BadRequestException.class, () -> personSvc.createPerson("NameTooLongPersonNameTooLongPersonNameTooLongPerson", 5));
-    }
-    
-    @Test
-    public void testNonJaxrsMethod() {
-        assertThrows(ProcessingException.class, () -> personSvc.nonJaxrsMethod());
     }
 
 }

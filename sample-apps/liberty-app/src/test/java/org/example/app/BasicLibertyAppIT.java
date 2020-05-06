@@ -35,7 +35,7 @@ import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.junit.jupiter.Container;
 
 @MicroShedTest
-public class BasicLibertyAppTest {
+public class BasicLibertyAppIT {
 
     @Container
     public static ApplicationContainer app = new ApplicationContainer()

@@ -30,10 +30,10 @@ import org.microshed.testing.jupiter.MicroShedTest;
 
 @MicroShedTest
 @SharedContainerConfig(AppContainerConfig.class)
-public class MongoAndLibertyTest {
+public class DatabaseIT {
 
     @RESTClient
-    public static PersonServiceWithMongo personSvc;
+    public static PersonServiceWithJDBC personSvc;
 
     @Test
     public void testGetPerson() {

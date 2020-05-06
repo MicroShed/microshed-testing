@@ -29,7 +29,7 @@ import org.microshed.testing.jupiter.MicroShedTest;
 
 @MicroShedTest
 @SharedContainerConfig(AppContainerConfig.class)
-public class RestAssuredTest {
+public class RestAssuredIT {
 
     @Test
     public void testCreatePerson() {
