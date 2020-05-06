@@ -2,11 +2,9 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/org.microshed/microshed-testing-testcontainers.svg?label=Maven%20Central)](https://mvnrepository.com/artifact/org.microshed/microshed-testing-testcontainers)
 [![Javadocs](https://www.javadoc.io/badge/org.microshed/microshed-testing-testcontainers.svg)](https://www.javadoc.io/doc/org.microshed/microshed-testing-testcontainers)
-[![Jitpack (Snapshots)](https://jitpack.io/v/microshed/microshed-testing.svg)](https://jitpack.io/#microshed/microshed-testing)
 [![Website](https://img.shields.io/website/http/microshed.org/microshed-testing?up_color=informational)](http://microshed.org/microshed-testing)
 [![Build Status](https://travis-ci.org/MicroShed/microshed-testing.svg?branch=master)](https://travis-ci.org/MicroShed/microshed-testing)
 [![License](https://img.shields.io/badge/License-ASL%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Gitter](https://badges.gitter.im/MicroShed/microshed-testing.svg)](https://gitter.im/MicroShed/microshed-testing)
 
 # Why use MicroShed Testing?
 
@@ -63,6 +61,7 @@ NOTE: The first run will take longer due to downloading required container layer
 - Wildfly
 - Payara Micro
 - Apache TomEE
+- Quarkus
 
 To change which app server is used, [un]comment sections of the test app's Dockerfile at `sample-apps/jaxrs-json/Dockerfile`
 
@@ -101,6 +100,14 @@ public class PersonService {
 Using MicroShed Testing, we can write an integration test that looks something like this:
 
 ```java
+import static org.junit.jupiter.api.Assertions.*;
+import javax.ws.rs.NotFoundException;
+import org.junit.jupiter.api.Test;
+import org.microshed.testing.jaxrs.RESTClient;
+import org.microshed.testing.jupiter.MicroShedTest;
+import org.microshed.testing.testcontainers.ApplicationContainer;
+import org.testcontainers.junit.jupiter.Container;
+
 @MicroShedTest
 public class BasicJAXRSServiceTest {
 

@@ -52,6 +52,14 @@ public class PersonService {
 Using MicroShed Testing, we can write an integration test that looks something like this:
 
 ```java
+import static org.junit.jupiter.api.Assertions.*;
+import javax.ws.rs.NotFoundException;
+import org.junit.jupiter.api.Test;
+import org.microshed.testing.jaxrs.RESTClient;
+import org.microshed.testing.jupiter.MicroShedTest;
+import org.microshed.testing.testcontainers.ApplicationContainer;
+import org.testcontainers.junit.jupiter.Container;
+
 @MicroShedTest
 public class BasicJAXRSServiceTest {
 
@@ -109,7 +117,7 @@ automatically produce a testable container image roughly equivalent to the follo
 ```
 FROM openliberty/open-liberty:full-java8-openj9-ubi
 COPY src/main/liberty/config /config/
-ADD build/libs/$APP_FILE /config/dropins
+ADD target/$APP_FILE /config/dropins
 ```
 
 ## Quick Start
@@ -139,6 +147,11 @@ Once you have the above dependencies added, create a new test class with the fol
 1. Inject one or more `public static` JAX-RS resource classes
 
 ```java
+import org.microshed.testing.jaxrs.RESTClient;
+import org.microshed.testing.jupiter.MicroShedTest;
+import org.microshed.testing.testcontainers.ApplicationContainer;
+import org.testcontainers.junit.jupiter.Container;
+
 @MicroShedTest
 public class MyTest {
 
@@ -152,4 +165,6 @@ public class MyTest {
     // write @Test methods as normal
 }
 ```
+
+For a more complete introduction, see the [Walkthrough page](Walkthrough).
 

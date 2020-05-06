@@ -41,8 +41,18 @@ As the `@RolesAllowed` annotations imply, anyone can access the `GET /data/ping`
 When MicroShed Testing will automatically generate and configure a pair of JWT secrets for the `ApplicationContainer` container. Then a test client may access these endpoints using the `@JwtConfig` annotation on injected REST clients as follows:
 
 ```java
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.NotAuthorizedException;
+
+import org.junit.jupiter.api.Test;
+import org.microshed.testing.jaxrs.RESTClient;
+import org.microshed.testing.jupiter.MicroShedTest;
+import org.microshed.testing.jwt.JwtConfig;
+import org.microshed.testing.testcontainers.ApplicationContainer;
+import org.testcontainers.junit.jupiter.Container;
+
 @MicroShedTest
-public class SecuredSvcTest {
+public class SecuredSvcIT {
 
     @Container
     public static ApplicationContainer app = new ApplicationContainer()
