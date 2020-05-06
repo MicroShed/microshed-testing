@@ -25,7 +25,7 @@ Add `microshed-testing-testcontainers` and `junit-jupiter` as test-scoped depend
     <dependency>
         <groupId>org.microshed</groupId>
         <artifactId>microshed-testing-testcontainers</artifactId>
-        <version>0.8</version>
+        <version>0.9</version>
        <scope>test</scope>
     </dependency>
     
