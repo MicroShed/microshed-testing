@@ -38,7 +38,7 @@ import com.google.common.net.MediaType;
 
 @MicroShedTest
 @SharedContainerConfig(AppContainerConfig.class)
-public class DependentServiceTest {
+public class DependentServiceIT {
 
     @RESTClient
     public static PersonServiceWithPassthrough personSvc;

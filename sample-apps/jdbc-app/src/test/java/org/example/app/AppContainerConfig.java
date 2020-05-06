@@ -28,8 +28,7 @@ public class AppContainerConfig implements SharedContainerConfiguration {
 	@Container
 	public static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>()
 					.withNetworkAliases("testpostgres")
-					.withDatabaseName("testdb")
-					.withReuse(true);
+					.withDatabaseName("testdb");
 	
     @Container
     public static ApplicationContainer app = new ApplicationContainer()

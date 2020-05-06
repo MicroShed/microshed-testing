@@ -32,7 +32,7 @@ import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.junit.jupiter.Container;
 
 @MicroShedTest
-public class SecuredSvcTest {
+public class SecuredSvcIT {
 
     @Container
     public static ApplicationContainer app = new ApplicationContainer()
