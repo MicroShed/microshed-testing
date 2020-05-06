@@ -8,7 +8,7 @@ Have you ever toiled with creating mock objects for unit tests? How about custom
 
 One of the great benefits of Docker is that we get a nice consistent package that contains everything down to the OS, meaning it’s portable to any hardware. Great, so lets use this to get consistent testing environments too!
 
-# Starting point
+# Starting application
 
 Assume we have a basic JAX-RS application that can perform create, update, and delete
 operations on 'Person' data objects. It may look something like this:
@@ -45,7 +45,7 @@ Now assume we also have simple Dockerfile in our repository that packages up our
 ```
 FROM openliberty/open-liberty:full-java8-openj9-ubi
 COPY src/main/liberty/config /config/
-ADD build/libs/myservice.war /config/dropins
+ADD target/myservice.war /config/dropins
 ```
 
 It doesn't really matter what's in the Dockerfile. What matters is we can start it using Docker and interact with it over HTTP or some other protocol.
@@ -75,13 +75,48 @@ Given the above application code, we can start by adding maven dependencies:
 </dependencies>
 ```
 
+## Enabling JUnit Jupiter with Maven Failsafe
+
+If you have never used JUnit Jupiter (JUnit 5) before with integration tests, there are a few important things to note:
+
+1. The package import for `@Test` is now `import org.junit.jupiter.api.Test;`
+2. By default, test class names must match the pattern: `**/IT*.java`, `**/*IT.java`, or `**/*ITCase.java`
+3. The `maven-failsafe-plugin` must be added to your `pom.xml` with configuration similar to the following:
+
+```xml
+<project>
+  [...]
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.22.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  [...]
+</project>
+```
+
 ## Starting the application container
 
 Next, we create the basic test class and inject the REST endpoint we want to test:
 
 ```java
+import org.microshed.testing.jaxrs.RESTClient;
+import org.microshed.testing.jupiter.MicroShedTest;
+
 @MicroShedTest
-public class MyTest {
+public class MyServiceIT {
 
     @RESTClient
     public static MyService mySvc;
@@ -101,8 +136,13 @@ Launching defaultServer (Open Liberty 19.0.0.8/wlp-1.0.31.cl190820190813-1136) o
 Here we can see that the application is available at `http://localhost:9080/myservice/`, which means the context root is `/myservice`. Now we can add that information to the test class like so:
 
 ```java
+import org.microshed.testing.jaxrs.RESTClient;
+import org.microshed.testing.jupiter.MicroShedTest;
+import org.microshed.testing.testcontainers.ApplicationContainer;
+import org.testcontainers.junit.jupiter.Container;
+
 @MicroShedTest
-public class MyTest {
+public class MyServiceIT {
 
     @Container
     public static ApplicationContainer app = new ApplicationContainer()
@@ -121,35 +161,8 @@ org.testcontainers.containers.ContainerLaunchException:
 ```
 
 A few questions may come up at this point, such as:
-- Where are the logs??
 - Why port 33735?
 - Why wasn't the URL accessible?
-
-### Where are the logs??
-
-By default, containers pipe logs to SLF4j. This is certainly worth setting up, because coallates all container logs to the test output. This makes it easy to correlate what was going on inside of your application during each test method. One way to set up SFL4j is by adding the following dependency:
-
-```xml
-<dependency>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-    <version>1.7.26</version>
-    <scope>test</scope>
-</dependency>
-```
-
-And then create a file at `src/test/resources/log4j.properties` with a valid Log4j configuration. For example:
-
-```
-log4j.rootLogger=INFO, stdout
-
-log4j.appender=org.apache.log4j.ConsoleAppender
-log4j.appender.layout=org.apache.log4j.PatternLayout
-
-log4j.appender.stdout=org.apache.log4j.ConsoleAppender
-log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
-log4j.appender.stdout.layout.ConversionPattern=%r %p %c %x - %m%n
-```
 
 ### Why port 33735?
 
@@ -162,10 +175,10 @@ By default, MicroShed Testing will poll the application container via HTTP on it
 However, our application does not respond at this endpoint, so we need to configure a different endpoint for readiness. Since the `getAllPeople()` method is bound to the `GET /myservice/people/` endpoint and does not depend on any particular state, it is a good candidate for a readiness check. We can configure the readiness check endpoint like this:
 
 ```java
-    @Container
-    public static ApplicationContainer app = new ApplicationContainer()
-                    .withAppContextRoot("/myservice")
-                    .withReadinessPath("/myservice/people");
+	@Container
+	public static ApplicationContainer app = new ApplicationContainer()
+	                .withAppContextRoot("/myservice")
+	                .withReadinessPath("/myservice/people");
 ```
 
 Alternatively, if your application runtime supports MicroProfile Health 2.0, it will have a standard readiness endpoint at `/heath/ready`, which will return `HTTP 200` when the application is available.
@@ -176,31 +189,37 @@ Now that the setup is complete, we are ready to write some test methods! First w
 reading the result back.
 
 ```java
-    @Test
-    public void testGetPerson() {
-        // This invokes an HTTP POST request to the running container, which triggers
-        // the PersonService#createPerson endpoint and returns the generated ID
-        Long bobId = personSvc.createPerson("Bob", 24);
-        
-        // Using the generated ID, invoke an HTTP GET request to read the record we just created
-        // The JSON response will be automatically converted to a 'Person' object using JSON-B 
-        Person bob = personSvc.getPerson(bobId);
-        
-        assertEquals("Bob", bob.name);
-        assertEquals(24, bob.age);
-        assertNotNull(bob.id);
-    }
+import org.junit.jupiter.api.Test;
+// ...
+
+	@Test
+	public void testGetPerson() {
+	    // This invokes an HTTP POST request to the running container, which triggers
+	    // the PersonService#createPerson endpoint and returns the generated ID
+	    Long bobId = personSvc.createPerson("Bob", 24);
+	    
+	    // Using the generated ID, invoke an HTTP GET request to read the record we just created
+	    // The JSON response will be automatically converted to a 'Person' object using JSON-B 
+	    Person bob = personSvc.getPerson(bobId);
+	    
+	    assertEquals("Bob", bob.name);
+	    assertEquals(24, bob.age);
+	    assertNotNull(bob.id);
+	}
 ```
 
 Next, we can write a negative test case that checks behavior for when someone requests a `Person` with an invalid ID.
 
 ```java
-    @Test
-    public void testGetUnknownPerson() {
-        // This invokes an HTTP GET request to get a person with ID -1, which does not exist
-        // asserts that the application container returns an HTTP 404 (not found) exception
-        assertThrows(NotFoundException.class, () -> personSvc.getPerson(-1L));
-    }
+import org.junit.jupiter.api.Test;
+// ...
+
+	@Test
+	public void testGetUnknownPerson() {
+	    // This invokes an HTTP GET request to get a person with ID -1, which does not exist
+	    // asserts that the application container returns an HTTP 404 (not found) exception
+	    assertThrows(NotFoundException.class, () -> personSvc.getPerson(-1L));
+	}
 ```
 
 ## Expanding the number of tests
@@ -208,6 +227,6 @@ Next, we can write a negative test case that checks behavior for when someone re
 If more than one test class is used for the same application container, it will save time to leave containers running across multiple test classes.
 This can be accomplished by moving `@Container` annotated fields to a separate class that implements `SharedContainerConfiguration`. 
 
-For more information on this approach, see the [SharedContainerConfiguration documentation](01_SharedContainerConfiguration).
+For more information on this approach, see the [SharedContainerConfiguration documentation](SharedContainerConfiguration).
 
 
