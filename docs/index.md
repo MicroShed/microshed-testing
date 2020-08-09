@@ -166,5 +166,5 @@ public class MyTest {
 }
 ```
 
-For a more complete introduction, see the [Walkthrough page](Walkthrough).
+For a more complete introduction, see the [Walkthrough page](https://microshed.org/microshed-testing/features/Walkthrough.html)
 
