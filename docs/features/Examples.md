@@ -10,7 +10,7 @@ Sometimes code is worth a thousand words. Here are some pointers to working exam
 
 - [Basic JAX-RS application using Gradle](https://github.com/MicroShed/microshed-testing/tree/master/sample-apps/jaxrs-json)
 - [Basic JAX-RS application using Maven](https://github.com/MicroShed/microshed-testing/tree/master/sample-apps/maven-app)
-- [Basic JAX-RS application using REST Assured](https://github.com/MicroShed/microshed-testing/blob/master/sample-apps/everything-app/src/test/java/org/example/app/RestAssuredTest.java)
+- [Basic JAX-RS application using REST Assured](https://github.com/MicroShed/microshed-testing/blob/master/sample-apps/everything-app/src/test/java/org/example/app/RestAssuredIT.java)
 - [JAX-RS and JDBC application using a PostgreSQL database](https://github.com/MicroShed/microshed-testing/tree/master/sample-apps/jdbc-app)
 - [JAX-RS application secured with Basic Auth](https://github.com/MicroShed/microshed-testing/tree/master/sample-apps/jaxrs-basicauth) 
 - [JAX-RS application secured with MP JWT](https://github.com/MicroShed/microshed-testing/tree/master/sample-apps/jaxrs-mpjwt)

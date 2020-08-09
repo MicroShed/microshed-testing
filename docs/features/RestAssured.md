@@ -4,7 +4,7 @@ title: "REST Assured"
 order: 14
 ---
 
-MicroShed Testing provides auto-configuration for when [REST Assured](https://github.com/rest-assured/rest-assured) is available on the test classpath. REST Assured is a Java DSL library for easy testing of REST services. It is more verbose than using a REST client, but offers more direct control over the request and response.f
+MicroShed Testing provides auto-configuration for when [REST Assured](https://github.com/rest-assured/rest-assured) is available on the test classpath. REST Assured is a Java DSL library for easy testing of REST services. It is more verbose than using a REST client, but offers more direct control over the request and response.
 
 ## Enable REST Assured
 
@@ -90,7 +90,7 @@ It is also possible to send/receive POJOs with the JSON-B based ObjectMapper:
     }
 ```
 
-For a complete working example, see the [RestAssuredTest class](https://github.com/MicroShed/microshed-testing/blob/master/sample-apps/everything-app/src/test/java/org/example/app/RestAssuredTest.java)
+For a complete working example, see the [RestAssuredTest class](https://github.com/MicroShed/microshed-testing/blob/master/sample-apps/everything-app/src/test/java/org/example/app/RestAssuredIT.java)
 
 ## Auto-configuration override
 
