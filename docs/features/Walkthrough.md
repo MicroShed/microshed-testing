@@ -6,7 +6,7 @@ order: 00
 
 Have you ever toiled with creating mock objects for unit tests? How about custom setup steps for integration tests? Ever had an issue in production because of differences in behavior between testing and production environments?
 
-One of the great benefits of Docker is that we get a nice consistent package that contains everything down to the OS, meaning it’s portable to any hardware. Great, so lets use this to get consistent testing environments too!
+One of the great benefits of Docker is that we get a nice consistent package that contains everything down to the OS, meaning it's portable to any hardware. Great, so let's use this to get consistent testing environments too!
 
 # Starting application
 
@@ -167,7 +167,7 @@ A few questions may come up at this point, such as:
 ### Why port 33735?
 
 Although port 33735 was not configured anywhere, MicroShed Testing still waited for this port to be available. This is because the application is running inside a container, and the ports inside containers can be mapped to different ports outside of the container. Testcontainers takes advantage of this 
-feature of containers by automatically randomizing the ports so they do not conflict. In th is case, port `9080` inside of the container was randomly exposed as `33735`, which can be obtained by calling `app.getFirstExposedPort()` or `app.getMappedPort(9080)`.
+feature of containers by automatically randomizing the ports so they do not conflict. In this case, port `9080` inside of the container was randomly exposed as `33735`, which can be obtained by calling `app.getFirstExposedPort()` or `app.getMappedPort(9080)`.
 
 ### Why wasn't the URL accessible?
 
@@ -181,7 +181,7 @@ However, our application does not respond at this endpoint, so we need to config
 	                .withReadinessPath("/myservice/people");
 ```
 
-Alternatively, if your application runtime supports MicroProfile Health 2.0, it will have a standard readiness endpoint at `/heath/ready`, which will return `HTTP 200` when the application is available.
+Alternatively, if your application runtime supports MicroProfile Health 2.0, it will have a standard readiness endpoint at `/health/ready`, which will return `HTTP 200` when the application is available.
 
 ## Writing your first test method
 

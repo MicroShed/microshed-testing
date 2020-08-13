@@ -78,7 +78,7 @@ The Testcontainers API has a built-in dependency mechanism which can be used to 
 ```
 
 Since the `app` container `dependsOn` the `mongo` container, when MicroShed Testing starts the containers, the Testcontainers library will
-ensure that the `mongo` container starts sucessfully before the `app` container start is initiatied. 
+ensure that the `mongo` container starts sucessfully before the `app` container start is initiated. 
 
 ### Fully custom start process
 

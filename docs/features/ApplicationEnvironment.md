@@ -51,7 +51,7 @@ The envionment is called "hollow" because everything _except_ your application w
                     .withNetworkAliases("testmongo");
 ```
 
-With the default `TestcontainersConfiguration`, both the `app` and `mongo` containers would be started each time tests are run. With "hollow" mode, only the `mongo` container would be started each time the tests run, and instead of staring the `app` container the already-running application runtime will be used.
+With the default `TestcontainersConfiguration`, both the `app` and `mongo` containers would be started each time tests are run. With "hollow" mode, only the `mongo` container would be started each time the tests run, and instead of starting the `app` container the already-running application runtime will be used.
 
 This environment is also provided by the `microshed-testing-testcontainers` module. To enable this environment, the following system properties or env vars must be set:
 * **microshed_hostname**: Indicates the hostname or IP address where the application is running. For example, `localhost` or `216.3.128.12`.

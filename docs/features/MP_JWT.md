@@ -34,7 +34,7 @@ public class SecuredService {
 }
 ```
 
-As the `@RolesAllowed` annotations imply, anyone can access the `GET /data/ping` endpoint, but only client authenticated in the `users` role can access the `GET /data/users` endpoint.
+As the `@RolesAllowed` annotations imply, anyone can access the `GET /data/ping` endpoint, but only clients authenticated in the `users` role can access the `GET /data/users` endpoint.
 
 ## Testing a MP JWT secured endpoint
 
