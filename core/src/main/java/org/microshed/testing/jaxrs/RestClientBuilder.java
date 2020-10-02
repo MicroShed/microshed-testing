@@ -181,8 +181,8 @@ public class RestClientBuilder {
         }
 
         if (appClasses.size() == 0) {
-            LOG.info("No classes implementing 'javax.ws.rs.core.Application' found on classpath to set as context root for " + clazz +
-                     ". Defaulting context root to '/'");
+            LOG.info("No classes implementing 'javax.ws.rs.core.Application' found on classpath to set base path from " + clazz +
+                     ". Defaulting base path to '/'");
             return "";
         }
 
@@ -193,10 +193,10 @@ public class RestClientBuilder {
         ApplicationPath appPath = AnnotationSupport.findAnnotation(selectedClass, ApplicationPath.class).get();
         if (appClasses.size() > 1) {
             LOG.warn("Found multiple classes implementing 'javax.ws.rs.core.Application' on classpath: " + appClasses +
-                     ". Setting context root to the first class discovered (" + selectedClass.getCanonicalName() + ") with path: " +
+                     ". Setting base path from the first class discovered (" + selectedClass.getCanonicalName() + ") with path: " +
                      appPath.value());
         }
-        LOG.debug("Using ApplicationPath of '" + appPath.value() + "'");
+        LOG.debug("Using base ApplicationPath of '" + appPath.value() + "'");
         return appPath.value();
     }
 
