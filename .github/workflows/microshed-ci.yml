@@ -1,10 +1,6 @@
 name: MicroShed CI
 
 on:
-  push:
-    branches: 
-    - master
-    - gh-actions
   pull_request:
     branches: 
     - master
