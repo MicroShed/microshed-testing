@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -233,6 +235,11 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         }
         if (isHollow) {
             setContainerIpAddress(ManuallyStartedConfiguration.getHostname());
+            try {
+                setFirstMappedPort(new URL(ManuallyStartedConfiguration.getRuntimeURL()).getPort());
+            } catch (MalformedURLException e) {
+                LOG.debug("Unable to obtain port from " + ManuallyStartedConfiguration.getRuntimeURL(), e);
+            }
             withAppContextRoot(ManuallyStartedConfiguration.getBasePath());
         } else {
             withAppContextRoot("/");
@@ -273,6 +280,10 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         if (!isHollow)
             throw new IllegalStateException("Can only set first mapped port in hollow mode");
         primaryPort = port;
+        List<Integer> exposedPorts = new ArrayList<>(getExposedPorts());
+        if (!exposedPorts.contains(primaryPort))
+            exposedPorts.add(0, primaryPort);
+        setExposedPorts(exposedPorts);
     }
 
     @Override
