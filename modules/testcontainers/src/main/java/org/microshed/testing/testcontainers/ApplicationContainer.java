@@ -54,9 +54,12 @@ import org.microshed.testing.testcontainers.internal.HollowContainerInspection;
 import org.microshed.testing.testcontainers.internal.ImageFromDockerfile;
 import org.microshed.testing.testcontainers.spi.ServerAdapter;
 import org.testcontainers.DockerClientFactory;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.SelinuxContext;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
+import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.Base58;
@@ -435,13 +438,21 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
     @Override
     public ApplicationContainer waitingFor(WaitStrategy waitStrategy) {
         waitStrategySet = true;
+        checkHollowWaitStrategy(waitStrategy);
         return super.waitingFor(waitStrategy);
     }
 
     @Override
     public void setWaitStrategy(WaitStrategy waitStrategy) {
         waitStrategySet = true;
+        checkHollowWaitStrategy(waitStrategy);
         super.setWaitStrategy(waitStrategy);
+    }
+
+    private void checkHollowWaitStrategy(WaitStrategy strat) {
+        if (isHollow && waitStrategy instanceof LogMessageWaitStrategy) {
+            throw new UnsupportedOperationException("WaitStrategy [" + strat + "] is not supported in hollow container mode");
+        }
     }
 
     /**
@@ -535,6 +546,35 @@ public class ApplicationContainer extends GenericContainer<ApplicationContainer>
         }
         super.withReuse(reusable);
         return this;
+    }
+
+    @Override
+    public ApplicationContainer withFileSystemBind(String hostPath, String containerPath) {
+        requireNonHollow();
+        return super.withFileSystemBind(hostPath, containerPath);
+    }
+
+    @Override
+    public ApplicationContainer withFileSystemBind(String hostPath, String containerPath, BindMode mode) {
+        requireNonHollow();
+        return super.withFileSystemBind(hostPath, containerPath, mode);
+    }
+
+    @Override
+    public void addFileSystemBind(String hostPath, String containerPath, BindMode mode) {
+        requireNonHollow();
+        super.addFileSystemBind(hostPath, containerPath, mode);
+    }
+
+    @Override
+    public void addFileSystemBind(String hostPath, String containerPath, BindMode mode, SelinuxContext selinuxContext) {
+        requireNonHollow();
+        super.addFileSystemBind(hostPath, containerPath, mode, selinuxContext);
+    }
+
+    private void requireNonHollow() {
+        if (isHollow)
+            throw new UnsupportedOperationException("Operation not supported in hollow container mode");
     }
 
     /**
