@@ -3,7 +3,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.microshed/microshed-testing-testcontainers.svg?label=Maven%20Central)](https://mvnrepository.com/artifact/org.microshed/microshed-testing-testcontainers)
 [![Javadocs](https://www.javadoc.io/badge/org.microshed/microshed-testing-testcontainers.svg)](https://www.javadoc.io/doc/org.microshed/microshed-testing-testcontainers)
 [![Website](https://img.shields.io/website/http/microshed.org/microshed-testing?up_color=informational)](http://microshed.org/microshed-testing)
-[![Build Status](https://travis-ci.org/MicroShed/microshed-testing.svg?branch=master)](https://travis-ci.org/MicroShed/microshed-testing)
+[![Build Status](https://github.com/MicroShed/microshed-testing/workflows/MicroShed%20CI/badge.svg)](https://github.com/MicroShed/microshed-testing/actions?query=workflow%3A%22MicroShed+CI%22)
 [![License](https://img.shields.io/badge/License-ASL%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # Why use MicroShed Testing?
