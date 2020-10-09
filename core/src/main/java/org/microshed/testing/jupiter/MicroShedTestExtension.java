@@ -49,14 +49,16 @@ import org.microshed.testing.kafka.KafkaProducerClient;
  * Currently this is tied to Testcontainers managing runtime build/deployment, but in a future version
  * it could be refactored to allow for a different framework managing the runtime build/deployment.
  */
-class MicroShedTestExtension implements BeforeAllCallback {
+public class MicroShedTestExtension implements BeforeAllCallback {
 
     private static final InternalLogger LOG = InternalLogger.get(MicroShedTestExtension.class);
 
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
-        Class<?> testClass = context.getRequiredTestClass();
+        beforeAll(context.getRequiredTestClass());
+    }
 
+    public void beforeAll(Class<?> testClass) throws Exception {
         // Explicitly trigger static initialization of any SharedContainerConfig before we do further processing
         if (testClass.isAnnotationPresent(SharedContainerConfig.class)) {
             Class.forName(testClass.getAnnotation(SharedContainerConfig.class).value().getName());
@@ -64,11 +66,16 @@ class MicroShedTestExtension implements BeforeAllCallback {
 
         ApplicationEnvironment config = ApplicationEnvironment.Resolver.load();
         LOG.info("Using ApplicationEnvironment class: " + config.getClass().getCanonicalName());
-        config.applyConfiguration(testClass);
+        config.preConfigure(testClass);
         config.start();
-        configureRestAssured(config);
+        postConfigure(testClass, config);
+    }
+
+    public static void postConfigure(Class<?> testClass, ApplicationEnvironment env) {
+        configureRestAssured(env);
         injectRestClients(testClass);
         injectKafkaClients(testClass);
+        env.postConfigure(testClass);
     }
 
     private static void injectRestClients(Class<?> clazz) {
@@ -115,7 +122,7 @@ class MicroShedTestExtension implements BeforeAllCallback {
         }
     }
 
-    private void injectKafkaClients(Class<?> clazz) {
+    private static void injectKafkaClients(Class<?> clazz) {
         // Verify kafka-client and testcontainers-kafka is on classpath
         Class<?> KafkaProducer = tryLoad("org.apache.kafka.clients.producer.KafkaProducer");
         Class<?> KafkaConsumer = tryLoad("org.apache.kafka.clients.consumer.KafkaConsumer");

@@ -142,18 +142,32 @@ public interface ApplicationEnvironment {
      * This method is typically called by the test framework.
      * Implementations should use this method to apply the environment configuration to the
      * specified class.
+     * This method is called before {@link #start()}.
      *
      * @param testClass The test class to apply configuration for
      */
-    public void applyConfiguration(Class<?> testClass);
+    public default void preConfigure(Class<?> testClass) {
+    }
 
     /**
      * This method is typically called by the test framework.
      * Implementations should use this method to perform any start procedures necessary to
      * initialize the test environment. Examples may include starting the application runtime
      * and any dependent services, such as databases.
+     * This method is invoked after {@link #preConfigure(Class)}
      */
     public void start();
+
+    /**
+     * This method is typically called by the test framework.
+     * Implementations should use this method to apply the environment configuration to the
+     * specified class.
+     * This method is invoked after {@link #start()} completes.
+     *
+     * @param testClass The test class to apply configuration for
+     */
+    public default void postConfigure(Class<?> testClass) {
+    }
 
     /**
      * @return The URL that the application under test is available at
