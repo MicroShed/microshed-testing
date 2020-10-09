@@ -1,0 +1,122 @@
+name: MicroShed CI
+
+on:
+  push:
+    branches: 
+    - master
+    - gh-actions
+  pull_request:
+    branches: 
+    - master
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - '.gitignore'
+      - '.dockerignore'
+      - '*.md'
+      - '*.adoc'
+      - '*.txt'
+      - '.github/ISSUE_TEMPLATE/**'
+
+env:
+  LANG: en_US
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Java
+      uses: joschi/setup-jdk@v2
+      with:
+        java-version: 11
+        openjdk_impl: openj9
+    - name: Apply repository caches
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.gradle/caches/modules-2
+          !~/.gradle/caches/modules-2/org.microshed*
+          ~/.gradle/wrapper
+          ~/.m2/repository/
+          !~/.m2/repository/org/microshed/
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+    - name: Build with Gradle
+      run: |
+        chmod +x gradlew
+        ./gradlew assemble testClasses
+  integration_tests:
+    name: Tests - ${{matrix.category}}
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 18
+      matrix:
+        include:
+          - category: JAXRS
+            projects: >
+              jaxrs-json
+              jaxrs-basicauth
+              jaxrs-mpjwt
+              everything-app
+          - category: GENERAL
+            projects: >
+              maven-app
+              everything-app
+              jdbc-app
+              kafka-app
+          - category: LIBERTY/PAYARA
+            projects: >
+              liberty-app
+              payara-app
+          - category: QUARKUS/WILDFLY
+            projects: >
+              quarkus-app
+              wildfly-app
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Java
+      uses: joschi/setup-jdk@v2
+      with:
+        java-version: 11
+        openjdk_impl: openj9
+    - name: Apply repository caches
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.gradle/caches/modules-2
+          !~/.gradle/caches/modules-2/org.microshed*
+          ~/.gradle/wrapper
+          ~/.m2/repository/
+          !~/.m2/repository/org/microshed/
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+    - name: Run integration tests
+      shell: bash
+      env:
+        TEST_PROJECTS: ${{matrix.projects}}
+        CATEGORY: ${{matrix.category}}
+      run: |
+        chmod +x gradlew
+        echo "org.gradle.daemon=false" >> gradle.properties
+        
+        echo "Will be running projects $TEST_PROJECTS"
+        for TEST_PROJECT in $TEST_PROJECTS
+        do
+          if [[ ! -d "sample-apps/$TEST_PROJECT" ]]; then
+            echo "::error::Test project $TEST_PROJECT does not exist.";
+            exit 1;
+          fi
+        done
+        
+        for TEST_PROJECT in $TEST_PROJECTS
+        do
+          echo "### BEGIN running test project $TEST_PROJECT"
+          ./gradlew :microshed-testing-$TEST_PROJECT:test
+          echo "### END running test project $TEST_PROJECT";
+        done
+        
+        echo "Done running all tests."
