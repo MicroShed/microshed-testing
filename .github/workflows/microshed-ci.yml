@@ -47,7 +47,6 @@ jobs:
         ./gradlew assemble testClasses
   integration_tests:
     name: Tests - ${{matrix.category}}
-    needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
