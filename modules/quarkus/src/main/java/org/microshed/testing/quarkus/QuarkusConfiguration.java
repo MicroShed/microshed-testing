@@ -92,7 +92,7 @@ public class QuarkusConfiguration extends TestcontainersConfiguration {
     }
 
     @Override
-    public void applyConfiguration(Class<?> testClass) {
+    public void preConfigure(Class<?> testClass) {
         containers = discoveredContainers.computeIfAbsent(testClass, clazz -> new ContainerGroup(clazz));
 
         // Verify that @MicroShedTest comes before @QuarkusTest
@@ -111,14 +111,13 @@ public class QuarkusConfiguration extends TestcontainersConfiguration {
         LOG.info("Using Quarkus application URL: " + appUrl);
 
         ManuallyStartedConfiguration.setRuntimeURL(appUrl);
-        super.applyConfiguration(testClass);
+        super.preConfigure(testClass);
     }
 
     @Override
-    public void start() {
-        super.start();
+    public void postConfigure(Class<?> testClass) {
         // TODO: JWT auto configuration
-//        autoConfigureJwt();
+//      autoConfigureJwt();
         autoConfigureDatabases();
         autoConfigureKafka();
         autoConfigureMongoDB();

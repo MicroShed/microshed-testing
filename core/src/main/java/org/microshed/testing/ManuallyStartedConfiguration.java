@@ -112,11 +112,6 @@ public class ManuallyStartedConfiguration implements ApplicationEnvironment {
     }
 
     @Override
-    public void applyConfiguration(Class<?> testClass) {
-        // no-op
-    }
-
-    @Override
     public void start() {
         // already started -- no-op
     }

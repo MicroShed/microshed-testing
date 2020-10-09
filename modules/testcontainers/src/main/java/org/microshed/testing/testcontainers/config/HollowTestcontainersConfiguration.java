@@ -80,8 +80,8 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
     }
 
     @Override
-    public void applyConfiguration(Class<?> testClass) {
-        super.applyConfiguration(testClass);
+    public void preConfigure(Class<?> testClass) {
+        super.preConfigure(testClass);
 
         // Translate any Docker network hosts that may have been configured in environment variables
         Set<String> networkAliases = containers.allContainers.stream()

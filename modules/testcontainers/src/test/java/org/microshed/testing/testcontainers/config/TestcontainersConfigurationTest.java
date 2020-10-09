@@ -39,7 +39,7 @@ public class TestcontainersConfigurationTest {
     @Test
     public void testTwoApps() {
         assertThrows(ExtensionConfigurationException.class, () -> {
-            new TestcontainersConfiguration().applyConfiguration(TwoAppsClass.class);
+            new TestcontainersConfiguration().preConfigure(TwoAppsClass.class);
         });
     }
 

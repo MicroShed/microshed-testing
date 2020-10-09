@@ -68,7 +68,7 @@ public class TestcontainersConfiguration implements ApplicationEnvironment {
     }
 
     @Override
-    public void applyConfiguration(Class<?> testClass) {
+    public void preConfigure(Class<?> testClass) {
         containers = discoveredContainers.computeIfAbsent(testClass, clazz -> new ContainerGroup(clazz));
 
         // Put all containers in the same network if no networks are explicitly defined
