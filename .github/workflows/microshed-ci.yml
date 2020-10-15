@@ -77,6 +77,9 @@ jobs:
       with:
         java-version: 11
         openjdk_impl: openj9
+    - uses: testspace-com/setup-testspace@v1
+      with:
+        domain: ${{ github.repository_owner }}
     - name: Apply repository caches
       uses: actions/cache@v2
       with:
@@ -115,3 +118,7 @@ jobs:
         done
         
         echo "Done running all tests."
+    - name: Upload test results
+      if: always()
+      run: |
+        testspace sample-apps/*/build/test-results/**/*.xml
