@@ -20,28 +20,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Java
-      uses: joschi/setup-jdk@v2
-      with:
-        java-version: 11
-        openjdk_impl: openj9
-    - name: Apply repository caches
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.gradle/caches/modules-2
-          !~/.gradle/caches/modules-2/org.microshed*
-          ~/.gradle/wrapper
-          ~/.m2/repository/
-          !~/.m2/repository/org/microshed/
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
     - name: Build with Gradle
       run: |
-        chmod +x gradlew
-        ./gradlew assemble testClasses
+        set +e
+        echo "@AGG dumping env"
+        env
+        echo "@AGG DONE dumping env"
+        echo "github.ref ${{ github.ref }}"
+        echo "github.sha ${{ github.sha }}"
+        echo "Base ref is: ${{ github.base_ref }}"
+        echo "Head ref is: ${{ github.head_ref }}"
+        git branch -r
+        echo "Checking status"
+        git status
+        echo "Show head ref"
+        git show ${{ github.head_ref }}
+        echo "Reg diff"
+        #git diff --name-only "$GITHUB_BASE_REF..$GITHUB_HEAD_REF"
+        echo "Qualified diff"
+        git diff --name-only ${{ github.base_ref }}..${{ github.ref }}
+        echo "done with diffs"
+        #./gradlew assemble testClasses
   integration_tests:
+    if: "false" # temp
     name: Tests - ${{matrix.category}}
     runs-on: ubuntu-latest
     timeout-minutes: 20
