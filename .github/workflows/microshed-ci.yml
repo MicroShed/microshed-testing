@@ -121,4 +121,4 @@ jobs:
     - name: Upload test results
       if: always()
       run: |
-        testspace sample-apps/*/build/test-results/**/*.xml
+        testspace [${{matrix.category}}]sample-apps/*/build/test-results/**/*.xml
