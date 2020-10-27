@@ -1,6 +1,17 @@
 name: MicroShed CI
 
 on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'The branch to build'
+        required: true
+      prioritized-jobs:
+        description: 'An array of comma-separated list of test jobs to prioritize running first'
+      java-version:
+        description: 'The version of Java to use for tests. Possible values: 8, 11, 15'
+      os:
+        description: 'The operating system to run tests on. Possible values: ubuntu-latest, windows-latest, macos-latest'
   pull_request:
     branches: 
     - master
@@ -43,12 +54,17 @@ jobs:
         ./gradlew assemble testClasses
   integration_tests:
     name: Tests - ${{matrix.category}}
-    runs-on: ubuntu-latest
+    defaults:
+      github.event.inputs.os: ubuntu-latest
+      github.event.inputs.java-version: 11
+      github.event.inputs.prioritized-jobs: '[ ]'
+    runs-on: ${{ github.event.inputs.os }}
     timeout-minutes: 20
     strategy:
       fail-fast: false
       max-parallel: 18
       matrix:
+        category: ${{ github.event.inputs.prioritized-jobs }}
         include:
           - category: JAXRS
             projects: >
@@ -75,7 +91,7 @@ jobs:
     - name: Set up Java
       uses: joschi/setup-jdk@v2
       with:
-        java-version: 11
+        java-version: ${{ github.event.inputs.java-version }}
         openjdk_impl: openj9
     - uses: testspace-com/setup-testspace@v1
       with:
