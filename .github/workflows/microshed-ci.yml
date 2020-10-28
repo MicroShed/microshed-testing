@@ -1,6 +1,9 @@
 name: MicroShed CI
-
+# temp
 on:
+  push:
+    branches:
+    - actions-temp
   pull_request:
     branches: 
     - master
@@ -14,41 +17,36 @@ on:
       - '.github/ISSUE_TEMPLATE/**'
 
 env:
-  LANG: en_US
+  LANG: en_US.UTF-8
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      test-priority: ${{ steps.gen-params.outputs.test-priority }}
+      test-os: ${{ steps.gen-params.outputs.test-os }}
+      test-java: ${{ steps.gen-params.outputs.test-java }}
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Java
-      uses: joschi/setup-jdk@v2
-      with:
-        java-version: 11
-        openjdk_impl: openj9
-    - name: Apply repository caches
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.gradle/caches/modules-2
-          !~/.gradle/caches/modules-2/org.microshed*
-          ~/.gradle/wrapper
-          ~/.m2/repository/
-          !~/.m2/repository/org/microshed/
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
-    - name: Build with Gradle
+    - name: Dump event json
       run: |
-        chmod +x gradlew
-        ./gradlew assemble testClasses
+        echo "Dumping event json"
+        cat $GITHUB_EVENT_PATH
+    - name: Generate output
+      id: gen-params
+      run: |
+        echo "::set-output name=test-os::ubuntu-latest"
+        echo "::set-output name=test-java::11"
+        echo '::set-output name=test-priority::[ GENERAL ]'
   integration_tests:
+    needs: build
     name: Tests - ${{matrix.category}}
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.build.outputs.test-os }}
     timeout-minutes: 20
     strategy:
       fail-fast: false
       max-parallel: 18
       matrix:
+        category: [ GENERAL ]
         include:
           - category: JAXRS
             projects: >
@@ -75,7 +73,7 @@ jobs:
     - name: Set up Java
       uses: joschi/setup-jdk@v2
       with:
-        java-version: 11
+        java-version: ${{ needs.build.outputs.test-java }}
         openjdk_impl: openj9
     - uses: testspace-com/setup-testspace@v1
       with:
