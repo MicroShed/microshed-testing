@@ -1,5 +1,5 @@
 name: MicroShed CI
-# temp
+# temp2
 on:
   push:
     branches:
@@ -22,7 +22,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      test-priority: ${{ steps.gen-params.outputs.test-priority }}
+      test-matrix: ${{ steps.gen-params.outputs.test-matrix }}
       test-os: ${{ steps.gen-params.outputs.test-os }}
       test-java: ${{ steps.gen-params.outputs.test-java }}
     steps:
@@ -31,12 +31,26 @@ jobs:
       run: |
         echo "Dumping event json"
         cat $GITHUB_EVENT_PATH
+    - name: Set up Java
+      uses: joschi/setup-jdk@v2
+      with:
+        java-version: 11
+        openjdk_impl: openj9
     - name: Generate output
       id: gen-params
       run: |
         echo "::set-output name=test-os::ubuntu-latest"
         echo "::set-output name=test-java::11"
-        echo '::set-output name=test-priority::[ GENERAL ]'
+
+        cat > .github/pull_request_body.txt << END_OF_PR_BODY
+        ${{ github.event.pull_request.body }}
+        END_OF_PR_BODY
+        echo "PR Summary is:"
+        cat .github/pull_request_body.txt
+        
+        MATRIX_RESULT=$(java .github/GenerateCategories.java .github/pull_request_body.txt)
+        echo "MATRIX_RESULT is $MATRIX_RESULT"
+        echo "::set-output name=test-matrix::$MATRIX_RESULT"
   integration_tests:
     needs: build
     name: Tests - ${{matrix.category}}
@@ -45,29 +59,7 @@ jobs:
     strategy:
       fail-fast: false
       max-parallel: 18
-      matrix:
-        category: [ GENERAL ]
-        include:
-          - category: JAXRS
-            projects: >
-              jaxrs-json
-              jaxrs-basicauth
-              jaxrs-mpjwt
-              everything-app
-          - category: GENERAL
-            projects: >
-              maven-app
-              everything-app
-              jdbc-app
-              kafka-app
-          - category: LIBERTY/PAYARA
-            projects: >
-              liberty-app
-              payara-app
-          - category: QUARKUS/WILDFLY
-            projects: >
-              quarkus-app
-              wildfly-app
+      matrix: ${{fromJson(needs.build.outputs.test-matrix)}}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Java
@@ -93,12 +85,12 @@ jobs:
     - name: Run integration tests
       shell: bash
       env:
-        TEST_PROJECTS: ${{matrix.projects}}
         CATEGORY: ${{matrix.category}}
       run: |
         chmod +x gradlew
         echo "org.gradle.daemon=false" >> gradle.properties
         
+        TEST_PROJECTS=$(cat .github/test-categories/$CATEGORY)
         echo "Will be running projects $TEST_PROJECTS"
         for TEST_PROJECT in $TEST_PROJECTS
         do
