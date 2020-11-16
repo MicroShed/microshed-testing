@@ -47,11 +47,11 @@ public class PayaraMicroAdapter implements ServerAdapter {
         // Compose a docker image equivalent to doing:
         // FROM payara/micro:5.193
         // CMD ["--deploymentDir", "/opt/payara/deployments", "--noCluster"]
-        // ADD target/myservice.war /opt/payara/deployments
+        // ADD target/myservice.war /opt/payara/deployments/
         ImageFromDockerfile image = new ImageFromDockerfile()
                 .withDockerfileFromBuilder(builder -> builder.from("payara/micro:5.193")
-                        .cmd("--deploymentDir", "/opt/payara/deployments", "--noCluster")
-                        .add(appName, "/opt/payara/deployments")
+                        .cmd("--deploymentDir", "/opt/payara/deployments/", "--noCluster")
+                        .add(appName, "/opt/payara/deployments/")
                         .build())
                 .withFileFromFile(appName, appFile);
         return image;
