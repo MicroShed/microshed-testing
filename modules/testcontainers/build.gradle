@@ -16,10 +16,10 @@ sourceSets {
 
 dependencies {
   compile project(':microshed-testing-core')
-  compile 'org.testcontainers:junit-jupiter:1.15.0-rc2'
+  compile 'org.testcontainers:junit-jupiter:1.15.0'
   testCompile 'org.eclipse.microprofile.rest.client:microprofile-rest-client-api:1.4.1'
   testCompile 'org.slf4j:slf4j-log4j12:1.7.30'
-  testCompile 'org.testcontainers:mockserver:1.15.0-rc2'
+  testCompile 'org.testcontainers:mockserver:1.15.0'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
 }
 

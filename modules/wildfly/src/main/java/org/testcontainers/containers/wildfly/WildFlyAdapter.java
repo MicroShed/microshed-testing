@@ -45,10 +45,10 @@ public class WildFlyAdapter implements ServerAdapter {
         String appName = appFile.getName();
         // Compose a docker image equivalent to doing:
         // FROM jboss/wildfly:18.0.1.Final
-        // ADD target/myservice.war /opt/jboss/wildfly/standalone/deployments
+        // ADD target/myservice.war /opt/jboss/wildfly/standalone/deployments/
         ImageFromDockerfile image = new ImageFromDockerfile()
                 .withDockerfileFromBuilder(builder -> builder.from("jboss/wildfly:18.0.1.Final")
-                        .add(appName, "/opt/jboss/wildfly/standalone/deployments")
+                        .add(appName, "/opt/jboss/wildfly/standalone/deployments/")
                         .build())
                 .withFileFromFile(appName, appFile);
         return image;

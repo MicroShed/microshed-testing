@@ -46,10 +46,10 @@ public class PayaraServerAdapter implements ServerAdapter {
         String appName = appFile.getName();
         // Compose a docker image equivalent to doing:
         // FROM payara/server-full:5.193
-        // ADD target/myservice.war /opt/payara/deployments
+        // ADD target/myservice.war /opt/payara/deployments/
         ImageFromDockerfile image = new ImageFromDockerfile()
                 .withDockerfileFromBuilder(builder -> builder.from("payara/server-full:5.193")
-                        .add(appName, "/opt/payara/deployments")
+                        .add(appName, "/opt/payara/deployments/")
                         .build())
                 .withFileFromFile(appName, appFile);
         return image;
