@@ -1,0 +1,49 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/core"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: org.eclipse:yasson
+    versions:
+    - ">= 2.a, < 3"
+  - dependency-name: org.bitbucket.b_c:jose4j
+    versions:
+    - 0.7.6
+  - dependency-name: org.apache.cxf:cxf-rt-rs-extension-providers
+    versions:
+    - 3.4.2
+  - dependency-name: org.apache.cxf:cxf-rt-rs-client
+    versions:
+    - 3.4.2
+- package-ecosystem: gradle
+  directory: "/modules/liberty"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/modules/payara-micro"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/modules/payara-server"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/modules/testcontainers"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: org.testcontainers:mockserver
+    versions:
+    - 1.15.1
+    - 1.15.2
+  - dependency-name: org.testcontainers:junit-jupiter
+    versions:
+    - 1.15.1
+    - 1.15.2
