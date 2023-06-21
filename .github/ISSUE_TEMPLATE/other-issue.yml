@@ -1,0 +1,9 @@
+name: Other issue
+description: Not a bug, feature request, or question
+title: "[Other]: "
+labels: [""]
+- type: textarea
+  attributes:
+    label: Describe your issue.
+    value: |
+      > A clear and concise description of your issue.

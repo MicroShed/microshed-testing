@@ -1,0 +1,26 @@
+name: Question or documentation
+description: Have a question or request for documentation
+title: "[Question]: "
+labels: ["question"] #Verified - label exists
+body:
+- type: checkboxes
+  id: documentation
+  validations:
+    required: true
+  attributes:
+    label: Is your question related to unclear or missing documentation?
+    options:
+    - label: 'yes'
+    - label: 'no'
+- type: textarea
+  validations:
+    required: true
+  attributes:
+    label: What is your question?
+    value: |
+      > A clear and concise description of your question.
+- type: textarea
+  attributes:
+    label: Additional context
+    value: |
+      > Add any other context or screenshots about your question.

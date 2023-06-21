@@ -19,24 +19,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
     - name: Set up Java
-      uses: joschi/setup-jdk@v2
+      uses: actions/setup-jdk@5ffc13f4174014e2d4d4572b3d74c3fa61aeb2c2 # v3.11.0
       with:
-        java-version: 11
-        openjdk_impl: openj9
-    - name: Apply repository caches
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.gradle/caches/modules-2
-          !~/.gradle/caches/modules-2/org.microshed*
-          ~/.gradle/wrapper
-          ~/.m2/repository/
-          !~/.m2/repository/org/microshed/
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
+        java-version: '17'
+        distribution: 'temurin'
+        cache: 'gradle'
     - name: Build with Gradle
       run: |
         chmod +x gradlew
@@ -50,7 +39,7 @@ jobs:
       max-parallel: 18
       matrix:
         include:
-          - category: JAXRS
+          - category: RESTFUL
             projects: >
               jaxrs-json
               jaxrs-basicauth
@@ -71,27 +60,16 @@ jobs:
               quarkus-app
               wildfly-app
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
     - name: Set up Java
-      uses: joschi/setup-jdk@v2
+      uses: actions/setup-jdk@5ffc13f4174014e2d4d4572b3d74c3fa61aeb2c2 # v3.11.0
       with:
-        java-version: 11
-        openjdk_impl: openj9
-    - uses: testspace-com/setup-testspace@v1
+        java-version: '17'
+        distribution: 'temurin'
+        cache: 'gradle'
+    - uses: testspace-com/setup-testspace@ee1482f978eb5010ec27b6f6372904f01f2edd68 # v1.0.6
       with:
         domain: ${{ github.repository_owner }}
-    - name: Apply repository caches
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.gradle/caches/modules-2
-          !~/.gradle/caches/modules-2/org.microshed*
-          ~/.gradle/wrapper
-          ~/.m2/repository/
-          !~/.m2/repository/org/microshed/
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
     - name: Run integration tests
       shell: bash
       env:
