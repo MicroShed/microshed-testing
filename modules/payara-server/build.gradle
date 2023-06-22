@@ -5,7 +5,7 @@ dependencies {
   implementation project(':microshed-testing-core')
   implementation project(':microshed-testing-testcontainers')
   implementation 'org.junit.jupiter:junit-jupiter:5.7.0'
-  implementation 'org.testcontainers:testcontainers:1.15.0'
+  implementation 'org.testcontainers:testcontainers:1.15.1'
 }
 
 apply from: publishScript

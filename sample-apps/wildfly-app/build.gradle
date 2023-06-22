@@ -8,7 +8,7 @@ dependencies {
   testImplementation project(':microshed-testing-core')
   testImplementation project(':microshed-testing-wildfly')
   testImplementation project(':microshed-testing-testcontainers')
-  testImplementation 'org.testcontainers:junit-jupiter:1.15.0'
+  testImplementation 'org.testcontainers:junit-jupiter:1.15.1'
   testImplementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.6.0'
 }

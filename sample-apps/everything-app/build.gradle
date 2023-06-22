@@ -8,7 +8,7 @@ dependencies {
   implementation group: 'org.mongodb', name: 'mongo-java-driver', version: '3.11.2'
   testImplementation project(':microshed-testing-core')
   testImplementation project(':microshed-testing-testcontainers')
-  testImplementation 'org.testcontainers:junit-jupiter:1.15.0'
+  testImplementation 'org.testcontainers:junit-jupiter:1.15.1'
   testImplementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
   testImplementation 'org.testcontainers:mockserver:1.15.0'
   testImplementation 'org.mock-server:mockserver-client-java:5.5.4'
