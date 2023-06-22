@@ -1,22 +1,92 @@
 version: 2
 
-update_configs:
-  - package_manager: "java:gradle"
+updates:
+  - package-ecosystem: "gradle"
     directory: "/core"
-    update_schedule: "weekly"
+    schedule:
+      interval: "weekly"
 
-  - package_manager: "java:gradle"
-    directory: "/modules/testcontainers"
-    update_schedule: "weekly"
-
-  - package_manager: "java:gradle"
+  - package-ecosystem: "gradle"
     directory: "/modules/liberty"
-    update_schedule: "weekly"
+    schedule:
+      interval: "weekly"
 
-  - package_manager: "java:gradle"
+  - package-ecosystem: "gradle"
     directory: "/modules/payara-micro"
-    update_schedule: "weekly"
+    schedule:
+      interval: "weekly"
 
-  - package_manager: "java:gradle"
+  - package-ecosystem: "gradle"
     directory: "/modules/payara-server"
-    update_schedule: "weekly"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/modules/quarkus"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/modules/testcontainers"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/modules/wildfly"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/sample-apps/everything-app"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/sample-apps/jaxrs-basicauth"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/sample-apps/jaxrs-json"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/sample-apps/jaxrs-mpjwt"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/sample-apps/jdbc-app"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/sample-apps/kafka-app"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/sample-apps/liberty-app"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "maven"
+    directory: "/sample-apps/maven-app"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/sample-apps/payara-app"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "maven"
+    directory: "/sample-apps/quarkus-app"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/sample-apps/wildfly-app"
+    schedule:
+      interval: "weekly"

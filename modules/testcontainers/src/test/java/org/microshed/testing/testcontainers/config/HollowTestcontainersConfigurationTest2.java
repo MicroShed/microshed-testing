@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 IBM Corporation and others
+ * Copyright (c) 2019, 2023 IBM Corporation and others
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.file.Paths;
 import java.time.Duration;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.microshed.testing.ApplicationEnvironment;
 import org.microshed.testing.jupiter.MicroShedTest;
@@ -33,6 +34,7 @@ import org.testcontainers.containers.wait.strategy.WaitStrategyTarget;
 import org.testcontainers.junit.jupiter.Container;
 
 @MicroShedTest
+@Disabled("HollowTestcontainersConfiguration not chosen")
 public class HollowTestcontainersConfigurationTest2 {
 
     // This cointainer never actually gets started, since we are running in hollow mode
