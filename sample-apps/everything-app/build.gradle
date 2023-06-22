@@ -5,12 +5,14 @@ plugins {
 dependencies {
   providedCompile 'javax:javaee-api:8.0.1'
   providedCompile 'org.eclipse.microprofile:microprofile:2.1'
-  compile group: 'org.mongodb', name: 'mongo-java-driver', version: '3.11.2'
-  testCompile project(':microshed-testing-testcontainers')
-  testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
-  testCompile 'org.testcontainers:mockserver:1.15.0'
-  testCompile 'org.mock-server:mockserver-client-java:5.5.4'
-  testCompile 'io.rest-assured:rest-assured:4.2.0'
+  implementation group: 'org.mongodb', name: 'mongo-java-driver', version: '3.11.2'
+  testImplementation project(':microshed-testing-core')
+  testImplementation project(':microshed-testing-testcontainers')
+  testImplementation 'org.testcontainers:junit-jupiter:1.15.0'
+  testImplementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
+  testImplementation 'org.testcontainers:mockserver:1.15.0'
+  testImplementation 'org.mock-server:mockserver-client-java:5.5.4'
+  testImplementation 'io.rest-assured:rest-assured:4.2.0'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.6.0'
 }
 

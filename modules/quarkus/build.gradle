@@ -2,7 +2,10 @@ ext.title = "MicroShed Testing Framework :: Quarkus extensions"
 description = "Extensions for using MicroShed Testing with Quarkus"
 
 dependencies {
-  compile project(':microshed-testing-testcontainers')
+  implementation project(':microshed-testing-core')
+  implementation project(':microshed-testing-testcontainers')
+  implementation 'org.junit.jupiter:junit-jupiter:5.7.0'
+  implementation 'org.testcontainers:testcontainers:1.15.0'
   compileOnly 'io.quarkus:quarkus-junit5:1.8.3.Final'
 }
 

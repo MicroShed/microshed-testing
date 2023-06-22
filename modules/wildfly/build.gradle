@@ -2,7 +2,10 @@ ext.title = "MicroShed Testing Framework :: WildFly extensions"
 description = "Extensions for using MicroShed Testing with WildFly servers"
 
 dependencies {
-  compile project(':microshed-testing-testcontainers')
+  implementation project(':microshed-testing-core')
+  implementation project(':microshed-testing-testcontainers')
+  implementation 'org.junit.jupiter:junit-jupiter:5.7.0'
+  implementation 'org.testcontainers:testcontainers:1.15.0'
 }
 
 apply from: publishScript

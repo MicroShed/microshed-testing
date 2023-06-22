@@ -1,26 +1,25 @@
 ext.title = "MicroShed Testing Framework :: Testcontainers extension"
 description = "Extensions for using MicroShed Testing with Testcontainers for managing application and resource lifecycle"
 
-configurations {
-    intTestImplementation.extendsFrom testImplementation
-    intTestCompile.extendsFrom testCompile
-    intTestRuntimeOnly.extendsFrom testRuntimeOnly
-}
-
 sourceSets {
-    integrationTest {
-        compileClasspath += sourceSets.main.output + configurations.testCompile
-        runtimeClasspath += output + compileClasspath + configurations.intTestImplementation
-    }
+    integrationTest
 }
 
 dependencies {
-  compile project(':microshed-testing-core')
-  compile 'org.testcontainers:junit-jupiter:1.15.0'
-  testCompile 'org.eclipse.microprofile.rest.client:microprofile-rest-client-api:1.4.1'
-  testCompile 'org.slf4j:slf4j-log4j12:1.7.30'
-  testCompile 'org.testcontainers:mockserver:1.15.0'
-  testImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
+    implementation project(':microshed-testing-core')
+    implementation 'org.testcontainers:junit-jupiter:1.15.0'
+    testImplementation 'org.eclipse.microprofile.rest.client:microprofile-rest-client-api:1.4.1'
+    testImplementation 'org.slf4j:slf4j-log4j12:1.7.30'
+    testImplementation 'org.testcontainers:mockserver:1.15.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
+
+    integrationTestImplementation project(':microshed-testing-core')
+    integrationTestImplementation project(':microshed-testing-testcontainers')
+    integrationTestImplementation 'org.testcontainers:junit-jupiter:1.15.0'
+    integrationTestImplementation 'org.eclipse.microprofile.rest.client:microprofile-rest-client-api:1.4.1'
+    integrationTestImplementation 'org.slf4j:slf4j-log4j12:1.7.30'
+    integrationTestImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
+    integrationTestImplementation 'org.testcontainers:mockserver:1.15.0'
 }
 
 test {
@@ -45,9 +44,6 @@ task integrationTest(type: Test) {
         exceptionFormat = 'full'
         events 'PASSED', 'FAILED', 'SKIPPED'
     }
-
-    testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath = sourceSets.integrationTest.runtimeClasspath
     shouldRunAfter test
 }
 
