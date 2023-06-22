@@ -53,6 +53,11 @@ publishing {
                         name = 'Andy Guibert'
                         email = 'andy.guibert@gmail.com'
                     }
+                    developer {
+                        id = 'KyleAure'
+                        name = 'Kyle Aure'
+                        email = 'kylejaure@gmail.com'
+                    }
                 }
                 scm {
                     connection = 'scm:git:ssh://git@github.com/MicroShed/microshed-testing.git'
