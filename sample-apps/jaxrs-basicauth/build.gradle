@@ -7,7 +7,7 @@ dependencies {
   providedCompile 'org.eclipse.microprofile:microprofile:2.1'
   testCompile project(':microshed-testing-testcontainers')
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.15.0'
-  testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
+  testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.36'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.6.0'
 }
 

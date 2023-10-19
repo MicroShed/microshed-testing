@@ -10,7 +10,7 @@ dependencies {
   providedCompile 'javax:javaee-api:8.0.1'
   providedCompile 'org.eclipse.microprofile:microprofile:2.1'
   testCompile 'org.testcontainers:postgresql:1.15.0'
-  testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
+  testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.36'
   testCompile project(':microshed-testing-testcontainers')
   testImplementation 'org.junit.jupiter:junit-jupiter:5.6.0'
   postgres 'org.postgresql:postgresql:42.2.8'
