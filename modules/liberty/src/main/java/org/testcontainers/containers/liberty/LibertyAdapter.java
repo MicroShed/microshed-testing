@@ -43,7 +43,7 @@ public class LibertyAdapter implements ServerAdapter {
 
     static final InternalLogger LOG = InternalLogger.get(LibertyAdapter.class);
 
-    private static String BASE_DOCKER_IMAGE = "openliberty/open-liberty:full-java8-openj9-ubi";
+    private static String BASE_DOCKER_IMAGE = "openliberty/open-liberty:full-java17-openj9-ubi";
     private static final String CONFIG_FILE_PROP = "MICROSHED_TEST_LIBERTY_CONFIG_FILE";
 
     public static String getBaseDockerImage() {
