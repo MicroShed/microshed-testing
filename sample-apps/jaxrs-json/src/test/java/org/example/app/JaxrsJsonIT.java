@@ -18,34 +18,31 @@
  */
 package org.example.app;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Collection;
-
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.ProcessingException;
-
 import org.junit.jupiter.api.Test;
 import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.junit.jupiter.Container;
 
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.ProcessingException;
+import java.util.Collection;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 @MicroShedTest
 public class JaxrsJsonIT {
-    
+
     @Container
     public static ApplicationContainer app = new ApplicationContainer()
-                    .withAppContextRoot("/myservice")
-                    .withReadinessPath("/myservice/app/people");
-    
+            .withExposedPorts(9080, 9443)
+            .withAppContextRoot("/myservice")
+            .withReadinessPath("/myservice/app/people");
+
     @RESTClient
     public static PersonService personSvc;
-    
+
     @Test
     public void testCreatePerson() {
         Long createId = personSvc.createPerson("Hank", 42);
@@ -56,14 +53,14 @@ public class JaxrsJsonIT {
     public void testMinSizeName() {
         Long minSizeNameId = personSvc.createPerson("Ha", 42);
         assertEquals(new Person("Ha", 42, minSizeNameId),
-                     personSvc.getPerson(minSizeNameId));
+                personSvc.getPerson(minSizeNameId));
     }
 
     @Test
     public void testMinAge() {
         Long minAgeId = personSvc.createPerson("Newborn", 0);
         assertEquals(new Person("Newborn", 0, minAgeId),
-                     personSvc.getPerson(minAgeId));
+                personSvc.getPerson(minAgeId));
     }
 
     @Test
@@ -127,7 +124,7 @@ public class JaxrsJsonIT {
     public void testCreateBadPersonNameTooLong() {
         assertThrows(BadRequestException.class, () -> personSvc.createPerson("NameTooLongPersonNameTooLongPersonNameTooLongPerson", 5));
     }
-    
+
     @Test
     public void testNonJaxrsMethod() {
         assertThrows(ProcessingException.class, () -> personSvc.nonJaxrsMethod());
