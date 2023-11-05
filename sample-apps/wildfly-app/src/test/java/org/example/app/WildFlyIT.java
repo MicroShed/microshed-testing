@@ -36,7 +36,7 @@ import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.junit.jupiter.Container;
 
 @MicroShedTest
-public class JaxrsJsonIT {
+public class WildFlyIT {
     
     @Container
     public static ApplicationContainer app = new ApplicationContainer()
