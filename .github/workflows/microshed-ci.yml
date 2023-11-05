@@ -51,9 +51,6 @@ jobs:
         chmod +x gradlew
         ./gradlew assemble testClasses
   integration_tests:
-    with:
-      environment: default
-    secrets: inherit
     name: Tests - ${{matrix.category}}
     runs-on: ubuntu-latest
     needs: build
