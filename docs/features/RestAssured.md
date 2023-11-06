@@ -90,7 +90,7 @@ It is also possible to send/receive POJOs with the JSON-B based ObjectMapper:
     }
 ```
 
-For a complete working example, see the [RestAssuredTest class](https://github.com/MicroShed/microshed-testing/blob/master/sample-apps/everything-app/src/test/java/org/example/app/RestAssuredIT.java)
+For a complete working example, see the [RestAssuredTest class](https://github.com/MicroShed/microshed-testing/blob/main/sample-apps/everything-app/src/test/java/org/example/app/RestAssuredIT.java)
 
 ## Auto-configuration override
 
