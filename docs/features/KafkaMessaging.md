@@ -85,6 +85,6 @@ injected `consumer` to the specified `topics`.
 
 ## Additional resources
 
-- [Example application using Apache Kafka messaging](https://github.com/MicroShed/microshed-testing/tree/master/sample-apps/kafka-app)
+- [Example application using Apache Kafka messaging](https://github.com/MicroShed/microshed-testing/tree/main/sample-apps/kafka-app)
 - [OpenLiberty blog on using MicroProfile Reactive Messaging](https://openliberty.io/blog/2019/09/13/microprofile-reactive-messaging.html)
 - [Quarkus guide on using Apache Kafka with Reactive Messaging](https://quarkus.io/guides/kafka)
