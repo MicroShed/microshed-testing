@@ -7,7 +7,7 @@ dependencies {
   providedCompile 'org.eclipse.microprofile:microprofile:2.1'
   testCompile project(':microshed-testing-wildfly')
   testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.36'
-  testImplementation 'org.junit.jupiter:junit-jupiter:5.6.0'
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
 }
 
 war.archiveName 'myservice.war'
