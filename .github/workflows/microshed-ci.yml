@@ -79,6 +79,7 @@ jobs:
           distribution: 'temurin'
           cache: gradle
       - uses: testspace-com/setup-testspace@ee1482f978eb5010ec27b6f6372904f01f2edd68 # v1.0.6
+        if: ${{ github.event_name == 'push' }}
         with:
           domain: ${{github.repository_owner}}
       - name: Run integration tests
@@ -114,10 +115,9 @@ jobs:
             fi
 
           done
-
-          ls -la results/
   
-          echo "Done running all tests."
+          echo "Done running all tests, results folder contains:"
+          ls -la results/
       - name: Upload test results
-        # if: ${{ github.event_name == 'push' }}  Commented out for now to test this
+        if: ${{ github.event_name == 'push' }}
         run: testspace "[ ${{ matrix.category }} ]results/TEST-*.xml"
