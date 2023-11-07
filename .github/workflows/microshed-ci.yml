@@ -32,7 +32,7 @@ jobs:
     - name: Set up Java
       uses: actions/setup-java@0ab4596768b603586c0de567f2430c30f5b0d2b0 # v3.13.0
       with:
-        java-version: 11
+        java-version: ${{ matrix.java }}
         distribution: 'temurin'
         cache: gradle
     - name: Apply repository caches
