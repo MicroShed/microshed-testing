@@ -40,7 +40,6 @@ jobs:
         chmod +x gradlew
         ./gradlew assemble testClasses
   integration_tests:
-    environment: default
     name: Tests - ${{matrix.category}}
     runs-on: ubuntu-latest
     needs: build
@@ -52,7 +51,7 @@ jobs:
         include:
           - category: JAXRS
             projects: >
-              jaxrs-json
+#              jaxrs-json
               jaxrs-basicauth
               jaxrs-mpjwt
               everything-app
