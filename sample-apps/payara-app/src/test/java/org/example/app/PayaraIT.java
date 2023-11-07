@@ -36,16 +36,16 @@ import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.junit.jupiter.Container;
 
 @MicroShedTest
-public class JaxrsJsonIT {
-    
+public class PayaraIT {
+
     @Container
     public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/myservice")
                     .withReadinessPath("/myservice/app/people");
-    
+
     @RESTClient
     public static PersonService personSvc;
-    
+
     @Test
     public void testCreatePerson() {
         Long createId = personSvc.createPerson("Hank", 42);
@@ -127,7 +127,7 @@ public class JaxrsJsonIT {
     public void testCreateBadPersonNameTooLong() {
         assertThrows(BadRequestException.class, () -> personSvc.createPerson("NameTooLongPersonNameTooLongPersonNameTooLongPerson", 5));
     }
-    
+
     @Test
     public void testNonJaxrsMethod() {
         assertThrows(ProcessingException.class, () -> personSvc.nonJaxrsMethod());
