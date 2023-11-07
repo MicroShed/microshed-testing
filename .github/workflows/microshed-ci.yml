@@ -103,7 +103,16 @@ jobs:
               ./gradlew :microshed-testing-$TEST_PROJECT:test
             echo "### END running test project $TEST_PROJECT";
 
-            cp sample-apps/$TEST_PROJECT/build/test-results/test/TEST-*.xml results/
+            #Gradle test results
+            if [[ -d "sample-apps/$TEST_PROJECT/build/test-results/test/" ]]; then
+              cp sample-apps/$TEST_PROJECT/build/test-results/test/TEST-*.xml results/
+            fi
+
+            #Maven test results
+            if [[ -d "sample-apps/$TEST_PROJECT/target/test-failsafe-reports/" ]]; then
+              cp sample-apps/$TEST_PROJECT/target/test-failsafe-reports/TEST-*.xml results/
+            fi
+
           done
 
           ls -la results/
