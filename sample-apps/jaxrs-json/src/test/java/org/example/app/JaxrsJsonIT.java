@@ -38,7 +38,7 @@ public class JaxrsJsonIT {
     public static ApplicationContainer app = new ApplicationContainer()
             .withExposedPorts(9080, 9443)
             .withAppContextRoot("/myservice")
-            .withReadinessPath("/myservice/app/people");
+            .withReadinessPath("/health/ready");
 
     @RESTClient
     public static PersonService personSvc;
