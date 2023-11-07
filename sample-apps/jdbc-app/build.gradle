@@ -12,7 +12,7 @@ dependencies {
   testCompile 'org.testcontainers:postgresql:1.15.0'
   testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.36'
   testCompile project(':microshed-testing-testcontainers')
-  testImplementation 'org.junit.jupiter:junit-jupiter:5.6.0'
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
   postgres 'org.postgresql:postgresql:42.2.8'
 }
 
