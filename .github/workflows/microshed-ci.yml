@@ -3,8 +3,8 @@ name: MicroShed CI
 on:
   push:
   pull_request:
-    branches:
-    - master
+    branches: 
+    - main
     types: [opened, synchronize, reopened, ready_for_review]
     paths-ignore:
       - '.gitignore'
