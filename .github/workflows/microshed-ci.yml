@@ -3,7 +3,7 @@ name: MicroShed CI
 on:
   push:
   pull_request:
-    branches: 
+    branches:
     - master
     types: [opened, synchronize, reopened, ready_for_review]
     paths-ignore:
@@ -84,7 +84,7 @@ jobs:
 #        run: docker version
       - name: Set up testcontainers for podman
         run: |
-          echo ryuk.container.privileged=true > /home/user/$(id -u)/.testcontainers.properties
+          echo ryuk.container.privileged=true >> "$GITHUB_ENV"
 #      - name: Login to Docker Hub
 #        uses: redhat-actions/podman-login@v1
 #        with:
