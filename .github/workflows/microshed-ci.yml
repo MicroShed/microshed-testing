@@ -51,7 +51,6 @@ jobs:
         include:
           - category: JAXRS
             projects: >
-#              jaxrs-json
               jaxrs-basicauth
               jaxrs-mpjwt
               everything-app
