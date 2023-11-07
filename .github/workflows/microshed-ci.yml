@@ -78,19 +78,19 @@ jobs:
           java-version: 11
           distribution: 'temurin'
           cache: gradle
-      - name: Setup docker host
-        run: echo "DOCKER_HOST=unix:///run/user/$(id -u)/podman/podman.sock" >> "$GITHUB_ENV"
-      - name: Check podman
-        run: docker version
-      - name: Set up testcontainers for podman
-        run: |
-          echo ryuk.container.privileged=true > ~/.testcontainers.properties
-      - name: Login to Docker Hub
-        uses: redhat-actions/podman-login@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME  }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          registry: docker.io
+#      - name: Setup docker host
+#        run: echo "DOCKER_HOST=unix:///run/user/$(id -u)/podman/podman.sock" >> "$GITHUB_ENV"
+#      - name: Check podman
+#        run: docker version
+#      - name: Set up testcontainers for podman
+#        run: |
+#          echo ryuk.container.privileged=true > ~/.testcontainers.properties
+#      - name: Login to Docker Hub
+#        uses: redhat-actions/podman-login@v1
+#        with:
+#          username: ${{ secrets.DOCKERHUB_USERNAME  }}
+#          password: ${{ secrets.DOCKERHUB_TOKEN }}
+#          registry: docker.io
       - name: Run integration tests
         shell: bash
         env:
