@@ -61,6 +61,7 @@ jobs:
             projects: >
               maven-app
               everything-app
+              everything-jakarta-app
               jdbc-app
               kafka-app
           - category: LIBERTY/PAYARA
