@@ -1,3 +1,3 @@
-FROM openliberty/open-liberty:full-java8-openj9-ubi
+FROM open-liberty:full-java11-openj9
 COPY src/main/liberty/config /config/
 ADD build/libs/myservice.war /config/apps/

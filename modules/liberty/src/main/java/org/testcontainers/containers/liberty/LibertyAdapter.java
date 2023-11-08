@@ -112,7 +112,7 @@ public class LibertyAdapter implements ServerAdapter {
         final File configDir = new File("src/main/liberty/config");
         final boolean configDirExists = configDir.exists() && configDir.canRead();
         // Compose a docker image equivalent to doing:
-        // FROM openliberty/open-liberty:full-java8-openj9-ubi
+        // FROM FROM open-liberty:full-java11-openj9
         // COPY src/main/liberty/config /config/
         // RUN configure.sh
         // ADD build/libs/<appFile> /config/dropins

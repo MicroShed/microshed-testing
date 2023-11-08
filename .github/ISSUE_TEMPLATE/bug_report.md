@@ -18,7 +18,7 @@ A clear and concise description of what you expected to happen.
 
 **System information:**
  - OS: [e.g. Linux, Windows, Mac]
- - Java Version: [e.g. 8, 11]
+ - Java Version: [e.g. 11, 17]
  - MicroShed Testing Version: [e.g. 0.4.2]
 
 **Additional context**

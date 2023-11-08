@@ -115,7 +115,7 @@ provide the default logic for building an application container. For example, th
 automatically produce a testable container image roughly equivalent to the following Dockerfile:
 
 ```
-FROM openliberty/open-liberty:full-java8-openj9-ubi
+FROM open-liberty:full-java11-openj9
 COPY src/main/liberty/config /config/
 ADD target/$APP_FILE /config/dropins
 ```
