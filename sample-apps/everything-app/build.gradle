@@ -11,7 +11,7 @@ dependencies {
   testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.36'
   testCompile 'org.testcontainers:mockserver:1.19.1'
   testCompile 'org.mock-server:mockserver-client-java:5.5.4'
-  testCompile 'io.rest-assured:rest-assured:4.2.0'
+  testCompile 'io.rest-assured:rest-assured:4.5.1'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
 }
 
