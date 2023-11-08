@@ -15,8 +15,8 @@ dependencies {
   implementation 'org.eclipse.parsson:parsson:1.0.5'
 
   implementation 'cglib:cglib-nodep:3.3.0'
-  implementation 'org.apache.cxf:cxf-rt-rs-client:3.4.1'
-  implementation 'org.apache.cxf:cxf-rt-rs-extension-providers:3.4.1'
+  implementation 'org.apache.cxf:cxf-rt-rs-client:3.6.2'
+  implementation 'org.apache.cxf:cxf-rt-rs-extension-providers:3.6.2'
   implementation 'org.bitbucket.b_c:jose4j:0.7.2'
 
   testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
