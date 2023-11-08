@@ -6,6 +6,7 @@ dependencies {
   providedCompile 'javax:javaee-api:8.0.1'
   providedCompile 'org.eclipse.microprofile:microprofile:3.0'
   testCompile project(':microshed-testing-liberty')
+  testCompile project(':microshed-testing-core')
   testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.36'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
 }

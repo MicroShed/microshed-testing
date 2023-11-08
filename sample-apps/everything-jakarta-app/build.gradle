@@ -11,6 +11,7 @@ dependencies {
   compile 'org.mongodb:mongo-java-driver:3.11.2'
 
   testCompile project(':microshed-testing-testcontainers')
+  testCompile project(':microshed-testing-core-jakarta')
 
   testCompile 'org.slf4j:slf4j-log4j12:1.7.36'
   testCompile 'org.testcontainers:mockserver:1.19.1'

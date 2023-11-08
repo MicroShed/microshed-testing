@@ -34,6 +34,7 @@ task deleteTarget(type: Delete) {
 }
 
 compileJava.dependsOn ':microshed-testing-testcontainers:publishToMavenLocal'
+compileJava.dependsOn ':microshed-testing-core:publishToMavenLocal'
 assemble.dependsOn runMvnCompile
 test.dependsOn runMvnVerify
 clean.dependsOn deleteTarget

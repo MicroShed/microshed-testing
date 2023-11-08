@@ -52,16 +52,13 @@ jar.dependsOn transform
 
 //Overwrites the empty jar with the transformed jar in the build/libs directory
 task overwrite(type: Copy) {
-    dependsOn jar
     from(transformed_jar)
     into('build/libs')
 }
 
-assemble.dependsOn overwrite
+jar.finalizedBy overwrite
 
 apply from: publishScript
-
-publishToMavenLocal.dependsOn overwrite
 
 publishToMavenLocal.dependsOn ':microshed-testing-core:publishToMavenLocal'
 
