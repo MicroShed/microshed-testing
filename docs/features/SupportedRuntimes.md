@@ -39,7 +39,7 @@ Maven Dependency:
 Example Dockerfile:
 
 ```
-FROM payara/micro:5.193
+FROM payara/micro:5.2022.5-jdk11
 CMD ["--deploymentDir", "/opt/payara/deployments", "--noCluster"]
 ADD build/libs/myservice.war /opt/payara/deployments
 ```
@@ -59,7 +59,7 @@ Maven Dependency:
 Example Dockerfile:
 
 ```
-FROM payara/server-full:5.193
+FROM payara/server-full:5.2022.5-jdk11
 ADD target/myservice.war /opt/payara/deployments
 ```
 

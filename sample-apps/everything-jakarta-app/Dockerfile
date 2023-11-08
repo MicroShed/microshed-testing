@@ -7,7 +7,7 @@ ADD build/libs/myservice.war /config/dropins/
 #ADD build/libs/myservice.war /opt/jboss/wildfly/standalone/deployments/
 
 # Payara
-#FROM payara/micro:5.193
+#FROM payara/micro:5.2022.5-jdk11
 #CMD ["--deploymentDir", "/opt/payara/deployments", "--noCluster"]
 #ADD build/libs/myservice.war /opt/payara/deployments
 
