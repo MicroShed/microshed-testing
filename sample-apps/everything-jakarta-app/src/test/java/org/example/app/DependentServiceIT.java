@@ -31,8 +31,7 @@ import org.microshed.testing.SharedContainerConfig;
 import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jupiter.MicroShedTest;
 import org.mockserver.client.MockServerClient;
-
-import com.google.common.net.MediaType;
+import org.mockserver.model.MediaType;
 
 @SuppressWarnings("resource")
 
