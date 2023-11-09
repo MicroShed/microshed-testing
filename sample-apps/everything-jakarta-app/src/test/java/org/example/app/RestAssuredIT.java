@@ -23,6 +23,7 @@ import static io.restassured.http.ContentType.JSON;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.microshed.testing.SharedContainerConfig;
 import org.microshed.testing.jupiter.MicroShedTest;
@@ -46,8 +47,8 @@ public class RestAssuredIT {
     }
 
     //Blocked because this codepath of restassured is still using javax
-    // https://github.com/rest-assured/rest-assured/issues/1651
-    //@Test
+    @Disabled("https://github.com/rest-assured/rest-assured/issues/1651")
+    @Test
     public void testMinSizeName() {
         // First create a new person with min size name
         long minSizeNameId = given()
@@ -78,8 +79,8 @@ public class RestAssuredIT {
     }
 
     //Blocked because this codepath of restassured is still using javax
-    // https://github.com/rest-assured/rest-assured/issues/1651
-    //@Test
+    @Disabled("https://github.com/rest-assured/rest-assured/issues/1651")
+    @Test
     public void testMinAge() {
         long minAgeId = given()
                         .queryParam("name", "Newborn")
@@ -108,8 +109,8 @@ public class RestAssuredIT {
     }
 
     //Blocked because this codepath of restassured is still using javax
-    // https://github.com/rest-assured/rest-assured/issues/1651
-    //@Test
+    @Disabled("https://github.com/rest-assured/rest-assured/issues/1651")
+    @Test
     public void testGetPerson() {
         // First create the Person
         long bobId = given()
