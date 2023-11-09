@@ -43,7 +43,7 @@ public class PersonService {
 Now assume we also have simple Dockerfile in our repository that packages up our application into a container which gets used in production.
 
 ```
-FROM openliberty/open-liberty:full-java8-openj9-ubi
+FROM open-liberty:full-java11-openj9
 COPY src/main/liberty/config /config/
 ADD target/myservice.war /config/dropins
 ```

@@ -44,7 +44,7 @@ If your Pull Request results in the failure of this build it will not be reviewe
 
 ##### Requirements
 
-- JDK 8 or higher
+- JDK 11 or higher
 - Docker (daemon or desktop)
 <!-- TODO support podman/colima for builds -->
 

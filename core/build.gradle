@@ -1,15 +1,19 @@
 ext.title = "MicroShed Testing Framework"
-description = "A test framework for black-box testing MicroProfile and JavaEE applications"
+description="A test framework for black-box testing MicroProfile and Java EE applications"
 
 dependencies {
   compile 'org.junit.jupiter:junit-jupiter-api:5.10.1'
-  implementation group: 'cglib', name: 'cglib-nodep', version: '3.3.0'
-  implementation group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version: '3.4.1'
-  implementation group: 'org.apache.cxf', name: 'cxf-rt-rs-extension-providers', version: '3.4.1'
-  implementation group: 'org.bitbucket.b_c', name: 'jose4j', version: '0.7.2'
-  implementation group: 'org.eclipse', name: 'yasson', version: '1.0.11'
-  implementation group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
+  
+  implementation 'org.eclipse:yasson:1.0.11'
+  implementation 'org.glassfish:javax.json:1.1.4'
+
+  implementation 'cglib:cglib-nodep:3.3.0'
+  implementation 'org.apache.cxf:cxf-rt-rs-client:3.6.2'
+  implementation 'org.apache.cxf:cxf-rt-rs-extension-providers:3.6.2'
+  implementation 'org.bitbucket.b_c:jose4j:0.7.2'
+
   testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
 }
+
 
 apply from: publishScript

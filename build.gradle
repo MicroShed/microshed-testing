@@ -13,8 +13,8 @@ subprojects {
     group = 'org.microshed'
     version = currentVersion
     
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    sourceCompatibility = 11
+    targetCompatibility = 11
     compileJava.options.encoding = 'UTF-8'
 
     repositories {
@@ -41,7 +41,7 @@ subprojects {
 task updateVersion {
     doLast {
         if (!project.hasProperty('nextVersion'))
-            throw new GradleException("Must define '-PnextVersion=X.Y.Z' when running this task")
+            throw GradleException("Must define '-PnextVersion=X.Y.Z' when running this task")
         def isRelease = !nextVersion.endsWith('SNAPSHOT')
 
         println 'Updating project version: ' + currentVersion + ' --> ' + nextVersion

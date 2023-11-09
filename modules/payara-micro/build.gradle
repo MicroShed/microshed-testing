@@ -3,6 +3,7 @@ description = "Extensions for using MicroShed Testing with Payara Micro servers"
 
 dependencies {
   compile project(':microshed-testing-testcontainers')
+  compileOnly project(':microshed-testing-core')
 }
 
 apply from: publishScript
