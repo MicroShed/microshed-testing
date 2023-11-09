@@ -5,11 +5,11 @@ description="A test framework for black-box testing MicroProfile and Jakarta EE 
 
 configurations {
   transformer
-  parent {extendsFrom compile}
+  parent {extendsFrom implementation}
 }
 
 dependencies {
-  compile 'org.junit.jupiter:junit-jupiter-api:5.10.1'
+  implementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
 
   implementation 'org.eclipse:yasson:2.0.4'
   implementation 'org.eclipse.parsson:parsson:1.0.5'

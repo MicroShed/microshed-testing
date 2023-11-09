@@ -2,7 +2,7 @@ ext.title = "MicroShed Testing Framework"
 description="A test framework for black-box testing MicroProfile and Java EE applications"
 
 dependencies {
-  compile 'org.junit.jupiter:junit-jupiter-api:5.10.1'
+  implementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
   
   implementation 'org.eclipse:yasson:1.0.11'
   implementation 'org.glassfish:javax.json:1.1.4'

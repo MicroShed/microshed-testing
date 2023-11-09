@@ -18,11 +18,6 @@
  */
 package org.example.app;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.util.Collection;
 
 import javax.ws.rs.BadRequestException;
@@ -33,6 +28,8 @@ import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.junit.jupiter.Container;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @MicroShedTest
 public class BasicLibertyAppIT {
@@ -82,12 +79,12 @@ public class BasicLibertyAppIT {
         Person expected2 = new Person("Person2", 2, person2Id);
 
         Collection<Person> allPeople = personSvc.getAllPeople();
-        assertTrue("Expected at least 2 people to be registered, but there were only: " + allPeople,
-                   allPeople.size() >= 2);
-        assertTrue("Did not find person " + expected1 + " in all people: " + allPeople,
-                   allPeople.contains(expected1));
-        assertTrue("Did not find person " + expected2 + " in all people: " + allPeople,
-                   allPeople.contains(expected2));
+        assertTrue(allPeople.size() >= 2,
+                "Expected at least 2 people to be registered, but there were only: " + allPeople);
+        assertTrue(allPeople.contains(expected1),
+                "Did not find person " + expected1 + " in all people: " + allPeople);
+        assertTrue(allPeople.contains(expected2),
+                "Did not find person " + expected2 + " in all people: " + allPeople);
     }
 
     @Test

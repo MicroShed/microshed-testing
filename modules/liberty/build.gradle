@@ -2,8 +2,11 @@ ext.title = "MicroShed Testing Framework :: Liberty extensions"
 description = "Extensions for using MicroShed Testing with Liberty servers"
 
 dependencies {
-  compile project(':microshed-testing-testcontainers')
+  compileOnly project(':microshed-testing-testcontainers')
   compileOnly project(':microshed-testing-core')
+  implementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
+  implementation 'org.testcontainers:junit-jupiter:1.19.1'
+
 }
 
 apply from: publishScript

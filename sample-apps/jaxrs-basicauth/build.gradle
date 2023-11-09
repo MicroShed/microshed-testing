@@ -5,14 +5,15 @@ plugins {
 dependencies {
   providedCompile 'javax:javaee-api:8.0.1'
   providedCompile 'org.eclipse.microprofile:microprofile:2.1'
-  testCompile project(':microshed-testing-testcontainers')
-  testCompile project(':microshed-testing-core')
-  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.15.0'
-  testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.36'
+  testImplementation project(':microshed-testing-testcontainers')
+  testImplementation project(':microshed-testing-core')
+  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.15.0'
+  testImplementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.36'
+  testImplementation 'org.testcontainers:junit-jupiter:1.19.1'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
 }
 
-war.archiveName 'myservice.war'
+war.archiveFileName.set 'myservice.war'
 test.dependsOn 'war'
 
 // Always re-run tests on every build for the sake of this sample

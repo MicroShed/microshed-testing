@@ -18,6 +18,13 @@
  */
 package org.microshed.testing.testcontainers.config;
 
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.microshed.testing.ApplicationEnvironment;
+import org.microshed.testing.ManuallyStartedConfiguration;
+import org.microshed.testing.internal.InternalLogger;
+import org.microshed.testing.testcontainers.ApplicationContainer;
+import org.testcontainers.containers.GenericContainer;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.DatagramSocket;
@@ -29,13 +36,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.junit.jupiter.api.extension.ExtensionConfigurationException;
-import org.microshed.testing.ApplicationEnvironment;
-import org.microshed.testing.ManuallyStartedConfiguration;
-import org.microshed.testing.internal.InternalLogger;
-import org.microshed.testing.testcontainers.ApplicationContainer;
-import org.testcontainers.containers.GenericContainer;
 
 public class HollowTestcontainersConfiguration extends TestcontainersConfiguration {
 
@@ -85,9 +85,9 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
 
         // Translate any Docker network hosts that may have been configured in environment variables
         Set<String> networkAliases = containers.allContainers.stream()
-                        .filter(c -> !(c instanceof ApplicationContainer))
-                        .flatMap(c -> c.getNetworkAliases().stream())
-                        .collect(Collectors.toSet());
+                .filter(c -> !(c instanceof ApplicationContainer))
+                .flatMap(c -> c.getNetworkAliases().stream())
+                .collect(Collectors.toSet());
         sanitizeEnvVar(containers.app, networkAliases);
 
         // Expose any external resources (such as DBs) on fixed exposed ports
@@ -99,8 +99,8 @@ public class HollowTestcontainersConfiguration extends TestcontainersConfigurati
                 for (Integer p : c.getExposedPorts()) {
                     if (fixedExposedPorts.containsKey(p) && !(c instanceof ApplicationContainer)) {
                         throw new ExtensionConfigurationException("Cannot expose port " + p + " for " + c.getDockerImageName() +
-                                                                  " because another container (" + fixedExposedPorts.get(p) +
-                                                                  ") is already using it.");
+                                " because another container (" + fixedExposedPorts.get(p) +
+                                ") is already using it.");
                     }
                     if (c.isShouldBeReused() && !isPortAvailable(p)) {
                         // Do not expose the fixed exposed port if a reusable container is already

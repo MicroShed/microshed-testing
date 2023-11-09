@@ -15,19 +15,28 @@ sourceSets {
 }
 
 dependencies {
-  compile 'org.testcontainers:junit-jupiter:1.19.1'
-  compileOnly project(':microshed-testing-core')
-  testCompile 'org.eclipse.microprofile.rest.client:microprofile-rest-client-api:1.4.1'
-  testCompile 'org.slf4j:slf4j-log4j12:1.7.36'
-  testCompile 'org.testcontainers:mockserver:1.19.1'
-  testCompile project(':microshed-testing-core')
-  testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+    implementation 'org.testcontainers:junit-jupiter:1.19.1'
+    implementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
+    compileOnly project(':microshed-testing-core')
+    testImplementation 'org.eclipse.microprofile.rest.client:microprofile-rest-client-api:1.4.1'
+    testImplementation 'org.slf4j:slf4j-log4j12:1.7.36'
+    testImplementation 'org.testcontainers:mockserver:1.19.1'
+    testImplementation project(':microshed-testing-core')
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+
+    integrationTestImplementation project(':microshed-testing-core')
+    integrationTestImplementation project(':microshed-testing-testcontainers')
+    integrationTestImplementation 'org.testcontainers:junit-jupiter:1.19.1'
+    integrationTestImplementation 'org.eclipse.microprofile.rest.client:microprofile-rest-client-api:1.4.1'
+    integrationTestImplementation 'org.slf4j:slf4j-log4j12:1.7.36'
+    integrationTestImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+    integrationTestImplementation 'org.testcontainers:mockserver:1.19.1'
 }
 
 test {
-  // These system properties will trigger hollow mode to be triggered during unit tests
-  systemProperty "microshed_hostname", "localhost"
-  systemProperty "microshed_http_port", "9080"
+    // These system properties will trigger hollow mode to be triggered during unit tests
+    systemProperty "microshed_hostname", "localhost"
+    systemProperty "microshed_http_port", "9080"
 }
 
 apply from: publishScript

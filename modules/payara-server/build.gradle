@@ -2,7 +2,8 @@ ext.title = "MicroShed Testing Framework :: Payara Server extensions"
 description = "Extensions for using MicroShed Testing with Payara servers"
 
 dependencies {
-  compile project(':microshed-testing-testcontainers')
+  implementation 'org.testcontainers:junit-jupiter:1.19.1'
+  implementation project(':microshed-testing-testcontainers')
   compileOnly project(':microshed-testing-core')
 }
 

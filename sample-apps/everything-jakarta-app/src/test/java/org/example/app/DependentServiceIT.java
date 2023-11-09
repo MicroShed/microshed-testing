@@ -47,7 +47,7 @@ public class DependentServiceIT {
     @Test
     public void testCreatePerson() {
         Person expectedPerson = new Person("Hank", 42, 5L);
-        new MockServerClient(mockServer.getContainerIpAddress(), mockServer.getServerPort())
+        new MockServerClient(mockServer.getHost(), mockServer.getServerPort())
                         .when(request("/mock-passthrough/person/5"))
                         .respond(response().withBody(jsonb.toJson(expectedPerson), MediaType.JSON_UTF_8));
 
