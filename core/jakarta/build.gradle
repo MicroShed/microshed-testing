@@ -61,4 +61,3 @@ jar.finalizedBy overwrite
 apply from: publishScript
 
 publishToMavenLocal.dependsOn ':microshed-testing-core:publishToMavenLocal'
-

@@ -141,7 +141,7 @@ public class QuarkusConfiguration extends TestcontainersConfiguration {
     }
 
     private void autoConfigureDatabases() {
-        if (System.getProperty("quarkus.datasource.url") != null ||
+        if (System.getProperty("quarkus.datasource.jdbc.url") != null ||
             System.getProperty("quarkus.datasource.username") != null ||
             System.getProperty("quarkus.datasource.password") != null)
             return; // Do not override explicit configuration
@@ -153,7 +153,7 @@ public class QuarkusConfiguration extends TestcontainersConfiguration {
             if (jdbcContainers.size() == 1) {
                 GenericContainer<?> db = jdbcContainers.get(0);
                 String jdbcUrl = (String) JdbcContainerClass.getMethod("getJdbcUrl").invoke(db);
-                System.setProperty("quarkus.datasource.url", jdbcUrl);
+                System.setProperty("quarkus.datasource.jdbc.url", jdbcUrl);
                 System.setProperty("quarkus.datasource.username", (String) JdbcContainerClass.getMethod("getUsername").invoke(db));
                 System.setProperty("quarkus.datasource.password", (String) JdbcContainerClass.getMethod("getPassword").invoke(db));
                 LOG.info("Set quarkus.datasource.url to: " + jdbcUrl);

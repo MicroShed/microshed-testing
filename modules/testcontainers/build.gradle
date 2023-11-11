@@ -33,6 +33,7 @@ test {
 apply from: publishScript
 
 publishToMavenLocal.dependsOn ':microshed-testing-core:publishToMavenLocal'
+publishToMavenLocal.dependsOn ':microshed-testing-core-jakarta:publishToMavenLocal'
 
 task integrationTest(type: Test) {
     description = 'Runs integration tests.'

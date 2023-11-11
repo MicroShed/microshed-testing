@@ -6,17 +6,15 @@
   <artifactId>quarkus-demo</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <properties>
-    <compiler-plugin.version>3.8.1</compiler-plugin.version>
+    <compiler-plugin.version>3.11.0</compiler-plugin.version>
     <maven.compiler.parameters>true</maven.compiler.parameters>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.release>11</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
-    <quarkus.platform.version>1.8.3.Final</quarkus.platform.version>
-    <quarkus-plugin.version>1.8.3.Final</quarkus-plugin.version>
-    <surefire-plugin.version>2.22.2</surefire-plugin.version>
+    <quarkus.platform.version>3.2.8.Final</quarkus.platform.version>
+    <surefire-plugin.version>3.1.2</surefire-plugin.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -55,7 +53,7 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-mongodb-client</artifactId>
     </dependency>
-    <!-- 
+    <!--
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-jwt</artifactId>
@@ -67,7 +65,7 @@
       <artifactId>quarkus-smallrye-reactive-messaging-kafka</artifactId>
     </dependency>
      -->
-    
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -87,17 +85,17 @@
     </dependency>
     <dependency>
       <groupId>org.microshed</groupId>
-      <artifactId>microshed-testing-core</artifactId>
+      <artifactId>microshed-testing-core-jakarta</artifactId>
       <version>0.9.2-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>postgresql</artifactId>
-      <version>1.15.0</version>
+      <version>1.19.1</version>
       <scope>test</scope>
     </dependency>
-    <!-- 
+    <!--
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>kafka</artifactId>
@@ -108,7 +106,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
-      <version>1.7.36</version>
+      <version>2.0.9</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -117,11 +115,13 @@
       <plugin>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
-        <version>${quarkus-plugin.version}</version>
+        <version>${quarkus.platform.version}</version>
         <executions>
           <execution>
             <goals>
               <goal>build</goal>
+              <goal>generate-code</goal>
+              <goal>generate-code-tests</goal>
             </goals>
           </execution>
         </executions>
@@ -161,9 +161,14 @@
                   <goal>verify</goal>
                 </goals>
                 <configuration>
-                  <systemProperties>
-                    <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
-                  </systemProperties>
+                  <systemPropertyVariables>
+                    <native.image.path>
+                      ${project.build.directory}/${project.build.finalName}-runner
+                    </native.image.path>
+                    <java.util.logging.manager>org.jboss.logmanager.LogManager
+                    </java.util.logging.manager>
+                    <maven.home>${maven.home}</maven.home>
+                  </systemPropertyVariables>
                 </configuration>
               </execution>
             </executions>
