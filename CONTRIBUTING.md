@@ -45,8 +45,7 @@ If your Pull Request results in the failure of this build it will not be reviewe
 ##### Requirements
 
 - JDK 11 or higher
-- Docker (daemon or desktop)
-<!-- TODO support podman/colima for builds -->
+- Any container engine, e.g. Docker, Podman, Colima. As this project is build on top of testcontainers, see their [documentation](https://golang.testcontainers.org/system_requirements/using_podman/) on how to use another container engine than Docker by default. 
 
 ##### Building project
 
