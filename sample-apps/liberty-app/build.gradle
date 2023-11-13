@@ -7,7 +7,7 @@ dependencies {
   providedCompile 'org.eclipse.microprofile:microprofile:3.0'
   testImplementation 'org.testcontainers:junit-jupiter:1.19.1'
   testImplementation project(':microshed-testing-liberty')
-  testImplementation project(':microshed-testing-testcontainers')
+//  testImplementation project(':microshed-testing-testcontainers')
   testImplementation project(':microshed-testing-core')
   testImplementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.36'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
