@@ -20,9 +20,11 @@ package org.example.app;
 
 import org.microshed.testing.SharedContainerConfiguration;
 import org.microshed.testing.testcontainers.ApplicationContainer;
+import org.mockserver.client.MockServerClient;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MockServerContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.utility.DockerImageName;
 
 public class AppContainerConfig implements SharedContainerConfiguration {
 
@@ -33,8 +35,13 @@ public class AppContainerConfig implements SharedContainerConfiguration {
                     .withEnv("MONGO_PORT", "27017")
                     .withMpRestClient(ExternalRestServiceClient.class, "http://mockserver:" + MockServerContainer.PORT);
 
+    public static final DockerImageName MOCKSERVER_IMAGE = DockerImageName
+            .parse("mockserver/mockserver")
+            .withTag("mockserver-" + MockServerClient.class.getPackage().getImplementationVersion());
+
+
     @Container
-    public static MockServerContainer mockServer = new MockServerContainer()
+    public static MockServerContainer mockServer = new MockServerContainer("5.5.4")
                     .withNetworkAliases("mockserver");
 
     @Container
