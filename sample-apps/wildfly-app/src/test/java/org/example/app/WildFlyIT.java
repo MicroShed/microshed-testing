@@ -38,9 +38,6 @@ import org.testcontainers.junit.jupiter.Container;
 @MicroShedTest
 public class WildFlyIT {
     
-    //FIXME - container is failing to start with
-    // Timed out waiting for URL to be accessible (http://127.0.0.1:32956/myservice/app/people should return HTTP 200)
-    // java.lang.RuntimeException: HTTP response code was: 404
     @Container
     public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/myservice")
