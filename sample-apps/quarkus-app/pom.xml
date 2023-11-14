@@ -18,9 +18,9 @@
 
     <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
-    <quarkus.platform.version>2.16.12.Final</quarkus.platform.version>
+    <quarkus.platform.version>3.2.8.Final</quarkus.platform.version>
 
-    <quarkus-plugin.version>2.16.12.Final</quarkus-plugin.version>
+    <quarkus-plugin.version>3.2.8.Final</quarkus-plugin.version>
     <surefire-plugin.version>2.22.2</surefire-plugin.version>
   </properties>
   <dependencyManagement>
@@ -92,7 +92,7 @@
     </dependency>
     <dependency>
       <groupId>org.microshed</groupId>
-      <artifactId>microshed-testing-core</artifactId>
+      <artifactId>microshed-testing-core-jakarta</artifactId>
       <version>0.9.2-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
