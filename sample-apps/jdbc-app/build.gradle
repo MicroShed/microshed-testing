@@ -7,13 +7,16 @@ configurations {
 }
 
 dependencies {
-  providedCompile 'javax:javaee-api:8.0.1'
-  providedCompile 'org.eclipse.microprofile:microprofile:2.1'
-  testCompile 'org.testcontainers:postgresql:1.15.0'
-  testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.36'
-  testCompile project(':microshed-testing-testcontainers')
-  testCompile project(':microshed-testing-core')
+  api 'javax:javaee-api:8.0.1'
+  api 'org.eclipse.microprofile:microprofile:2.1'
+
+  testImplementation 'org.testcontainers:postgresql:1.15.0'
+  testImplementation 'org.slf4j:slf4j-log4j12:1.7.36'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+
+  testImplementation project(':microshed-testing-testcontainers')
+  testImplementation project(':microshed-testing-core')
+  
   postgres 'org.postgresql:postgresql:42.2.8'
 }
 
@@ -24,7 +27,7 @@ task copyDriver(type: Copy) {
 	rename 'postgresql.*jar', 'postgresql.jar'
 }
 
-war.archiveName 'myservice.war'
+war.archiveFileName.set 'myservice.war'
 test.dependsOn 'war'
 test.dependsOn 'copyDriver'
 

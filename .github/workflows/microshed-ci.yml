@@ -51,19 +51,20 @@ jobs:
       max-parallel: 18
       matrix:
         include:
-          - category: JAXRS
+          - category: GENERAL
+            projects: >
+              maven-app
+              jdbc-app
+              kafka-app
+          - category: COMPLEX
+            projects: >
+              everything-app
+              everything-jakarta-app
+          - category: RESTFUL
             projects: >
               jaxrs-json
               jaxrs-basicauth
               jaxrs-mpjwt
-              everything-app
-          - category: GENERAL
-            projects: >
-              maven-app
-              everything-app
-              everything-jakarta-app
-              jdbc-app
-              kafka-app
           - category: LIBERTY/PAYARA
             projects: >
               liberty-app
