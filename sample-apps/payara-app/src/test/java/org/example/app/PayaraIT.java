@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 IBM Corporation and others
+ * Copyright (c) 2019, 2023 IBM Corporation and others
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -30,12 +30,15 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.ProcessingException;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.junit.jupiter.Container;
 
 @MicroShedTest
+//FIXME - re-enable arm testing when payara releases multi-platform images
+@DisabledIfSystemProperty(named = "os.arch", matches = ".*aarch64.*")
 public class PayaraIT {
 
     @Container

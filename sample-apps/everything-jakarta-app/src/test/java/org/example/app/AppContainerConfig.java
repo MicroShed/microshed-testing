@@ -34,10 +34,12 @@ public class AppContainerConfig implements SharedContainerConfiguration {
                     .withEnv("MONGO_PORT", "27017")
                     .withMpRestClient(ExternalRestServiceClient.class, "http://mockserver:" + MockServerContainer.PORT);
 
-    private static DockerImageName mockServerImage = DockerImageName.parse("mockserver/mockserver:5.15.0").asCompatibleSubstituteFor("jamesdbloom/mockserver");
+    private static final DockerImageName MOCK_SERVER_IMAGE_NAME = 
+        DockerImageName.parse("mockserver/mockserver:5.15.0")
+        .asCompatibleSubstituteFor("jamesdbloom/mockserver");
     
     @Container
-    public static MockServerContainer mockServer = new MockServerContainer(mockServerImage)
+    public static MockServerContainer mockServer = new MockServerContainer(MOCK_SERVER_IMAGE_NAME)
                     .withNetworkAliases("mockserver");
 
     @Container

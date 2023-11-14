@@ -78,7 +78,7 @@ Maven Dependency:
 Example Dockerfile:
 
 ```
-FROM jboss/wildfly
+FROM quay.io/wildfly/wildfly:30.0.0.Final-jdk11
 ADD build/libs/myservice.war /opt/jboss/wildfly/standalone/deployments/
 ```
 

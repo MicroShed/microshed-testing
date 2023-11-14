@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 IBM Corporation and others
+ * Copyright (c) 2020, 2023 IBM Corporation and others
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -23,13 +23,17 @@ import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.utility.DockerImageName;
 
 public class AppContainerConfig implements SharedContainerConfiguration {
 
     private static Network network = Network.newNetwork();
 
+    private static final DockerImageName KAFKA_IMAGE_NAME = 
+        DockerImageName.parse("confluentinc/cp-kafka:7.4.3");
+
     @Container
-    public static KafkaContainer kafka = new KafkaContainer()
+    public static KafkaContainer kafka = new KafkaContainer(KAFKA_IMAGE_NAME)
         .withNetworkAliases("kafka")
         .withNetwork(network);
 

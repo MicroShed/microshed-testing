@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 IBM Corporation and others
+ * Copyright (c) 2019, 2023 IBM Corporation and others
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,6 +20,7 @@ package org.microshed.testing.testcontainers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -95,22 +96,26 @@ public class ApplicationContainerTest {
         ApplicationContainer app = dummyApp()
                         .withHttpPort(8888)
                         .withExposedPorts(7777, 9999);
-        assertEquals(Arrays.asList(8888, 7777, 9999), app.getExposedPorts());
+        assertEquals(8888, app.getFirstMappedPort());
+        assertTrue(app.getExposedPorts().containsAll(Arrays.asList(8888, 7777, 9999)));
 
         app = dummyApp()
                         .withExposedPorts(1234, 1235)
                         .withHttpPort(4444);
-        assertEquals(Arrays.asList(4444, 1234, 1235), app.getExposedPorts());
+        assertEquals(4444, app.getFirstMappedPort());
+        assertTrue(app.getExposedPorts().containsAll(Arrays.asList(4444, 1234, 1235)));
 
         app = dummyApp();
         app.withHttpPort(5555);
         app.setExposedPorts(Arrays.asList(1238, 1239));
-        assertEquals(Arrays.asList(5555, 1238, 1239), app.getExposedPorts());
+        assertEquals(5555, app.getFirstMappedPort());
+        assertTrue(app.getExposedPorts().containsAll(Arrays.asList(5555, 1238, 1239)));
 
         app = dummyApp()
                         .withHttpPort(9081)
                         .withExposedPorts(9081, 9444);
-        assertEquals(Arrays.asList(9081, 9444), app.getExposedPorts());
+        assertEquals(9081, app.getFirstMappedPort());
+        assertTrue(app.getExposedPorts().containsAll(Arrays.asList(9081, 9444)));
     }
 
     public static ApplicationContainer dummyApp() {
