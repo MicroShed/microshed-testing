@@ -18,6 +18,8 @@
  */
 package org.example.app;
 
+import java.time.Duration;
+
 import org.microshed.testing.SharedContainerConfiguration;
 import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.containers.GenericContainer;
@@ -26,6 +28,12 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
 public class AppContainerConfig implements SharedContainerConfiguration {
+
+    public static final Duration TIMEOUT = Duration.ofSeconds(
+        Long.parseLong(
+            System.getProperty("microshed.testing.startup.timeout", "60")
+        )
+    );
 
     @Container
     public static ApplicationContainer app = new ApplicationContainer()
@@ -40,11 +48,13 @@ public class AppContainerConfig implements SharedContainerConfiguration {
     
     @Container
     public static MockServerContainer mockServer = new MockServerContainer(MOCK_SERVER_IMAGE_NAME)
-                    .withNetworkAliases("mockserver");
+                    .withNetworkAliases("mockserver")
+                    .withStartupTimeout(TIMEOUT);
 
     @Container
     public static GenericContainer<?> mongo = new GenericContainer<>("mongo:3.4")
-                    .withNetworkAliases("testmongo");
+                    .withNetworkAliases("testmongo")
+                    .withStartupTimeout(TIMEOUT);
 
     @Override
     public void startContainers() {

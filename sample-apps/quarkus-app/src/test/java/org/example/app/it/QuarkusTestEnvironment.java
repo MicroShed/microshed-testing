@@ -18,6 +18,8 @@
  */
 package org.example.app.it;
 
+import java.time.Duration;
+
 import org.microshed.testing.SharedContainerConfiguration;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;

@@ -18,6 +18,8 @@
  */
 package org.example.app;
 
+import java.time.Duration;
+
 import org.microshed.testing.SharedContainerConfiguration;
 import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.containers.KafkaContainer;
@@ -27,6 +29,12 @@ import org.testcontainers.utility.DockerImageName;
 
 public class AppContainerConfig implements SharedContainerConfiguration {
 
+    public static final Duration TIMEOUT = Duration.ofSeconds(
+        Long.parseLong(
+            System.getProperty("microshed.testing.startup.timeout", "60")
+        )
+    );
+
     private static Network network = Network.newNetwork();
 
     private static final DockerImageName KAFKA_IMAGE_NAME = 
@@ -35,7 +43,8 @@ public class AppContainerConfig implements SharedContainerConfiguration {
     @Container
     public static KafkaContainer kafka = new KafkaContainer(KAFKA_IMAGE_NAME)
         .withNetworkAliases("kafka")
-        .withNetwork(network);
+        .withNetwork(network)
+        .withStartupTimeout(TIMEOUT);
 
     @Container
     public static ApplicationContainer app = new ApplicationContainer()
