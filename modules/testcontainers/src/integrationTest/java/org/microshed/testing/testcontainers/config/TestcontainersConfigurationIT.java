@@ -30,6 +30,7 @@ import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.containers.MockServerContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.utility.DockerImageName;
 
 @MicroShedTest
 public class TestcontainersConfigurationIT {
@@ -46,8 +47,12 @@ public class TestcontainersConfigurationIT {
                     .withEnv("SVC_URL6", oldValue -> "http://mockserver:1080")
                     .withMpRestClient("com.foo.ExampleClass", "http://mockserver:1080");
 
+    private static final DockerImageName MOCK_SERVER_IMAGE_NAME = 
+        DockerImageName.parse("mockserver/mockserver:5.15.0")
+        .asCompatibleSubstituteFor("jamesdbloom/mockserver");
+
     @Container
-    public static MockServerContainer mockServer = new MockServerContainer()
+    public static MockServerContainer mockServer = new MockServerContainer(MOCK_SERVER_IMAGE_NAME)
                     .withNetworkAliases("mockserver")
                     .withEnv("STAYS_UNCHANGED", "mockserver");
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Payara Services Corporation and others
+ * Copyright (c) 2019, 2023 Payara Services Corporation and others
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -48,6 +48,8 @@ public class PayaraMicroAdapter implements ServerAdapter {
         // FROM payara/micro:5.2022.5-jdk11
         // CMD ["--deploymentDir", "/opt/payara/deployments", "--noCluster"]
         // ADD target/myservice.war /opt/payara/deployments/
+        //FIXME - update to newer payara version once multi-platform docker images are available
+        //See issue: https://github.com/payara/Payara/issues/5715
         ImageFromDockerfile image = new ImageFromDockerfile()
                 .withDockerfileFromBuilder(builder -> builder.from("payara/micro:5.2022.5-jdk11")
                         .cmd("--deploymentDir", "/opt/payara/deployments/", "--noCluster")

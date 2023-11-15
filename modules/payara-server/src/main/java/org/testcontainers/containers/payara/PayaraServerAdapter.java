@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Payara Services Corporation and others
+ * Copyright (c) 2019, 2023 Payara Services Corporation and others
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -47,6 +47,8 @@ public class PayaraServerAdapter implements ServerAdapter {
         // Compose a docker image equivalent to doing:
         // FROM payara/server-full:5.2022.5-jdk11
         // ADD target/myservice.war /opt/payara/deployments/
+        //FIXME - update to newer payara version once multi-platform docker images are available
+        //See issue: https://github.com/payara/Payara/issues/5715
         ImageFromDockerfile image = new ImageFromDockerfile()
                 .withDockerfileFromBuilder(builder -> builder.from("payara/server-full:5.2022.5-jdk11")
                         .add(appName, "/opt/payara/deployments/")

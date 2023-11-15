@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Philip Riecks
+ * Copyright (c) 2020, 2023 Philip Riecks
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -44,14 +44,14 @@ public class WildFlyAdapter implements ServerAdapter {
     public ImageFromDockerfile getDefaultImage(File appFile) {
         String appName = appFile.getName();
         // Compose a docker image equivalent to doing:
-        // FROM jboss/wildfly:18.0.1.Final
+        // FROM quay.io/wildfly/wildfly:26.1.2.Final-jdk11
         // ADD target/myservice.war /opt/jboss/wildfly/standalone/deployments/
         ImageFromDockerfile image = new ImageFromDockerfile()
-                .withDockerfileFromBuilder(builder -> builder.from("jboss/wildfly:18.0.1.Final")
+                .withDockerfileFromBuilder(builder -> builder
+                        .from("quay.io/wildfly/wildfly:26.1.2.Final-jdk11")
                         .add(appName, "/opt/jboss/wildfly/standalone/deployments/")
                         .build())
                 .withFileFromFile(appName, appFile);
         return image;
-
     }
 }

@@ -56,6 +56,12 @@ mvn clean install
 
 NOTE: The first run will take longer due to downloading required container layers. Subsequent runs will be faster.
 
+NOTE: If a container is consistantly timing out on your system you can set a longer timeout (in seconds) with the system property
+`microshed.testing.startup.timeout` default value is 60 seconds.
+
+NOTE: If a mockserver has started, but HTTP calls are consistantly timint out on your system you can set a longer timeout (in milliseconds)
+with the system property `mockserver.maxSocketTimeout` default value is 120000 milliseconds.
+
 ### Tested with:
 - OpenLiberty
 - Wildfly

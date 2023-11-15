@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 IBM Corporation and others
+ * Copyright (c) 2020, 2023 IBM Corporation and others
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,21 +18,31 @@
  */
 package org.example.app.it;
 
+import java.time.Duration;
+
 import org.microshed.testing.SharedContainerConfiguration;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 
 public class QuarkusTestEnvironment implements SharedContainerConfiguration {
+
+    public static final Duration TIMEOUT = Duration.ofSeconds(
+        Long.parseLong(
+            System.getProperty("microshed.testing.startup.timeout", "60")
+        )
+    );
     
     // No need for an ApplicationContainer because we let the 
     // quarkus-maven-plugin handle starting Quarkus
     
     @Container
-    public static PostgreSQLContainer<?> db = new PostgreSQLContainer<>();
+    public static PostgreSQLContainer<?> db = new PostgreSQLContainer<>()
+        .withStartupTimeout(TIMEOUT);
     
     @Container
     public static GenericContainer<?> mongo = new GenericContainer<>("mongo:3.4")
-        .withExposedPorts(27017);
+        .withExposedPorts(27017)
+        .withStartupTimeout(TIMEOUT);
     
 }

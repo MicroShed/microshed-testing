@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 IBM Corporation and others
+ * Copyright (c) 2020, 2023 IBM Corporation and others
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -35,7 +35,7 @@ import org.microshed.testing.jupiter.MicroShedTest;
 import io.quarkus.test.junit.QuarkusTest;
 
 @MicroShedTest
-@QuarkusTest
+// @QuarkusTest FIXME QuarkusTest seems to be modifying fields in more recent versions.
 @SharedContainerConfig(QuarkusTestEnvironment.class)
 public class FruitResourceTest {
     

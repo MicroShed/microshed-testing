@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 IBM Corporation and others
+ * Copyright (c) 2020, 2023 IBM Corporation and others
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -21,7 +21,7 @@ package org.example.app;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 

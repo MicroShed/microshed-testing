@@ -18,6 +18,8 @@
  */
 package org.example.app;
 
+import java.time.Duration;
+
 import org.microshed.testing.SharedContainerConfiguration;
 import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.containers.GenericContainer;
@@ -27,6 +29,12 @@ import org.testcontainers.utility.DockerImageName;
 
 public class AppContainerConfig implements SharedContainerConfiguration {
 
+    public static final Duration TIMEOUT = Duration.ofSeconds(
+        Long.parseLong(
+            System.getProperty("microshed.testing.startup.timeout", "60")
+        )
+    );
+
     @Container
     public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/myservice")
@@ -34,15 +42,19 @@ public class AppContainerConfig implements SharedContainerConfiguration {
                     .withEnv("MONGO_PORT", "27017")
                     .withMpRestClient(ExternalRestServiceClient.class, "http://mockserver:" + MockServerContainer.PORT);
 
-    private static DockerImageName mockServerImage = DockerImageName.parse("mockserver/mockserver:5.15.0").asCompatibleSubstituteFor("jamesdbloom/mockserver");
+    private static final DockerImageName MOCK_SERVER_IMAGE_NAME = 
+        DockerImageName.parse("mockserver/mockserver:5.15.0")
+        .asCompatibleSubstituteFor("jamesdbloom/mockserver");
     
     @Container
-    public static MockServerContainer mockServer = new MockServerContainer(mockServerImage)
-                    .withNetworkAliases("mockserver");
+    public static MockServerContainer mockServer = new MockServerContainer(MOCK_SERVER_IMAGE_NAME)
+                    .withNetworkAliases("mockserver")
+                    .withStartupTimeout(TIMEOUT);
 
     @Container
     public static GenericContainer<?> mongo = new GenericContainer<>("mongo:3.4")
-                    .withNetworkAliases("testmongo");
+                    .withNetworkAliases("testmongo")
+                    .withStartupTimeout(TIMEOUT);
 
     @Override
     public void startContainers() {

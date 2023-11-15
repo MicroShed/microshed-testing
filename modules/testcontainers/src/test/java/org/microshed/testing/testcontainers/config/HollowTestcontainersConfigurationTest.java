@@ -33,6 +33,7 @@ import org.testcontainers.containers.MockServerContainer;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategyTarget;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.utility.DockerImageName;
 
 @MicroShedTest
 public class HollowTestcontainersConfigurationTest {
@@ -63,8 +64,12 @@ public class HollowTestcontainersConfigurationTest {
                         }
                     });
 
+    private static final DockerImageName MOCK_SERVER_IMAGE_NAME = 
+                    DockerImageName.parse("mockserver/mockserver:5.15.0")
+                    .asCompatibleSubstituteFor("jamesdbloom/mockserver");
+
     @Container
-    public static MockServerContainer mockServer = new MockServerContainer()
+    public static MockServerContainer mockServer = new MockServerContainer(MOCK_SERVER_IMAGE_NAME)
                     .withNetworkAliases("mockserver")
                     .withEnv("STAYS_UNCHANGED", "mockserver");
 
