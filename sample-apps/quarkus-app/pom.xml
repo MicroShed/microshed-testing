@@ -21,7 +21,7 @@
     <quarkus.platform.version>3.2.8.Final</quarkus.platform.version>
 
     <quarkus-plugin.version>3.2.8.Final</quarkus-plugin.version>
-    <surefire-plugin.version>2.22.2</surefire-plugin.version>
+    <surefire-plugin.version>3.2.2</surefire-plugin.version>
   </properties>
   <dependencyManagement>
     <dependencies>
