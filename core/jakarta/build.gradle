@@ -4,61 +4,78 @@ ext.title = "MicroShed Testing Framework"
 description="A test framework for black-box testing MicroProfile and Jakarta EE applications"
 
 configurations {
-  transformer
-  parent {extendsFrom compile}
+  transformer {extendsFrom implementation}
 }
 
 dependencies {
-  compile 'org.junit.jupiter:junit-jupiter-api:5.10.1'
+  //API for artifact and unit testing
+  api 'org.junit.jupiter:junit-jupiter-api:5.10.1'
 
+  //Jakarta EE
   implementation 'org.eclipse:yasson:2.0.4'
   implementation 'org.eclipse.parsson:parsson:1.0.5'
 
+  //Support Libraries
   implementation 'cglib:cglib-nodep:3.3.0'
   implementation 'org.apache.cxf:cxf-rt-rs-client:4.0.3'
   implementation 'org.apache.cxf:cxf-rt-rs-extension-providers:4.0.3'
   implementation 'org.bitbucket.b_c:jose4j:0.7.2'
 
+  //Unit testing
   testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
 
+  //Transform microshed-testing-core -> microshed-testing-core-jakarta
   transformer 'org.eclipse.transformer:org.eclipse.transformer.cli:0.5.0'
-
-  parent project(':microshed-testing-core')
 }
 
-ext.parent_jar = configurations.parent.find{
-    it.name.startsWith("microshed-testing-core")
-}
-ext.transformed_jar = new File(projectDir, 'build/tmp/transformed/' + parent_jar.getName().replace('core', 'core-jakarta'))
+jar {
+    mustRunAfter project(':microshed-testing-core').tasks.jar
+    mustRunAfter project(':microshed-testing-core').tasks.javadocJar
+    mustRunAfter project(':microshed-testing-core').tasks.sourcesJar
 
-//Deletes previously transformed jar otherwise transformer will produce an error
-task cleanupTransform() {
-    if(transformed_jar.exists()) {
-        transformed_jar.delete()
+    dependsOn    project(':microshed-testing-core').tasks.jar
+    dependsOn    project(':microshed-testing-core').tasks.javadocJar
+    dependsOn    project(':microshed-testing-core').tasks.sourcesJar
+
+    def baseDir = project(':microshed-testing-core').buildDir
+    def baseJars = fileTree(baseDir).matching {include 'libs/*.jar' }
+
+    inputs.files(baseJars).skipWhenEmpty()
+    outputs.dir project.buildDir
+
+    doLast {
+        new File(project.buildDir, "libs").mkdirs()
+        fileTree(project.buildDir).matching { include 'libs/*.jar' }.each { delete it }
+
+        baseJars.each { bundleJar ->
+            def sourceJar = baseDir.path + '/libs/' + bundleJar.name
+            println 'Source jar name [ ' + sourceJar + ' ]'
+
+            def transformedJar = project.buildDir.path + '/libs/' + bundleJar.name.replaceAll( 'microshed-testing-core', 'microshed-testing-core-jakarta' )
+            println 'Transformed jar name [ ' + transformedJar + ' ]'
+
+            def transformerArgs = [sourceJar, transformedJar]
+
+            javaexec {
+                classpath configurations.transformer
+                main = 'org.eclipse.transformer.cli.JakartaTransformerCLI'
+                args = transformerArgs
+            }
+        }
     }
 }
 
-//Creates the transformed archive in the build/tmp/transformed/ directory
-task transform(type: JavaExec) {
-    dependsOn cleanupTransform
-    classpath = configurations.transformer
-    main = 'org.eclipse.transformer.cli.JakartaTransformerCLI'
-    args parent_jar, transformed_jar
-}
-
-//Creates an empty jar file in the build/libs directory
-//since there are no source files
-jar.dependsOn transform
-
-//Overwrites the empty jar with the transformed jar in the build/libs directory
-task overwrite(type: Copy) {
-    from(transformed_jar)
-    into('build/libs')
-}
-
-jar.finalizedBy overwrite
-
 apply from: publishScript
+
+javadocJar {
+    mustRunAfter jar
+    dependsOn    jar
+}
+
+sourcesJar {
+    mustRunAfter jar
+    dependsOn    jar
+}
 
 publishToMavenLocal.dependsOn ':microshed-testing-core:publishToMavenLocal'
 

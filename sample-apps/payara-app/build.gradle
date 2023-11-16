@@ -3,15 +3,17 @@ plugins {
 }
 
 dependencies {
-  providedCompile 'javax:javaee-api:8.0.1'
-  providedCompile 'org.eclipse.microprofile:microprofile:2.1'
-  testCompile project(':microshed-testing-payara-server')
-  testCompile project(':microshed-testing-core')
-  testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.36'
+  api 'javax:javaee-api:8.0.1'
+  api 'org.eclipse.microprofile:microprofile:2.1'
+
+  testImplementation project(':microshed-testing-payara-server')
+  testImplementation project(':microshed-testing-core')
+  
+  testImplementation 'org.slf4j:slf4j-log4j12:1.7.36'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
 }
 
-war.archiveName 'myservice.war'
+war.archiveFileName.set 'myservice.war'
 test.dependsOn 'war'
 
 // Always re-run tests on every build for the sake of this sample

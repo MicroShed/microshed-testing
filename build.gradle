@@ -7,6 +7,11 @@ ext.lastRelease = '0.9.1'
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'java-library'
+
+    // java-library will force inter-project dependencies to use class files instead of jars
+    // This system property disables that and goes back to using jars
+    System.setProperty("org.gradle.java.compile-classpath-packaging", "true");
     
     ext.publishScript = rootProject.rootDir.absolutePath + '/publish.gradle'
 

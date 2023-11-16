@@ -3,23 +3,23 @@ plugins {
 }
 
 dependencies {
-  providedCompile 'javax:javaee-api:8.0.1'
-  providedCompile 'org.eclipse.microprofile:microprofile:3.3'
-  providedCompile 'org.eclipse.microprofile.reactive.messaging:microprofile-reactive-messaging-api:1.0'
+  api 'javax:javaee-api:8.0.1'
+  api 'org.eclipse.microprofile:microprofile:3.3'
+  api 'org.eclipse.microprofile.reactive.messaging:microprofile-reactive-messaging-api:1.0'
   
-  compile 'org.apache.kafka:kafka-clients:3.6.0'
+  implementation 'org.apache.kafka:kafka-clients:3.6.0'
   
-  testCompile project(':microshed-testing-testcontainers')
-  testCompile project(':microshed-testing-core')
+  testImplementation project(':microshed-testing-testcontainers')
+  testImplementation project(':microshed-testing-core')
   
-  testCompile 'org.awaitility:awaitility:4.0.2'
-  testCompile 'org.testcontainers:kafka:1.15.0'
-  testCompile 'org.slf4j:slf4j-log4j12:1.7.36'
+  testImplementation 'org.awaitility:awaitility:4.0.2'
+  testImplementation 'org.testcontainers:kafka:1.15.0'
+  testImplementation 'org.slf4j:slf4j-log4j12:1.7.36'
 
   testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
 }
 
-war.archiveName 'myservice.war'
+war.archiveFileName.set 'myservice.war'
 test.dependsOn 'war'
 
 // Always re-run tests on every build for the sake of this sample

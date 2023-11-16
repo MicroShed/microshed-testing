@@ -2,7 +2,8 @@ ext.title = "MicroShed Testing Framework :: Payara Server extensions"
 description = "Extensions for using MicroShed Testing with Payara servers"
 
 dependencies {
-  compile project(':microshed-testing-testcontainers')
+  api project(':microshed-testing-testcontainers')
+  
   compileOnly project(':microshed-testing-core')
 }
 
