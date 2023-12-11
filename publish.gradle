@@ -47,6 +47,18 @@ publishing {
                         url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                     }
                 }
+                developers {
+                    developer {
+                        id = 'KyleAure'
+                        name = 'Kyle Aure'
+                        email = 'kylejaure@gmail.com'
+                    }
+                    developer {
+                        id = 'aguibert'
+                        name = 'Andy Guibert'
+                        email = 'andy.guibert@gmail.com'
+                    }
+                }
                 scm {
                     connection = 'scm:git:ssh://git@github.com/MicroShed/microshed-testing.git'
                     developerConnection = 'scm:git:ssh://git@github.com/MicroShed/microshed-testing.git'
