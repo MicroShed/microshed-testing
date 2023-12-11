@@ -25,7 +25,7 @@ Add `microshed-testing-testcontainers` and `junit-jupiter` as test-scoped depend
     <dependency>
         <groupId>org.microshed</groupId>
         <artifactId>microshed-testing-testcontainers</artifactId>
-        <version>0.9.2</version>
+        <version>0.9.1</version>
        <scope>test</scope>
     </dependency>
     
@@ -37,34 +37,6 @@ Add `microshed-testing-testcontainers` and `junit-jupiter` as test-scoped depend
     </dependency>
 
     <!-- other dependencies... -->
-</dependencies>
-```
-
-## How to test a Java EE application
-
-Add `microshed-testing-core` as a test-scoped dependency:
-```xml
-<dependencies>
-    <dependency>
-        <groupId>org.microshed</groupId>
-        <artifactId>microshed-testing-core</artifactId>
-        <version>0.9.2</version>
-       <scope>test</scope>
-    </dependency>
-</dependencies>
-```
-
-## How to test a Jakarta EE application
-
-Add `microshed-testing-core-jakarta` as a test-scoped dependency:
-```xml
-<dependencies>
-    <dependency>
-        <groupId>org.microshed</groupId>
-        <artifactId>microshed-testing-core-jakarta</artifactId>
-        <version>0.9.2</version>
-       <scope>test</scope>
-    </dependency>
 </dependencies>
 ```
 
@@ -87,7 +59,7 @@ NOTE: The first run will take longer due to downloading required container layer
 NOTE: If a container is consistantly timing out on your system you can set a longer timeout (in seconds) with the system property
 `microshed.testing.startup.timeout` default value is 60 seconds.
 
-NOTE: If a mockserver has started, but HTTP calls are consistantly timing out on your system you can set a longer timeout (in milliseconds)
+NOTE: If a mockserver has started, but HTTP calls are consistantly timint out on your system you can set a longer timeout (in milliseconds)
 with the system property `mockserver.maxSocketTimeout` default value is 120000 milliseconds.
 
 ### Tested with:

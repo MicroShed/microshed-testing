@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2023 IBM Corporation and others
+ * Copyright (c) 2019 IBM Corporation and others
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -110,8 +110,6 @@ public class RestClientBuilder {
     }
 
     /**
-     * @param key The header key
-     * @param value The header value
      * @return The same builder instance
      */
     public RestClientBuilder withHeader(String key, String value) {
