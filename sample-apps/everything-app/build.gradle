@@ -6,7 +6,7 @@ dependencies {
   api 'javax:javaee-api:8.0.1'
   api 'org.eclipse.microprofile:microprofile:2.1'
 
-  implementation 'org.mongodb:mongo-java-driver:3.11.2'
+  implementation 'org.mongodb:mongo-java-driver:3.12.14'
 
   testImplementation project(':microshed-testing-testcontainers')
   testImplementation project(':microshed-testing-core')
