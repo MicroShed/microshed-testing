@@ -5,7 +5,7 @@ plugins {
 dependencies {
   //TODO update to Jakarta EE 10 once compiling/testing with JDK 17
   //TODO update to microprofile 6.1 once using Jakarta EE 10
-  api 'jakarta.platform:jakarta.jakartaee-api:9.0.0'
+  api 'jakarta.platform:jakarta.jakartaee-api:10.0.0'
   api 'org.eclipse.microprofile:microprofile:5.0'
 
   implementation 'org.mongodb:mongo-java-driver:3.12.14'
