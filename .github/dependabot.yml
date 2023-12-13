@@ -1,24 +1,109 @@
 version: 2
 updates:
+# Github Actions
+
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: daily
 
+# Gradle - core
+
   - package-ecosystem: gradle
     directory: /core
     schedule:
       interval: daily
+    # Ignore dependencies that are stabalized due to javax namespace
+    ignore:
+      - dependency-name: "yasson"
+      - dependency-name: "cxf-rt-rs-client"
+      - dependency-name: "cxf-rt-rs-extension-providers"
 
   - package-ecosystem: gradle
-    directory: /modules
+    directory: /core/jakarta
+    schedule:
+      interval: daily
+
+# Gradle - modules
+
+  - package-ecosystem: gradle
+    directory: /modules/liberty
     schedule:
       interval: daily
 
   - package-ecosystem: gradle
-    directory: /sample-apps
+    directory: /modules/payara-micro
     schedule:
       interval: daily
+
+  - package-ecosystem: gradle
+    directory: /modules/payara-server
+    schedule:
+      interval: daily
+
+  - package-ecosystem: gradle
+    directory: /modules/quarkus
+    schedule:
+      interval: daily
+
+  - package-ecosystem: gradle
+    directory: /modules/testcontainers
+    schedule:
+      interval: daily
+
+# Gradle - sample-apps
+
+  - package-ecosystem: gradle
+    directory: /sample-apps/everything-app
+    schedule:
+      interval: daily
+
+  - package-ecosystem: gradle
+    directory: /sample-apps/everything-jakarta-app
+    schedule:
+      interval: daily
+
+  - package-ecosystem: gradle
+    directory: /sample-apps/jaxrs-basicauth
+    schedule:
+      interval: daily
+
+  - package-ecosystem: gradle
+    directory: /sample-apps/jaxrs-json
+    schedule:
+      interval: daily
+
+  - package-ecosystem: gradle
+    directory: /sample-apps/jaxrs-mpjwt
+    schedule:
+      interval: daily
+
+  - package-ecosystem: gradle
+    directory: /sample-apps/jdbc-app
+    schedule:
+      interval: daily
+
+  - package-ecosystem: gradle
+    directory: /sample-apps/kafka-app
+    schedule:
+      interval: daily
+
+  - package-ecosystem: gradle
+    directory: /sample-apps/liberty-app
+    schedule:
+      interval: daily
+
+  - package-ecosystem: gradle
+    directory: /sample-apps/payara-app
+    schedule:
+      interval: daily
+
+  - package-ecosystem: gradle
+    directory: /sample-apps/wildfly-app
+    schedule:
+      interval: daily
+
+# Maven - sample-apps
 
   - package-ecosystem: maven
     directory: /sample-apps/maven-app
