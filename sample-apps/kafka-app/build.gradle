@@ -14,7 +14,7 @@ dependencies {
   
   testImplementation 'org.awaitility:awaitility:4.0.2'
   testImplementation 'org.testcontainers:kafka:1.19.3'
-  testImplementation 'org.slf4j:slf4j-log4j12:1.7.36'
+  testImplementation 'org.slf4j:slf4j-log4j12:2.0.9'
 
   testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
 }
