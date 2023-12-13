@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
   api 'javax:javaee-api:8.0.1'
-  api 'org.eclipse.microprofile:microprofile:3.0'
+  api 'org.eclipse.microprofile:microprofile:6.1'
 
   testImplementation project(':microshed-testing-liberty')
   testImplementation project(':microshed-testing-core')
