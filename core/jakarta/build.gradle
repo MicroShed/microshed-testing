@@ -12,7 +12,7 @@ dependencies {
   api 'org.junit.jupiter:junit-jupiter-api:5.10.1'
 
   //Jakarta EE
-  implementation 'org.eclipse:yasson:2.0.4'
+  implementation 'org.eclipse:yasson:3.0.3'
   implementation 'org.eclipse.parsson:parsson:1.1.5'
 
   //Support Libraries
