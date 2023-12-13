@@ -6,7 +6,17 @@ updates:
       interval: daily
 
   - package-ecosystem: gradle
-    directory: /
+    directory: /core
+    schedule:
+      interval: daily
+
+  - package-ecosystem: gradle
+    directory: /modules
+    schedule:
+      interval: daily
+
+  - package-ecosystem: gradle
+    directory: /sample-apps
     schedule:
       interval: daily
 
