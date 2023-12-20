@@ -2,7 +2,7 @@ ext.title = "MicroShed Testing Framework :: Quarkus extensions"
 description = "Extensions for using MicroShed Testing with Quarkus"
 
 dependencies {
-  api 'io.quarkus:quarkus-junit5:1.8.3.Final'
+  api 'io.quarkus:quarkus-junit5:3.6.4'
   api project(':microshed-testing-testcontainers')
 
   compileOnly project(':microshed-testing-core')
