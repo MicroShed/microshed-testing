@@ -27,10 +27,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.MessageBodyWriter;
 
 import org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean;
 import org.junit.platform.commons.support.AnnotationSupport;

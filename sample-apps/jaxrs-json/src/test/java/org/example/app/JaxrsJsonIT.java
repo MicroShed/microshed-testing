@@ -24,15 +24,15 @@ import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.junit.jupiter.Container;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.ProcessingException;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.ProcessingException;
 import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @MicroShedTest
-public class JaxrsJsonIT {
+public class  JaxrsJsonIT {
 
     @Container
     public static ApplicationContainer app = new ApplicationContainer()

@@ -18,81 +18,78 @@
  */
 package org.example.app;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Objects;
-
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
-
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serializer;
 
+import java.util.Objects;
+
 public class KitchenOrder {
 
-  public static enum Status {
-    NEW, // The order has just been sent
-    IN_PROGRESS, // The order has reached the kitchen/bar service via Kafka
-    READY, // The order is ready to be picked up by the servingWindow service
-    COMPLETED; // The order has been picked up, this is the final status.
-  }
-
-  public static enum Type {
-    FOOD, BEVERAGE;
-  }
-  
-  public String orderId;
-  public String tableId;
-  public Type type;
-  public String item;
-  public Status status;
-
-  public KitchenOrder() {
-  }
-
-  public KitchenOrder(String orderId, String tableId, Type type, String item, Status status) {
-    this.orderId = orderId;
-    this.tableId = tableId;
-    this.type = type;
-    this.item = item;
-    this.status = status;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (!(o instanceof KitchenOrder))
-      return false;
-    KitchenOrder order = (KitchenOrder) o;
-    return Objects.equals(orderId, order.orderId)
-        && Objects.equals(tableId, order.tableId)
-        && Objects.equals(type, order.type)
-        && Objects.equals(item, order.item)
-        && Objects.equals(status, order.status);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(orderId, tableId, type, item, status);
-  }
-  
-  private static final Jsonb jsonb = JsonbBuilder.create();
-  
-  public static class JsonbSerializer implements Serializer<Object> {
-    @Override
-    public byte[] serialize(String topic, Object data) {
-      return jsonb.toJson(data).getBytes();
+    public static enum Status {
+        NEW, // The order has just been sent
+        IN_PROGRESS, // The order has reached the kitchen/bar service via Kafka
+        READY, // The order is ready to be picked up by the servingWindow service
+        COMPLETED; // The order has been picked up, this is the final status.
     }
-  }
-  
-  public static class KitchenOrderDeserializer implements Deserializer<KitchenOrder> {
-    @Override
-    public KitchenOrder deserialize(String topic, byte[] data) {
-      if (data == null)
-        return null;
-      return jsonb.fromJson(new String(data), KitchenOrder.class);
+
+    public static enum Type {
+        FOOD, BEVERAGE;
     }
-  }
+
+    public String orderId;
+    public String tableId;
+    public Type type;
+    public String item;
+    public Status status;
+
+    public KitchenOrder() {
+    }
+
+    public KitchenOrder(String orderId, String tableId, Type type, String item, Status status) {
+        this.orderId = orderId;
+        this.tableId = tableId;
+        this.type = type;
+        this.item = item;
+        this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof KitchenOrder))
+            return false;
+        KitchenOrder order = (KitchenOrder) o;
+        return Objects.equals(orderId, order.orderId)
+                && Objects.equals(tableId, order.tableId)
+                && Objects.equals(type, order.type)
+                && Objects.equals(item, order.item)
+                && Objects.equals(status, order.status);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(orderId, tableId, type, item, status);
+    }
+
+    private static final Jsonb jsonb = JsonbBuilder.create();
+
+    public static class JsonbSerializer implements Serializer<Object> {
+        @Override
+        public byte[] serialize(String topic, Object data) {
+            return jsonb.toJson(data).getBytes();
+        }
+    }
+
+    public static class KitchenOrderDeserializer implements Deserializer<KitchenOrder> {
+        @Override
+        public KitchenOrder deserialize(String topic, byte[] data) {
+            if (data == null)
+                return null;
+            return jsonb.fromJson(new String(data), KitchenOrder.class);
+        }
+    }
 
 }

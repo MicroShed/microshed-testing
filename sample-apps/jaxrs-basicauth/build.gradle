@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-  api 'javax:javaee-api:8.0.1'
+  api 'jakarta.platform:jakarta.jakartaee-api:10.0.0'
   api 'org.eclipse.microprofile:microprofile:6.1'
 
   testImplementation project(':microshed-testing-testcontainers')

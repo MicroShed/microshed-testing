@@ -25,8 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Collection;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.NotFoundException;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotFoundException;
 
 import org.junit.jupiter.api.Test;
 import org.microshed.testing.jaxrs.RESTClient;

@@ -3,22 +3,20 @@
  */
 package org.microshed.testing.quarkus.internal;
 
+import io.quarkus.test.junit.callback.QuarkusTestBeforeClassCallback;
 import org.microshed.testing.ApplicationEnvironment;
 import org.microshed.testing.jupiter.MicroShedTestExtension;
 import org.microshed.testing.quarkus.QuarkusConfiguration;
 
-import io.quarkus.test.junit.callback.QuarkusTestBeforeAllCallback;
-
-public class MicroshedBeforeAllCallback implements QuarkusTestBeforeAllCallback {
+public class MicroshedBeforeAllCallback implements QuarkusTestBeforeClassCallback {
 
     @Override
-    public void beforeAll(Object testInstance) {
+    public void beforeClass(Class<?> testClass) {
         ApplicationEnvironment env = ApplicationEnvironment.Resolver.load();
         if (env instanceof QuarkusConfiguration) {
             QuarkusConfiguration quarkusEnv = (QuarkusConfiguration) env;
-            quarkusEnv.preConfigure(testInstance.getClass());
-            MicroShedTestExtension.postConfigure(testInstance.getClass(), quarkusEnv);
+            quarkusEnv.preConfigure(testClass);
+            MicroShedTestExtension.postConfigure(testClass, quarkusEnv);
         }
     }
-
 }
