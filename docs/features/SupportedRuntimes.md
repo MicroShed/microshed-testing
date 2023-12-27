@@ -19,7 +19,7 @@ Maven Dependency:
 Example Dockerfile:
 
 ```
-FROM open-liberty:full-java11-openj9
+FROM openliberty/open-liberty:full-java17-openj9-ubi
 COPY src/main/liberty/config /config/
 ADD build/libs/myservice.war /config/dropins
 ```
@@ -39,7 +39,7 @@ Maven Dependency:
 Example Dockerfile:
 
 ```
-FROM payara/micro:5.2022.5-jdk11
+FROM payara/micro:6.2023.12-jdk21
 CMD ["--deploymentDir", "/opt/payara/deployments", "--noCluster"]
 ADD build/libs/myservice.war /opt/payara/deployments
 ```
@@ -59,7 +59,7 @@ Maven Dependency:
 Example Dockerfile:
 
 ```
-FROM payara/server-full:5.2022.5-jdk11
+FROM payara/server-full:6.2023.12-jdk21
 ADD target/myservice.war /opt/payara/deployments
 ```
 
@@ -78,7 +78,7 @@ Maven Dependency:
 Example Dockerfile:
 
 ```
-FROM quay.io/wildfly/wildfly:26.1.2.Final-jdk11
+FROM quay.io/wildfly/wildfly:30.0.1.Final-jdk17
 ADD build/libs/myservice.war /opt/jboss/wildfly/standalone/deployments/
 ```
 
