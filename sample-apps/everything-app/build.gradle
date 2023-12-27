@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-  api 'javax:javaee-api:8.0.1'
+  api 'jakarta.platform:jakarta.jakartaee-api:10.0.0'
   api 'org.eclipse.microprofile:microprofile:6.1'
 
   implementation 'org.mongodb:mongo-java-driver:3.12.14'
@@ -11,13 +11,16 @@ dependencies {
   testImplementation project(':microshed-testing-testcontainers')
   testImplementation project(':microshed-testing-core')
 
-  testImplementation 'org.slf4j:slf4j-log4j12:2.0.9' 
+  testImplementation 'org.slf4j:slf4j-log4j12:2.0.9'
   testImplementation 'org.testcontainers:mockserver:1.19.3'
   testImplementation 'org.mock-server:mockserver-client-java:5.15.0'
   testImplementation 'io.rest-assured:rest-assured:5.4.0'
   
   testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
 }
+
+//Ensure the transformed library is available before testing
+compileTestJava.dependsOn ':microshed-testing-core:jar'
 
 war.archiveFileName.set 'myservice.war'
 test.dependsOn 'war'

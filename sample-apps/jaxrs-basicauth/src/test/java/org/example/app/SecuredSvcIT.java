@@ -21,8 +21,8 @@ package org.example.app;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.NotAuthorizedException;
 
 import org.junit.jupiter.api.Test;
 import org.microshed.testing.jaxrs.BasicAuthConfig;
@@ -56,8 +56,9 @@ public class SecuredSvcIT {
 
     @Test
     public void testHeaders() {
+        System.out.println("Headers: " + securedSvc.getHeaders());
         assertThat(securedSvc.getHeaders())
-          .contains("Authorization=[Basic Ym9iOmJvYnB3ZA==]")
+          .contains("Authorization=Basic Ym9iOmJvYnB3ZA==")
           .contains("PRINCIPAL NAME=bob");
     }
 

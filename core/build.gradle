@@ -1,18 +1,18 @@
 ext.title = "MicroShed Testing Framework"
-description="A test framework for black-box testing MicroProfile and Java EE applications"
+description="A test framework for black-box testing MicroProfile and Jakarta EE applications"
 
 dependencies {
   //API for artifact and unit testing
   api 'org.junit.jupiter:junit-jupiter-api:5.10.1'
-  
-  //Java EE
-  implementation 'org.eclipse:yasson:1.0.11'
-  implementation 'org.glassfish:javax.json:1.1.4'
+
+  //Jakarta EE
+  implementation 'org.eclipse:yasson:3.0.3'
+  implementation 'org.eclipse.parsson:parsson:1.1.5'
 
   //Support Libraries
   implementation 'cglib:cglib-nodep:3.3.0'
-  implementation 'org.apache.cxf:cxf-rt-rs-client:3.6.2'
-  implementation 'org.apache.cxf:cxf-rt-rs-extension-providers:3.6.2'
+  implementation 'org.apache.cxf:cxf-rt-rs-client:4.0.3'
+  implementation 'org.apache.cxf:cxf-rt-rs-extension-providers:4.0.3'
   implementation 'org.bitbucket.b_c:jose4j:0.9.4'
 
   //Unit testing

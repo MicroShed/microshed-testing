@@ -3,9 +3,6 @@ rootProject.name = 'microshed-testing'
 include rootProject.name + '-core'
 project(':' + rootProject.name + '-core').projectDir = "$rootDir/core" as File
 
-include rootProject.name + '-core-jakarta'
-project(':' +rootProject.name + '-core-jakarta').projectDir = "$rootDir/core/jakarta" as File
-
 file('modules').eachDir { dir ->
 	include rootProject.name + '-' + dir.name
 	project(':' + rootProject.name + '-' + dir.name).projectDir = dir

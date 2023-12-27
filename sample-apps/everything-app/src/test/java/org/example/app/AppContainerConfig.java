@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 IBM Corporation and others
+ * Copyright (c) 2019, 2023 IBM Corporation and others
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -43,9 +43,9 @@ public class AppContainerConfig implements SharedContainerConfiguration {
                     .withMpRestClient(ExternalRestServiceClient.class, "http://mockserver:" + MockServerContainer.PORT);
 
     private static final DockerImageName MOCK_SERVER_IMAGE_NAME = 
-                    DockerImageName.parse("mockserver/mockserver:5.15.0")
-                    .asCompatibleSubstituteFor("jamesdbloom/mockserver");
-
+        DockerImageName.parse("mockserver/mockserver:5.15.0")
+        .asCompatibleSubstituteFor("jamesdbloom/mockserver");
+    
     @Container
     public static MockServerContainer mockServer = new MockServerContainer(MOCK_SERVER_IMAGE_NAME)
                     .withNetworkAliases("mockserver")

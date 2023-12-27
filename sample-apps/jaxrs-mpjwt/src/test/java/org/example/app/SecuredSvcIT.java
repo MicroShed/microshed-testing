@@ -21,8 +21,8 @@ package org.example.app;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.NotAuthorizedException;
 
 import org.junit.jupiter.api.Test;
 import org.microshed.testing.jaxrs.RESTClient;
