@@ -16,12 +16,9 @@ sourceSets {
 dependencies {
   api 'org.junit.jupiter:junit-jupiter-api:5.10.1'
   api 'org.testcontainers:junit-jupiter:1.19.3'
-
-  compileOnly project(':microshed-testing-core')
+  api project(':microshed-testing-core')
   
   //Unit + Integration testing
-  testImplementation project(':microshed-testing-core')
-
   testImplementation 'org.eclipse.microprofile.rest.client:microprofile-rest-client-api:3.0.1'
 
   testImplementation 'org.slf4j:slf4j-log4j12:2.0.9'

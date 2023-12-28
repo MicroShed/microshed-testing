@@ -15,7 +15,6 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
 
     testImplementation project(':microshed-testing-testcontainers')
-    testImplementation project(':microshed-testing-core')
 
     postgres 'org.postgresql:postgresql:42.7.1'
 }
