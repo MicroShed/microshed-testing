@@ -17,57 +17,6 @@ MicroShed Testing aims to:
 1. work with any Java EE, Jakarta EE or MicroProfile runtime
 1. provide true-to-production tests
 
-# How to use in an existing project:
-
-Add `microshed-testing-testcontainers` and `junit-jupiter` as test-scoped dependencies:
-```xml
-<dependencies>
-    <dependency>
-        <groupId>org.microshed</groupId>
-        <artifactId>microshed-testing-testcontainers</artifactId>
-        <version>0.9.2</version>
-       <scope>test</scope>
-    </dependency>
-    
-    <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter</artifactId>
-        <version>5.10.1</version>
-        <scope>test</scope>
-    </dependency>
-
-    <!-- other dependencies... -->
-</dependencies>
-```
-
-## How to test a Java EE application
-
-Add `microshed-testing-core` as a test-scoped dependency:
-```xml
-<dependencies>
-    <dependency>
-        <groupId>org.microshed</groupId>
-        <artifactId>microshed-testing-core</artifactId>
-        <version>0.9.2</version>
-       <scope>test</scope>
-    </dependency>
-</dependencies>
-```
-
-## How to test a Jakarta EE application
-
-Add `microshed-testing-core-jakarta` as a test-scoped dependency:
-```xml
-<dependencies>
-    <dependency>
-        <groupId>org.microshed</groupId>
-        <artifactId>microshed-testing-core-jakarta</artifactId>
-        <version>0.9.2</version>
-       <scope>test</scope>
-    </dependency>
-</dependencies>
-```
-
 # How to try out a sample locally:
 
 ### Run with Maven:
@@ -90,95 +39,79 @@ NOTE: If a container is consistantly timing out on your system you can set a lon
 NOTE: If a mockserver has started, but HTTP calls are consistantly timing out on your system you can set a longer timeout (in milliseconds)
 with the system property `mockserver.maxSocketTimeout` default value is 120000 milliseconds.
 
-### Tested with:
+# Supported application-servers:
 - OpenLiberty
 - Wildfly
-- Payara Micro
-- Apache TomEE
+- Payara Micro / Full
 - Quarkus
 
-To change which app server is used, [un]comment sections of the test app's Dockerfile at `sample-apps/jaxrs-json/Dockerfile`
+# Supported runtimes:
+`microshed-testing-core` supports the Javax namespace up to and including version 0.9.2. Starting from version 0.9.3, the Jakarta namespace is supported.
 
-# What it looks like
+# Quick Start
 
-Assume we have a basic JAX-RS application that can perform create, update, and delete
-operations on 'Person' data objects. It may look something like this:
+To get started writing a test with MicroShed Testing, add `system-test` and `junit-jupiter` as test-scoped dependencies:
 
-```java
-@Path("/people")
-@ApplicationScoped
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-public class PersonService {
+```xml
+<dependency>
+    <groupId>org.microshed</groupId>
+    <artifactId>microshed-testing-testcontainers</artifactId>
+    <version>0.9.2</version>
+    <scope>test</scope>
+</dependency>
 
-    private final PersonRepo personRepo = // ...
-
-    @GET
-    public Collection<Person> getAllPeople() {
-        return personRepo.values();
-    }
-
-    @GET
-    @Path("/{personId}")
-    public Person getPerson(@PathParam("personId") long id) {
-        Person foundPerson = personRepo.get(id);
-        if (foundPerson == null)
-            throw new NotFoundException("Person with id " + id + " not found.");
-        return foundPerson;
-    }
-    
-    // ...
-}
+<!-- Any compatible version of JUnit Jupiter 5.X will work -->
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter</artifactId>
+    <version>5.10.1</version>
+    <scope>test</scope>
+</dependency>
 ```
 
-Using MicroShed Testing, we can write an integration test that looks something like this:
+Once you have the above dependencies added, create a new test class with the following items:
+1. Annotate the class with `@MicroShedTest`
+1. Create a `public static ApplicationContainer` field
+1. Inject one or more `public static` JAX-RS resource classes
 
 ```java
-import static org.junit.jupiter.api.Assertions.*;
-import javax.ws.rs.NotFoundException;
-import org.junit.jupiter.api.Test;
 import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jupiter.MicroShedTest;
 import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.junit.jupiter.Container;
 
 @MicroShedTest
-public class BasicJAXRSServiceTest {
+public class MyTest {
 
-    // This will search for a Dockerfile in the repository and start up the application
-    // in a Docker container, and wait for it to be ready before starting the tests.
     @Container
     public static ApplicationContainer app = new ApplicationContainer()
                     .withAppContextRoot("/myservice");
-
-    // This injects a REST _Client_ proxy of the PersonService shown above
-    // This allows us to easily invoke HTTP requests on the running application container
+                    
     @RESTClient
-    public static PersonService personSvc;
-
-    @Test
-    public void testGetPerson() {
-        // This invokes an HTTP POST request to the running container, which triggers
-        // the PersonService#createPerson endpoint and returns the generated ID
-        Long bobId = personSvc.createPerson("Bob", 24);
-        
-        // Using the generated ID, invoke an HTTP GET request to read the record we just created
-        // The JSON response will be automatically converted to a 'Person' object using JSON-B 
-        Person bob = personSvc.getPerson(bobId);
-        
-        assertEquals("Bob", bob.name);
-        assertEquals(24, bob.age);
-        assertNotNull(bob.id);
-    }
+    public static MyService mySvc;
     
-    @Test
-    public void testGetUnknownPerson() {
-        // This invokes an HTTP GET request to get a person with ID -1, which does not exist
-        // asserts that the application container returns an HTTP 404 (not found) exception
-        assertThrows(NotFoundException.class, () -> personSvc.getPerson(-1L));
-    }
-
-    // ...
+    // write @Test methods as normal
 }
 ```
 
+If the repository containing the tests does not have a `Dockerfile` in it, there are a few other options:
+
+* If the application's container image is produced by a different repository, a String docker image label can be
+  supplied instead:
+
+```java
+    @Container
+    public static ApplicationContainer app = new ApplicationContainer("myservice:latest")
+                    .withAppContextRoot("/myservice");
+```
+* If a Dockerfile or container image label is not available, it is possible to use vendor-specific adapters that will
+  provide the default logic for building an application container. For example, the `microshed-testing-liberty` adapter will
+  automatically produce a testable container image roughly equivalent to the following Dockerfile:
+
+```
+FROM openliberty/open-liberty:full-java17-openj9-ubi
+COPY src/main/liberty/config /config/
+ADD target/$APP_FILE /config/dropins
+```
+
+For a more complete introduction, see the [Walkthrough page](https://microshed.org/microshed-testing/features/Walkthrough.html)

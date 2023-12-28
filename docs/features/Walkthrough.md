@@ -43,7 +43,7 @@ public class PersonService {
 Now assume we also have simple Dockerfile in our repository that packages up our application into a container which gets used in production.
 
 ```
-FROM open-liberty:full-java11-openj9
+FROM openliberty/open-liberty:full-java17-openj9-ubi
 COPY src/main/liberty/config /config/
 ADD target/myservice.war /config/dropins
 ```
@@ -55,19 +55,13 @@ It doesn't really matter what's in the Dockerfile. What matters is we can start 
 ## Add dependencies
 
 Given the above application code, we can start by adding maven dependencies:
+`microshed-testing-core` supports the Javax namespace up to and including version 0.9.2. Starting from version 0.9.3, the Jakarta namespace is supported.
 
 ```xml
 <dependencies>
     <dependency>
         <groupId>org.microshed</groupId>
         <artifactId>microshed-testing-testcontainers</artifactId>
-        <version>0.9.2</version>
-        <scope>test</scope>
-    </dependency>
-    
-    <dependency>
-        <groupId>org.microshed</groupId>
-        <artifactId>microshed-testing-core-jakarta</artifactId>
         <version>0.9.2</version>
         <scope>test</scope>
     </dependency>
@@ -98,7 +92,7 @@ If you have never used JUnit Jupiter (JUnit 5) before with integration tests, th
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.22.0</version>
+        <version>3.2.3</version>
         <executions>
           <execution>
             <goals>
@@ -133,7 +127,7 @@ public class MyServiceIT {
 Before we can run the test, we need to define the application container. First we need to know what context root our application is available under. You may know this already, otherwise you can check the logs of your application runtime. They may look like this:
 
 ```
-Launching defaultServer (Open Liberty 19.0.0.8/wlp-1.0.31.cl190820190813-1136) on IBM J9 VM, version 8.0.5.40 - pxa6480sr5fp40-20190807_01(SR5 FP40) (en_US)
+[ApplicationContainer] Launching defaultServer (Open Liberty 23.0.0.10/wlp-1.0.82.cl231020231002-1201) on Eclipse OpenJ9 VM, version 17.0.8.1+1 (en_US)
 [AUDIT   ] CWWKE0001I: The server defaultServer has been launched.
 [AUDIT   ] CWWKT0016I: Web application available (default_host): http://localhost:9080/myservice/
 [AUDIT   ] CWWKZ0001I: Application myservice started in 1.678 seconds.
