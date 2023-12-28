@@ -45,16 +45,13 @@ public class PayaraServerAdapter implements ServerAdapter {
     public ImageFromDockerfile getDefaultImage(File appFile) {
         String appName = appFile.getName();
         // Compose a docker image equivalent to doing:
-        // FROM payara/server-full:5.2022.5-jdk11
+        // FROM payara/server-full:6.2023.12-jdk21
         // ADD target/myservice.war /opt/payara/deployments/
-        //FIXME - update to newer payara version once multi-platform docker images are available
-        //See issue: https://github.com/payara/Payara/issues/5715
         return new ImageFromDockerfile()
-                .withDockerfileFromBuilder(builder -> builder.from("payara/server-full:5.2022.5-jdk11")
+                .withDockerfileFromBuilder(builder -> builder.from("payara/server-full:6.2023.12-jdk21")
                         .add(appName, "/opt/payara/deployments/")
                         .build())
                 .withFileFromFile(appName, appFile);
-
     }
 
     @Override

@@ -37,7 +37,7 @@ is especially useful if your application runtime supports hot-updates (your IDE 
 needing to restart the application runtime). Even if your application only takes 10 seconds to start, this time can quickly add up if you are doing local
 development and going through the inner development loop (code->build->test cycle) locally. For this scenario, the `HollowTestcontainersConfiguration` is ideal. 
 
-The envionment is called "hollow" because everything _except_ your application will be started for each test invocation using Testcontainers. For example, suppose you have the following test class:
+The environment is called "hollow" because everything _except_ your application will be started for each test invocation using Testcontainers. For example, suppose you have the following test class:
 
 ```java
     @Container

@@ -45,13 +45,11 @@ public class PayaraMicroAdapter implements ServerAdapter {
     public ImageFromDockerfile getDefaultImage(File appFile) {
         String appName = appFile.getName();
         // Compose a docker image equivalent to doing:
-        // FROM payara/micro:5.2022.5-jdk11
+        // FROM payara/micro:6.2023.12-jdk21
         // CMD ["--deploymentDir", "/opt/payara/deployments", "--noCluster"]
         // ADD target/myservice.war /opt/payara/deployments/
-        //FIXME - update to newer payara version once multi-platform docker images are available
-        //See issue: https://github.com/payara/Payara/issues/5715
         return new ImageFromDockerfile()
-                .withDockerfileFromBuilder(builder -> builder.from("payara/micro:5.2022.5-jdk11")
+                .withDockerfileFromBuilder(builder -> builder.from("payara/micro:6.2023.12-jdk21")
                         .cmd("--deploymentDir", "/opt/payara/deployments/", "--noCluster")
                         .add(appName, "/opt/payara/deployments/")
                         .build())
