@@ -18,12 +18,9 @@
  */
 package org.example.app;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.NotAuthorizedException;
-
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jupiter.MicroShedTest;
@@ -31,20 +28,24 @@ import org.microshed.testing.jwt.JwtConfig;
 import org.microshed.testing.testcontainers.ApplicationContainer;
 import org.testcontainers.junit.jupiter.Container;
 
+import static io.restassured.RestAssured.given;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 @MicroShedTest
 public class SecuredSvcIT {
 
     @Container
     public static ApplicationContainer app = new ApplicationContainer()
-                    .withAppContextRoot("/myservice")
-                    .withReadinessPath("/myservice/app/data/ping");
+            .withAppContextRoot("/myservice")
+            .withReadinessPath("/myservice/app/data/ping");
 
     @RESTClient
-    @JwtConfig(claims = { "groups=users" })
+    @JwtConfig(claims = {"groups=users"})
     public static SecuredService securedSvc;
 
     @RESTClient
-    @JwtConfig(claims = { "groups=wrong" })
+    @JwtConfig(claims = {"groups=wrong"})
     public static SecuredService misSecuredSvc;
 
     @RESTClient
@@ -71,6 +72,32 @@ public class SecuredSvcIT {
     public void testGetSecuredInfoNoJwt() {
         // no user, expect 401
         assertThrows(NotAuthorizedException.class, () -> noJwtSecuredSvc.getSecuredInfo());
+    }
+
+    @Test
+    @DisplayName("Using RestAssured ensure a status code of 200 when accessing a PermitAll endpoint")
+    public void testRestAssuredGetHeaders() {
+        given().when().get("app/data/headers").then().statusCode(200);
+    }
+
+    @Test
+    @DisplayName("Using RestAssured ensure a status code of 401 when accessing a secured endpoint without authorization")
+    public void testRAGetSecuredInfoNoJWT() {
+        given().when().get("app/data").then().statusCode(401);
+    }
+
+    @Test
+    @DisplayName("Using RestAssured ensure a status code of 200 when accessing a secured endpoint with correct JwtConfig")
+    @JwtConfig(claims = {"groups=users"})
+    public void testRAGetSecuredInfoCorrectJwt() {
+        given().when().get("app/data").then().statusCode(200);
+    }
+
+    @Test
+    @DisplayName("Using RestAssured ensure a status code of 403 when accessing a secured endpoint with wrong JwtConfig")
+    @JwtConfig(claims = {"groups=wrong"})
+    public void testRAGetSecuredInfoBadJwt() {
+        given().when().get("app/data").then().statusCode(403);
     }
 
 }

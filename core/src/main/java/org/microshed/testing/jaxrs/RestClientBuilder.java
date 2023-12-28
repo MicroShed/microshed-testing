@@ -26,12 +26,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Comparator;
 
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.ext.MessageBodyReader;
 import jakarta.ws.rs.ext.MessageBodyWriter;
-
 import org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.ReflectionSupport;
@@ -55,8 +55,8 @@ public class RestClientBuilder {
 
     /**
      * @param appContextRoot The protocol, hostname, port, and application root path for the REST Client
-     *            For example, <code>http://localhost:8080/myapp/</code>. If unspecified, the app context
-     *            root will be automatically detected by {@link ApplicationEnvironment#getApplicationURL()}
+     *                       For example, <code>http://localhost:8080/myapp/</code>. If unspecified, the app context
+     *                       root will be automatically detected by {@link ApplicationEnvironment#getApplicationURL()}
      * @return The same builder instance
      */
     public RestClientBuilder withAppContextRoot(String appContextRoot) {
@@ -67,9 +67,9 @@ public class RestClientBuilder {
 
     /**
      * @param jaxrsPath The portion of the path after the app context root. For example, if a JAX-RS
-     *            endpoint is deployed at <code>http://localhost:8080/myapp/hello</code> and the app context root
-     *            is <code>http://localhost:8080/myapp/</code>, then the jaxrsPath is <code>hello</code>. If
-     *            unspecified, the JAX-RS path will be automatically detected by annotation scanning.
+     *                  endpoint is deployed at <code>http://localhost:8080/myapp/hello</code> and the app context root
+     *                  is <code>http://localhost:8080/myapp/</code>, then the jaxrsPath is <code>hello</code>. If
+     *                  unspecified, the JAX-RS path will be automatically detected by annotation scanning.
      * @return The same builder instance
      */
     public RestClientBuilder withJaxrsPath(String jaxrsPath) {
@@ -93,7 +93,7 @@ public class RestClientBuilder {
     }
 
     /**
-     * @param user The username portion of the Basic auth header
+     * @param user     The username portion of the Basic auth header
      * @param password The password portion of the Basic auth header
      * @return The same builder instance
      */
@@ -110,7 +110,7 @@ public class RestClientBuilder {
     }
 
     /**
-     * @param key The header key
+     * @param key   The header key
      * @param value The header value
      * @return The same builder instance
      */
@@ -126,8 +126,8 @@ public class RestClientBuilder {
 
     /**
      * @param providers One or more providers to apply. Providers typically implement
-     *            {@link MessageBodyReader} and/or {@link MessageBodyWriter}. If unspecified,
-     *            the {@link JsonBProvider} will be applied.
+     *                  {@link MessageBodyReader} and/or {@link MessageBodyWriter}. If unspecified,
+     *                  the {@link JsonBProvider} will be applied.
      * @return The same builder instance
      */
     public RestClientBuilder withProviders(Class<?>... providers) {
@@ -145,7 +145,7 @@ public class RestClientBuilder {
             providers = Collections.singletonList(JsonBProvider.class);
 
         JAXRSClientFactoryBean bean = new org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean();
-        String basePath = join(appContextRoot, jaxrsPath);
+        String basePath = joinPaths(appContextRoot, jaxrsPath);
         LOG.info("Building rest client for " + clazz + " with base path: " + basePath + " and providers: " + providers);
         bean.setResourceClass(clazz);
         bean.setProviders(providers);
@@ -163,10 +163,10 @@ public class RestClientBuilder {
 
         // First check for a jakarta.ws.rs.core.Application in the same package as the resource
         List<Class<?>> appClasses = ReflectionSupport.findAllClassesInPackage(resourcePackage,
-                                                                              c -> Application.class.isAssignableFrom(c) &&
-                                                                                   AnnotationSupport.isAnnotated(c, ApplicationPath.class),
-                                                                              n -> true);
-        if (appClasses.size() == 0) {
+                c -> Application.class.isAssignableFrom(c) &&
+                        AnnotationSupport.isAnnotated(c, ApplicationPath.class),
+                n -> true);
+        if (appClasses.isEmpty()) {
             LOG.debug("no classes implementing Application found in pkg: " + resourcePackage);
             // If not found, check under the 3rd package, so com.foo.bar.*
             // Classpath scanning can be expensive, so we jump straight to the 3rd package from root instead
@@ -176,39 +176,40 @@ public class RestClientBuilder {
                 String checkPkg = pkgs[0] + '.' + pkgs[1] + '.' + pkgs[2];
                 LOG.debug("checking in pkg: " + checkPkg);
                 appClasses = ReflectionSupport.findAllClassesInPackage(checkPkg,
-                                                                       c -> Application.class.isAssignableFrom(c) &&
-                                                                            AnnotationSupport.isAnnotated(c, ApplicationPath.class),
-                                                                       n -> true);
+                        c -> Application.class.isAssignableFrom(c) &&
+                                AnnotationSupport.isAnnotated(c, ApplicationPath.class),
+                        n -> true);
             }
         }
 
-        if (appClasses.size() == 0) {
+        if (appClasses.isEmpty()) {
             LOG.info("No classes implementing 'jakarta.ws.rs.core.Application' found on classpath to set base path from " + clazz +
-                     ". Defaulting base path to '/'");
+                    ". Defaulting base path to '/'");
             return "";
         }
 
         Class<?> selectedClass = appClasses.stream()
-                        .sorted((c1, c2) -> c1.getName().compareTo(c2.getName()))
-                        .findFirst()
-                        .get();
+                .sorted(Comparator.comparing(Class::getName))
+                .findFirst()
+                .get();
         ApplicationPath appPath = AnnotationSupport.findAnnotation(selectedClass, ApplicationPath.class).get();
         if (appClasses.size() > 1) {
             LOG.warn("Found multiple classes implementing 'jakarta.ws.rs.core.Application' on classpath: " + appClasses +
-                     ". Setting base path from the first class discovered (" + selectedClass.getCanonicalName() + ") with path: " +
-                     appPath.value());
+                    ". Setting base path from the first class discovered (" + selectedClass.getCanonicalName() + ") with path: " +
+                    appPath.value());
         }
         LOG.debug("Using base ApplicationPath of '" + appPath.value() + "'");
         return appPath.value();
     }
 
-    private static String join(String firstPart, String secondPart) {
-        if (firstPart.endsWith("/") && secondPart.startsWith("/"))
-            return firstPart + secondPart.substring(1);
-        else if (firstPart.endsWith("/") || secondPart.startsWith("/"))
-            return firstPart + secondPart;
+    private static String joinPaths(String appContextRoot, String jaxrsPath) {
+        if (appContextRoot.endsWith("/") && jaxrsPath.startsWith("/"))
+            return appContextRoot + jaxrsPath.substring(1);
+        else if (appContextRoot.endsWith("/") || jaxrsPath.startsWith("/"))
+            return appContextRoot + jaxrsPath;
         else
-            return firstPart + "/" + secondPart;
+            return appContextRoot + "/" + jaxrsPath;
     }
+
 
 }

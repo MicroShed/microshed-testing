@@ -39,8 +39,6 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 @Consumes(MediaType.APPLICATION_JSON)
 public class SecuredService {
 
-    
-   
     @Inject
     JsonWebToken callerPrincipal;
     
