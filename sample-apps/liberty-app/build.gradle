@@ -7,7 +7,6 @@ dependencies {
   api 'org.eclipse.microprofile:microprofile:6.1'
 
   testImplementation project(':microshed-testing-liberty')
-  testImplementation project(':microshed-testing-core')
   
   testImplementation 'org.slf4j:slf4j-log4j12:2.0.9'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'

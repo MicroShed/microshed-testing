@@ -91,12 +91,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.microshed</groupId>
-      <artifactId>microshed-testing-core</artifactId>
-      <version>0.9.3-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>postgresql</artifactId>
       <version>1.19.3</version>

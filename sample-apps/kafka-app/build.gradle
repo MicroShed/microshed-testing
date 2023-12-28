@@ -10,7 +10,6 @@ dependencies {
   implementation 'org.apache.kafka:kafka-clients:3.6.1'
   
   testImplementation project(':microshed-testing-testcontainers')
-  testImplementation project(':microshed-testing-core')
   
   testImplementation 'org.awaitility:awaitility:4.2.0'
   testImplementation 'org.testcontainers:kafka:1.19.3'

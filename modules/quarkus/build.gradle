@@ -4,8 +4,6 @@ description = "Extensions for using MicroShed Testing with Quarkus"
 dependencies {
   api 'io.quarkus:quarkus-junit5:3.6.4'
   api project(':microshed-testing-testcontainers')
-
-  compileOnly project(':microshed-testing-core')
 }
 
 apply from: publishScript
