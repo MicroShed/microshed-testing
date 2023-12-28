@@ -161,7 +161,7 @@ public class RestClientBuilder {
         if (AnnotationSupport.isAnnotated(clazz, ApplicationPath.class))
             return AnnotationSupport.findAnnotation(clazz, ApplicationPath.class).get().value();
 
-        // First check for a javax.ws.rs.core.Application in the same package as the resource
+        // First check for a jakarta.ws.rs.core.Application in the same package as the resource
         List<Class<?>> appClasses = ReflectionSupport.findAllClassesInPackage(resourcePackage,
                                                                               c -> Application.class.isAssignableFrom(c) &&
                                                                                    AnnotationSupport.isAnnotated(c, ApplicationPath.class),
@@ -183,7 +183,7 @@ public class RestClientBuilder {
         }
 
         if (appClasses.size() == 0) {
-            LOG.info("No classes implementing 'javax.ws.rs.core.Application' found on classpath to set base path from " + clazz +
+            LOG.info("No classes implementing 'jakarta.ws.rs.core.Application' found on classpath to set base path from " + clazz +
                      ". Defaulting base path to '/'");
             return "";
         }
@@ -194,7 +194,7 @@ public class RestClientBuilder {
                         .get();
         ApplicationPath appPath = AnnotationSupport.findAnnotation(selectedClass, ApplicationPath.class).get();
         if (appClasses.size() > 1) {
-            LOG.warn("Found multiple classes implementing 'javax.ws.rs.core.Application' on classpath: " + appClasses +
+            LOG.warn("Found multiple classes implementing 'jakarta.ws.rs.core.Application' on classpath: " + appClasses +
                      ". Setting base path from the first class discovered (" + selectedClass.getCanonicalName() + ") with path: " +
                      appPath.value());
         }

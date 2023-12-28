@@ -53,7 +53,7 @@ Using MicroShed Testing, we can write an integration test that looks something l
 
 ```java
 import static org.junit.jupiter.api.Assertions.*;
-import javax.ws.rs.NotFoundException;
+import jakarta.ws.rs.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.microshed.testing.jaxrs.RESTClient;
 import org.microshed.testing.jupiter.MicroShedTest;
@@ -115,7 +115,7 @@ provide the default logic for building an application container. For example, th
 automatically produce a testable container image roughly equivalent to the following Dockerfile:
 
 ```
-FROM open-liberty:full-java11-openj9
+FROM openliberty/open-liberty:full-java17-openj9-ubi
 COPY src/main/liberty/config /config/
 ADD target/$APP_FILE /config/dropins
 ```
@@ -123,18 +123,12 @@ ADD target/$APP_FILE /config/dropins
 ## Quick Start
 
 To get started writing a test with MicroShed Testing, add `system-test` and `junit-jupiter` as test-scoped dependencies:
+`microshed-testing-core` supports the Javax namespace up to and including version 0.9.2. Starting from version 0.9.3, the Jakarta namespace is supported.
 
 ```xml
 <dependency>
     <groupId>org.microshed</groupId>
     <artifactId>microshed-testing-testcontainers</artifactId>
-    <version>0.9.2</version>
-    <scope>test</scope>
-</dependency>
-
-<dependency>
-    <groupId>org.microshed</groupId>
-    <artifactId>microshed-testing-core-jakarta</artifactId>
     <version>0.9.2</version>
     <scope>test</scope>
 </dependency>
