@@ -9,7 +9,7 @@ dependencies {
   testImplementation project(':microshed-testing-testcontainers')
   
   testImplementation 'org.assertj:assertj-core:3.25.2'
-  testImplementation 'org.slf4j:slf4j-log4j12:2.0.11'
+  testImplementation 'org.slf4j:slf4j-log4j12:2.0.12'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
 }
 
