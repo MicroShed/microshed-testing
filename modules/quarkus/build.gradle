@@ -3,7 +3,7 @@ description = "Extensions for using MicroShed Testing with Quarkus"
 
 dependencies {
   //Cannot upgrade past 3.6.9 without increasing project to Java 17
-  api 'io.quarkus:quarkus-junit5:3.6.9'
+  api 'io.quarkus:quarkus-junit5:3.7.3'
   api project(':microshed-testing-testcontainers')
 }
 
