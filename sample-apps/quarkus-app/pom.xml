@@ -18,9 +18,10 @@
 
     <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
-    <quarkus.platform.version>3.6.8</quarkus.platform.version>
+    <!-- Cannot upgrade past 3.6.9 without increasing project to Java 17 -->
+    <quarkus.platform.version>3.6.9</quarkus.platform.version>
 
-    <quarkus-plugin.version>3.6.6</quarkus-plugin.version>
+    <quarkus-plugin.version>3.6.9</quarkus-plugin.version>
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
   </properties>
   <dependencyManagement>

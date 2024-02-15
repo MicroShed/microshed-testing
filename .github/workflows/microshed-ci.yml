@@ -36,11 +36,15 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
-          cache: gradle
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@3b1b3b9a2104c2b47fbae53f3938079c00c9bb87 # v3.0.0
+        with:
+          cache-overwrite-existing: true
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }} #Read only for pulls, read/write for pushes
       - name: Build with Gradle
         run: |
           chmod +x gradlew
-          ./gradlew assemble testClasses
+          ./gradlew assemble testClasses --parallel
   integration_tests:
     name: Tests - ${{matrix.category}}
     runs-on: ubuntu-latest
@@ -78,7 +82,11 @@ jobs:
         with:
           java-version: 11
           distribution: 'temurin'
-          cache: gradle
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@3b1b3b9a2104c2b47fbae53f3938079c00c9bb87 # v3.0.0
+        with:
+          cache-overwrite-existing: true
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }} #Read only for pulls, read/write for pushes
       - uses: testspace-com/setup-testspace@ee1482f978eb5010ec27b6f6372904f01f2edd68 # v1.0.6
         if: ${{ github.event_name == 'push' }}
         with:
@@ -90,10 +98,9 @@ jobs:
           CATEGORY: ${{matrix.category}}
         run: |
           chmod +x gradlew
-          echo "org.gradle.daemon=false" >> gradle.properties
 
           mkdir results
-  
+
           echo "Will be running projects $TEST_PROJECTS"
           for TEST_PROJECT in $TEST_PROJECTS
           do
@@ -116,7 +123,7 @@ jobs:
             fi
 
           done
-  
+
           echo "Done running all tests, results folder contains:"
           ls -la results/
       - name: Upload test results
