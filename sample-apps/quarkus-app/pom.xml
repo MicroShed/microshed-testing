@@ -21,7 +21,7 @@
     <!-- Cannot upgrade past 3.6.9 without increasing project to Java 17 -->
     <quarkus.platform.version>3.6.9</quarkus.platform.version>
 
-    <quarkus-plugin.version>3.6.9</quarkus-plugin.version>
+    <quarkus-plugin.version>3.7.3</quarkus-plugin.version>
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
   </properties>
   <dependencyManagement>
