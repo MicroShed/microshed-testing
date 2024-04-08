@@ -7,7 +7,7 @@ dependencies {
 
   //Jakarta EE
   implementation 'org.eclipse:yasson:3.0.3'
-  implementation 'org.eclipse.parsson:parsson:1.1.5'
+  implementation 'org.eclipse.parsson:parsson:1.1.6'
 
   //Support Libraries
   implementation 'cglib:cglib-nodep:3.3.0'
