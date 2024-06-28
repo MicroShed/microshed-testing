@@ -16,7 +16,7 @@ dependencies {
   implementation 'org.bitbucket.b_c:jose4j:0.9.6'
 
   //Unit testing
-  testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.10.3'
 }
 
 apply from: publishScript
