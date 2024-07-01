@@ -7,7 +7,7 @@ dependencies {
   api 'org.eclipse.microprofile:microprofile:6.1'
   api 'org.eclipse.microprofile.reactive.messaging:microprofile-reactive-messaging-api:3.0.1'
   
-  implementation 'org.apache.kafka:kafka-clients:3.7.0'
+  implementation 'org.apache.kafka:kafka-clients:3.7.1'
   
   testImplementation project(':microshed-testing-testcontainers')
   
