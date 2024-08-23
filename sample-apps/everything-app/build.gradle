@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
   api 'jakarta.platform:jakarta.jakartaee-api:10.0.0'
-  api 'org.eclipse.microprofile:microprofile:6.1'
+  api 'org.eclipse.microprofile:microprofile:7.0'
 
   implementation 'org.mongodb:mongo-java-driver:3.12.14'
 
