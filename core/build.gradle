@@ -3,7 +3,7 @@ description="A test framework for black-box testing MicroProfile and Jakarta EE 
 
 dependencies {
   //API for artifact and unit testing
-  api 'org.junit.jupiter:junit-jupiter-api:5.11.0'
+  api 'org.junit.jupiter:junit-jupiter-api:5.11.1'
 
   //Jakarta EE
   implementation 'org.eclipse:yasson:3.0.3'
