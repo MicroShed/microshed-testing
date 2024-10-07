@@ -14,7 +14,7 @@ sourceSets {
 }
 
 dependencies {
-  api 'org.junit.jupiter:junit-jupiter-api:5.11.1'
+  api 'org.junit.jupiter:junit-jupiter-api:5.11.2'
   api 'org.testcontainers:junit-jupiter:1.20.2'
   api project(':microshed-testing-core')
   
