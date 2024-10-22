@@ -14,7 +14,7 @@ To enable REST Assured, add the following dependency to your pom.xml:
 <dependency>
     <groupId>io.rest-assured</groupId>
     <artifactId>rest-assured</artifactId>
-    <version>4.2.0</version>
+    <version>5.4.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -105,3 +105,6 @@ import io.restassured.mapper.ObjectMapperType;
 ObjectMapperConfig omConfig = ObjectMapperConfig.objectMapperConfig().defaultObjectMapperType(ObjectMapperType.JACKSON_2);
 RestAssured.config = RestAssured.config.objectMapperConfig(omConfig);
 ```
+## JWT
+
+Autoconfiguration of JWT can be done in combination with the `jwtConfig` annotation. See [MicroProfile JWT](MP_JWT.md)

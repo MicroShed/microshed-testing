@@ -18,12 +18,13 @@
  */
 package org.microshed.testing.jwt;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.microshed.testing.jaxrs.RESTClient;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import org.microshed.testing.jaxrs.RESTClient;
 
 /**
  * Used to annotate a REST Client to configure MicroProfile JWT settings
@@ -31,8 +32,9 @@ import org.microshed.testing.jaxrs.RESTClient;
  * In order for this annotation to have any effect, the field must also
  * be annotated with {@link RESTClient}.
  */
-@Target({ ElementType.FIELD })
+@Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
+@ExtendWith(JwtConfigExtension.class)
 public @interface JwtConfig {
 
     public static final String DEFAULT_ISSUER = "http://testissuer.com";
@@ -46,7 +48,7 @@ public @interface JwtConfig {
      * array of claims in the following format:
      * key=value
      * example: {"sub=fred", "upn=fred", "kid=123"}
-     *
+     * <p>
      * For arrays, separate values with a comma.
      * example: {"groups=red,green,admin", "sub=fred"}
      *

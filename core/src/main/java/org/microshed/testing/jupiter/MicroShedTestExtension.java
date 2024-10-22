@@ -18,17 +18,6 @@
  */
 package org.microshed.testing.jupiter;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
-
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -43,6 +32,12 @@ import org.microshed.testing.jwt.JwtBuilder;
 import org.microshed.testing.jwt.JwtConfig;
 import org.microshed.testing.kafka.KafkaConsumerClient;
 import org.microshed.testing.kafka.KafkaProducerClient;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.net.URL;
+import java.util.*;
 
 /**
  * JUnit Jupiter extension that is applied whenever the <code>@MicroProfileTest</code> is used on a test class.
@@ -90,8 +85,8 @@ public class MicroShedTestExtension implements BeforeAllCallback {
 
         for (Field restClientField : restClientFields) {
             if (!Modifier.isPublic(restClientField.getModifiers()) ||
-                !Modifier.isStatic(restClientField.getModifiers()) ||
-                Modifier.isFinal(restClientField.getModifiers())) {
+                    !Modifier.isStatic(restClientField.getModifiers()) ||
+                    Modifier.isFinal(restClientField.getModifiers())) {
                 throw new ExtensionConfigurationException("REST client field must be public, static, and non-final: " + restClientField);
             }
             RestClientBuilder rcBuilder = new RestClientBuilder();
@@ -137,10 +132,10 @@ public class MicroShedTestExtension implements BeforeAllCallback {
                 throw new ExtensionConfigurationException("Fields annotated with @KafkaProducerClient must be of the type " + KafkaProducer.getName());
             }
             if (!Modifier.isPublic(producerField.getModifiers()) ||
-                !Modifier.isStatic(producerField.getModifiers()) ||
-                Modifier.isFinal(producerField.getModifiers())) {
+                    !Modifier.isStatic(producerField.getModifiers()) ||
+                    Modifier.isFinal(producerField.getModifiers())) {
                 throw new ExtensionConfigurationException("The KafkaProducer field annotated with @KafkaProducerClient " +
-                                                          "must be public, static, and non-final: " + producerField);
+                        "must be public, static, and non-final: " + producerField);
             }
 
             Properties properties = kafkaProcessor.getProducerProperties(producerField);
@@ -159,10 +154,10 @@ public class MicroShedTestExtension implements BeforeAllCallback {
                 throw new ExtensionConfigurationException("Fields annotated with @KafkaConsumerClient must be of the type " + KafkaConsumer.getName());
             }
             if (!Modifier.isPublic(consumerField.getModifiers()) ||
-                !Modifier.isStatic(consumerField.getModifiers()) ||
-                Modifier.isFinal(consumerField.getModifiers())) {
+                    !Modifier.isStatic(consumerField.getModifiers()) ||
+                    Modifier.isFinal(consumerField.getModifiers())) {
                 throw new ExtensionConfigurationException("The KafkaProducer field annotated with @KafkaConsumerClient " +
-                                                          "must be public, static, and non-final: " + consumerField);
+                        "must be public, static, and non-final: " + consumerField);
             }
 
             Properties properties = kafkaProcessor.getConsumerProperties(consumerField);
@@ -182,7 +177,7 @@ public class MicroShedTestExtension implements BeforeAllCallback {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static void configureRestAssured(ApplicationEnvironment config) {
         if (!config.configureRestAssured())
             return;
