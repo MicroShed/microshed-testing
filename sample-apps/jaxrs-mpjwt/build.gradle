@@ -10,7 +10,7 @@ dependencies {
   
   testImplementation 'org.slf4j:slf4j-log4j12:2.0.16'
   testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
-  testImplementation 'io.rest-assured:rest-assured:5.5.0'
+  testImplementation 'io.rest-assured:rest-assured:5.5.1'
 }
 
 war.archiveFileName.set 'myservice.war'
