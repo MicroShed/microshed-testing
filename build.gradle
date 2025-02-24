@@ -2,8 +2,13 @@ plugins {
     // to check for updates run: ./gradlew dependencyUpdates -Drevision=release
     id 'com.github.ben-manes.versions' version '0.50.0'
 }
-ext.currentVersion = '0.9.3-SNAPSHOT'
-ext.lastRelease = '0.9.2'
+
+ext {
+    currentVersion = '0.9.3-SNAPSHOT'
+    lastRelease = '0.9.2'
+    junitVersion = '5.12.0'
+    junitPlatformVersion = '1.9.2'
+}
 
 subprojects {
     apply plugin: 'java'
@@ -39,6 +44,15 @@ subprojects {
             showStackTraces = true
             exceptionFormat = 'full'
             events 'PASSED', 'FAILED', 'SKIPPED'
+        }
+    }
+
+    dependencies {
+        constraints {
+            implementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
+            implementation("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+            implementation("org.junit.platform:junit-platform-launcher:${junitPlatformVersion}")
+            implementation("org.junit.platform:junit-platform-engine:${junitPlatformVersion}")
         }
     }
 }
