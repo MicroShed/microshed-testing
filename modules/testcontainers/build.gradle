@@ -14,7 +14,7 @@ sourceSets {
 }
 
 dependencies {
-  api 'org.junit.jupiter:junit-jupiter-api:5.11.4'
+  api 'org.junit.jupiter:junit-jupiter-api:5.12.0'
   api 'org.testcontainers:junit-jupiter:1.20.5'
   api project(':microshed-testing-core')
   
@@ -24,7 +24,7 @@ dependencies {
   testImplementation 'org.slf4j:slf4j-log4j12:2.0.17'
   testImplementation 'org.testcontainers:mockserver:1.20.5'
   
-  testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.12.0'
 }
 
 test {
