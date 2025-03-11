@@ -13,11 +13,13 @@ updates:
     directory: /core
     schedule:
       interval: daily
-    # Ignore dependencies that are stabalized due to javax namespace
+    allow:
+      - dependency-type: "all"
+    # Ignore dependencies that are stabilized due to javax namespace
     ignore:
-      - dependency-name: "yasson"
-      - dependency-name: "cxf-rt-rs-client"
-      - dependency-name: "cxf-rt-rs-extension-providers"
+      - dependency-name: "org.eclipse:yasson"
+      - dependency-name: "org.apache.cxf:cxf-rt-rs-client"
+      - dependency-name: "org.apache.cxf:cxf-rt-rs-extension-providers"
 
   - package-ecosystem: gradle
     directory: /core/jakarta
