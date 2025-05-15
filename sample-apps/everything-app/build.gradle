@@ -13,7 +13,7 @@ dependencies {
   testImplementation 'org.slf4j:slf4j-log4j12:2.0.17'
   testImplementation 'org.testcontainers:mockserver:1.21.0'
   testImplementation 'org.mock-server:mockserver-client-java:5.15.0'
-  testImplementation 'io.rest-assured:rest-assured:5.5.1'
+  testImplementation 'io.rest-assured:rest-assured:5.5.2'
   
   testImplementation platform("org.junit:junit-bom:5.12.2")
   testImplementation "org.junit.jupiter:junit-jupiter-api"
