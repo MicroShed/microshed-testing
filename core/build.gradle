@@ -16,7 +16,7 @@ dependencies {
   implementation 'org.bitbucket.b_c:jose4j:0.9.6'
 
   //Unit testing
-  testImplementation platform("org.junit:junit-bom:5.13.0")
+  testImplementation platform("org.junit:junit-bom:5.13.1")
   testImplementation "org.junit.jupiter:junit-jupiter-api"
   testImplementation "org.junit.jupiter:junit-jupiter-params"
   testRuntimeOnly "org.junit.platform:junit-platform-launcher"
