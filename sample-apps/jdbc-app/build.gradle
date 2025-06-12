@@ -21,7 +21,7 @@ dependencies {
 
     testImplementation project(':microshed-testing-testcontainers')
 
-    postgres 'org.postgresql:postgresql:42.7.6'
+    postgres 'org.postgresql:postgresql:42.7.7'
 }
 
 task copyDriver(type: Copy) {
