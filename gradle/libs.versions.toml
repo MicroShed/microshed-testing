@@ -80,4 +80,4 @@ cxf-impl =      [ "cxf-rt-rs-client", "cxf-rt-rs-extension-providers" ]
 jakarta-json = [ "jakarta-yasson", "jakarta-parsson" ]
 
 [plugins]
-ben-manes = { id = "com.github.ben-manes.versions", version = "0.50.0" }
+ben-manes = { id = "com.github.ben-manes.versions", version = "0.52.0" }
