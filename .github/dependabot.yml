@@ -16,9 +16,9 @@ updates:
     ignore:
       #Stablelize on Jakarta 10 and Microprofile 7
       - dependency-name: "jakarta.platform:jakarta.jakartaee-api"
-        versions: [ "[10, 11)" ]
+        versions: [ "[11,)" ] # Ignore 11 and above
       - dependency-name: "org.eclipse.microprofile:microprofile"
-        versions: [ "[7, 8)" ]
+        versions: [ "[8,)" ] # Ignore 8 and above
 
 # Maven - sample-apps
 
