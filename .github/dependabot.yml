@@ -19,6 +19,10 @@ updates:
         versions: [ "[11,)" ] # Ignore 11 and above
       - dependency-name: "org.eclipse.microprofile:microprofile"
         versions: [ "[8,)" ] # Ignore 8 and above
+      - dependency-name: "org.apache.cxf:*"
+        versions: [ "[4.0,)" ] # Ignore 4.0 and above (started compiling at Java 17)
+      - dependency-name: "io.quarkus:*"
+        versions: [ "[3.6,)" ] # Ignore 3.6 and above (started compiling at Java 17)
 
 # Maven - sample-apps
 
@@ -26,8 +30,22 @@ updates:
     directory: /sample-apps/maven-app
     schedule:
       interval: daily
+    ignore:
+      #Stablelize on Jakarta 10 and Microprofile 7
+      - dependency-name: "jakarta.platform:jakarta.jakartaee-api"
+        versions: [ "[11,)" ] # Ignore 11 and above
+      - dependency-name: "org.eclipse.microprofile:microprofile"
+        versions: [ "[8,)" ] # Ignore 8 and above
 
   - package-ecosystem: maven
     directory: /sample-apps/quarkus-app
     schedule:
       interval: daily
+    ignore:
+      #Stablelize on Jakarta 10 and Microprofile 7
+      - dependency-name: "jakarta.platform:jakarta.jakartaee-api"
+        versions: [ "[11,)" ] # Ignore 11 and above
+      - dependency-name: "org.eclipse.microprofile:microprofile"
+        versions: [ "[8,)" ] # Ignore 8 and above
+      - dependency-name: "io.quarkus:*"
+        versions: [ "[3.6,)" ] # Ignore 3.6 and above (started compiling at Java 17)
