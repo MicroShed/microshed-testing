@@ -16,7 +16,7 @@ mp-rest-client = "4.0"
 mp-reactive-msg = "3.0.1"
 
 # Other libraries
-cxf = "4.0.5"
+cxf = "4.1.2"
 
 [libraries]
 # { group = "", name = "", version = "" }
