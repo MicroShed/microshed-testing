@@ -1,0 +1,83 @@
+[versions]
+# BOMs
+junit = "5.13.2"
+testcontainers = "1.21.2"
+slf4j = "2.0.17"
+assertj = "3.27.3"
+
+# Specifications
+mp = "7.1"
+jakarta = "10.0.0"
+
+# Implmentations
+parsson = "1.1.7"
+yasson = "3.0.3"
+mp-rest-client = "4.0"
+mp-reactive-msg = "3.0.1"
+
+# Other libraries
+cxf = "4.0.5"
+
+[libraries]
+# { group = "", name = "", version = "" }
+# { module = "", version.ref = "" }
+
+# Junit
+junit-bom =               { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter-api =       { module = "org.junit.jupiter:junit-jupiter-api" }
+junit-jupiter-params =    { module = "org.junit.jupiter:junit-jupiter-params" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+junit-jupiter-engine =    { module = "org.junit.jupiter:junit-jupiter-engine" }
+
+# Testcontainers
+tc-bom =           { module = "org.testcontainers:testcontainers-bom", version.ref = "testcontainers" }
+tc-junit-jupiter = { module = "org.testcontainers:junit-jupiter" }
+tc-mockserver =    { module = "org.testcontainers:mockserver" }
+tc-postgresql =    { module = "org.testcontainers:postgresql" }
+tc-kafka =         { module = "org.testcontainers:kafka" }
+
+# SLF4J
+slf4j-bom =   { module = "org.slf4j:slf4j-bom", version.ref = "slf4j" }
+slf4j-log4j = { module = "org.slf4j:slf4j-log4j12" }
+
+# AssertJ
+assertj-bom =  { module = "org.assertj:assertj-bom", version.ref = "assertj" }
+assertj-core = { module = "org.assertj:assertj-core" }
+
+# Jakarta EE
+jakarta-api =     { module = "jakarta.platform:jakarta.jakartaee-api", version.ref = "jakarta" }
+jakarta-parsson = { module = "org.eclipse.parsson:parsson", version.ref = "parsson" }
+jakarta-yasson =  { module = "org.eclipse:yasson", version.ref = "yasson" }
+
+# Microprofile
+mp-api =              { module = "org.eclipse.microprofile:microprofile", version.ref = "mp" }
+mp-rest-client-api =  { module = "org.eclipse.microprofile.rest.client:microprofile-rest-client-api", version.ref = "mp-rest-client" }
+mp-reactive-msg-api = { module = "org.eclipse.microprofile.reactive.messaging:microprofile-reactive-messaging-api", version.ref = "mp-reactive-msg" }
+
+# Apache cxf
+cxf-rt-rs-client =              { module = "org.apache.cxf:cxf-rt-rs-client", version.ref = "cxf" }
+cxf-rt-rs-extension-providers = { module = "org.apache.cxf:cxf-rt-rs-extension-providers", version.ref = "cxf" }
+
+# Standalone libraries
+awaitility =             { group = "org.awaitility", name = "awaitility", version = "4.3.0" }
+bitbucket-jose4j =       { group = "org.bitbucket.b_c", name = "jose4j", version = "0.9.6" }
+cglib-nodep =            { group = "cglib", name = "cglib-nodep", version = "3.3.0" }
+kafka-clients =          { group = "org.apache.kafka", name = "kafka-clients", version = "4.0.0" }
+mockserver-client-java = { group = "org.mock-server", name = "mockserver-client-java", version = "5.15.0" }
+mongo-java-driver =      { group = "org.mongodb", name = "mongo-java-driver", version = "3.12.14" }
+postgresql-jdbc =        { group = "org.postgresql", name = "postgresql", version = "42.7.7" }
+# Cannot upgrade past 3.6.9 without increasing project to Java 17
+quarkus-junit5 =         { group = "io.quarkus", name = "quarkus-junit5", version = "3.6.9" }
+rest-assured =           { group = "io.rest-assured", name = "rest-assured", version = "5.5.5" }
+
+
+[bundles]
+junit-impl =    [ "junit-jupiter-api", "junit-jupiter-params" ]
+junit-runtime = [ "junit-platform-launcher", "junit-jupiter-engine" ]
+
+cxf-impl =      [ "cxf-rt-rs-client", "cxf-rt-rs-extension-providers" ]
+
+jakarta-json = [ "jakarta-yasson", "jakarta-parsson" ]
+
+[plugins]
+ben-manes = { id = "com.github.ben-manes.versions", version = "0.50.0" }

@@ -3,24 +3,20 @@ description="A test framework for black-box testing MicroProfile and Jakarta EE 
 
 dependencies {
   //API for artifact and unit testing
-  api 'org.junit.jupiter:junit-jupiter-api:5.13.2'
+  api platform(libs.junit.bom)
+  api libs.junit.jupiter.api
 
-  //Jakarta EE
-  implementation 'org.eclipse:yasson:3.0.3'
-  implementation 'org.eclipse.parsson:parsson:1.1.7'
+  // JSON Binding and Processing
+  implementation libs.bundles.jakarta.json
 
   //Support Libraries
-  implementation 'cglib:cglib-nodep:3.3.0'
-  implementation 'org.apache.cxf:cxf-rt-rs-client:4.0.5'
-  implementation 'org.apache.cxf:cxf-rt-rs-extension-providers:4.0.5'
-  implementation 'org.bitbucket.b_c:jose4j:0.9.6'
+  implementation libs.bundles.cxf.impl
+  implementation libs.cglib.nodep
+  implementation libs.bitbucket.jose4j
 
   //Unit testing
-  testImplementation platform("org.junit:junit-bom:5.13.2")
-  testImplementation "org.junit.jupiter:junit-jupiter-api"
-  testImplementation "org.junit.jupiter:junit-jupiter-params"
-  testRuntimeOnly "org.junit.platform:junit-platform-launcher"
-  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+  testImplementation libs.bundles.junit.impl
+  testRuntimeOnly    libs.bundles.junit.runtime
 }
 
 apply from: publishScript
