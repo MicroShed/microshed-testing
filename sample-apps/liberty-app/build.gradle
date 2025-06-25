@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-  api 'jakarta.platform:jakarta.jakartaee-api:10.0.0'
+  api 'jakarta.platform:jakarta.jakartaee-api:11.0.0'
   api 'org.eclipse.microprofile:microprofile:7.1'
 
   testImplementation project(':microshed-testing-liberty')
