@@ -1,6 +1,6 @@
 plugins {
     // to check for updates run: ./gradlew dependencyUpdates -Drevision=release
-    id 'com.github.ben-manes.versions' version '0.50.0'
+    alias(libs.plugins.ben.manes)
 }
 ext.currentVersion = '0.9.3-SNAPSHOT'
 ext.lastRelease = '0.9.2'

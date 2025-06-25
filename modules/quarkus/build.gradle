@@ -2,8 +2,7 @@ ext.title = "MicroShed Testing Framework :: Quarkus extensions"
 description = "Extensions for using MicroShed Testing with Quarkus"
 
 dependencies {
-  //Cannot upgrade past 3.6.9 without increasing project to Java 17
-  api 'io.quarkus:quarkus-junit5:3.6.9'
+  api libs.quarkus.junit5
   api project(':microshed-testing-testcontainers')
 }
 

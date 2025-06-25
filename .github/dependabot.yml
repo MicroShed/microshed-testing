@@ -7,103 +7,18 @@ updates:
     schedule:
       interval: daily
 
-# Gradle - core
+# Gradle
 
   - package-ecosystem: gradle
-    directory: /core
+    directory: /
     schedule:
       interval: daily
-    allow:
-      - dependency-type: "all"
-    # Ignore dependencies that are stabilized due to javax namespace
     ignore:
-      - dependency-name: "org.eclipse:yasson"
-      - dependency-name: "org.apache.cxf:cxf-rt-rs-client"
-      - dependency-name: "org.apache.cxf:cxf-rt-rs-extension-providers"
-
-  - package-ecosystem: gradle
-    directory: /core/jakarta
-    schedule:
-      interval: daily
-
-# Gradle - modules
-
-  - package-ecosystem: gradle
-    directory: /modules/liberty
-    schedule:
-      interval: daily
-
-  - package-ecosystem: gradle
-    directory: /modules/payara-micro
-    schedule:
-      interval: daily
-
-  - package-ecosystem: gradle
-    directory: /modules/payara-server
-    schedule:
-      interval: daily
-
-  - package-ecosystem: gradle
-    directory: /modules/quarkus
-    schedule:
-      interval: daily
-
-  - package-ecosystem: gradle
-    directory: /modules/testcontainers
-    schedule:
-      interval: daily
-
-# Gradle - sample-apps
-
-  - package-ecosystem: gradle
-    directory: /sample-apps/everything-app
-    schedule:
-      interval: daily
-
-  - package-ecosystem: gradle
-    directory: /sample-apps/everything-jakarta-app
-    schedule:
-      interval: daily
-
-  - package-ecosystem: gradle
-    directory: /sample-apps/jaxrs-basicauth
-    schedule:
-      interval: daily
-
-  - package-ecosystem: gradle
-    directory: /sample-apps/jaxrs-json
-    schedule:
-      interval: daily
-
-  - package-ecosystem: gradle
-    directory: /sample-apps/jaxrs-mpjwt
-    schedule:
-      interval: daily
-
-  - package-ecosystem: gradle
-    directory: /sample-apps/jdbc-app
-    schedule:
-      interval: daily
-
-  - package-ecosystem: gradle
-    directory: /sample-apps/kafka-app
-    schedule:
-      interval: daily
-
-  - package-ecosystem: gradle
-    directory: /sample-apps/liberty-app
-    schedule:
-      interval: daily
-
-  - package-ecosystem: gradle
-    directory: /sample-apps/payara-app
-    schedule:
-      interval: daily
-
-  - package-ecosystem: gradle
-    directory: /sample-apps/wildfly-app
-    schedule:
-      interval: daily
+      #Stablelize on Jakarta 10 and Microprofile 7
+      - dependency-name: "jakarta.platform:jakarta.jakartaee-api"
+        versions: [ "[10, 11)" ]
+      - dependency-name: "org.eclipse.microprofile:microprofile"
+        versions: [ "[7, 8)" ]
 
 # Maven - sample-apps
 
