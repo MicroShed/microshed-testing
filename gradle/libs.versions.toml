@@ -67,7 +67,7 @@ mockserver-client-java = { group = "org.mock-server", name = "mockserver-client-
 mongo-java-driver =      { group = "org.mongodb", name = "mongo-java-driver", version = "3.12.14" }
 postgresql-jdbc =        { group = "org.postgresql", name = "postgresql", version = "42.7.7" }
 # Cannot upgrade past 3.6.9 without increasing project to Java 17
-quarkus-junit5 =         { group = "io.quarkus", name = "quarkus-junit5", version = "3.6.9" }
+quarkus-junit5 =         { group = "io.quarkus", name = "quarkus-junit5", version = "3.24.1" }
 rest-assured =           { group = "io.rest-assured", name = "rest-assured", version = "5.5.5" }
 
 
