@@ -3,7 +3,7 @@
 junit = "5.13.4"
 testcontainers = "1.21.3"
 slf4j = "2.0.17"
-assertj = "3.27.4"
+assertj = "3.27.5"
 
 # Specifications
 mp = "7.1"
