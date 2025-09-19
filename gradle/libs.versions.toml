@@ -65,7 +65,7 @@ cglib-nodep =            { group = "cglib", name = "cglib-nodep", version = "3.3
 kafka-clients =          { group = "org.apache.kafka", name = "kafka-clients", version = "4.1.0" }
 mockserver-client-java = { group = "org.mock-server", name = "mockserver-client-java", version = "5.15.0" }
 mongo-java-driver =      { group = "org.mongodb", name = "mongo-java-driver", version = "3.12.14" }
-postgresql-jdbc =        { group = "org.postgresql", name = "postgresql", version = "42.7.7" }
+postgresql-jdbc =        { group = "org.postgresql", name = "postgresql", version = "42.7.8" }
 # Cannot upgrade past 3.6.9 without increasing project to Java 17
 quarkus-junit5 =         { group = "io.quarkus", name = "quarkus-junit5", version = "3.6.9" }
 rest-assured =           { group = "io.rest-assured", name = "rest-assured", version = "5.5.6" }
