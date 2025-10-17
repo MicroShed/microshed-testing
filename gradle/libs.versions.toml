@@ -1,7 +1,7 @@
 [versions]
 # BOMs
 junit = "5.13.4"
-testcontainers = "1.21.3"
+testcontainers = "2.0.1"
 slf4j = "2.0.17"
 assertj = "3.27.6"
 
