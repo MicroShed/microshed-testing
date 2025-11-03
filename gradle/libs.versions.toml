@@ -1,6 +1,6 @@
 [versions]
 # BOMs
-junit = "5.13.4"
+junit = "6.0.1"
 testcontainers = "1.21.3"
 slf4j = "2.0.17"
 assertj = "3.27.6"
