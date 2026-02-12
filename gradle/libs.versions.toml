@@ -68,7 +68,7 @@ mongo-java-driver =      { group = "org.mongodb", name = "mongo-java-driver", ve
 postgresql-jdbc =        { group = "org.postgresql", name = "postgresql", version = "42.7.10" }
 # Cannot upgrade past 3.6.9 without increasing project to Java 17
 quarkus-junit5 =         { group = "io.quarkus", name = "quarkus-junit5", version = "3.6.9" }
-rest-assured =           { group = "io.rest-assured", name = "rest-assured", version = "5.5.6" }
+rest-assured =           { group = "io.rest-assured", name = "rest-assured", version = "6.0.0" }
 
 
 [bundles]
