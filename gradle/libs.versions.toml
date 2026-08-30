@@ -62,7 +62,7 @@ cxf-rt-rs-extension-providers = { module = "org.apache.cxf:cxf-rt-rs-extension-p
 awaitility =             { group = "org.awaitility", name = "awaitility", version = "4.3.0" }
 bitbucket-jose4j =       { group = "org.bitbucket.b_c", name = "jose4j", version = "0.9.6" }
 cglib-nodep =            { group = "cglib", name = "cglib-nodep", version = "3.3.0" }
-kafka-clients =          { group = "org.apache.kafka", name = "kafka-clients", version = "4.1.1" }
+kafka-clients =          { group = "org.apache.kafka", name = "kafka-clients", version = "4.2.0" }
 mockserver-client-java = { group = "org.mock-server", name = "mockserver-client-java", version = "5.15.0" }
 mongo-java-driver =      { group = "org.mongodb", name = "mongo-java-driver", version = "3.12.14" }
 postgresql-jdbc =        { group = "org.postgresql", name = "postgresql", version = "42.7.10" }
